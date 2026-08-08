@@ -16,8 +16,22 @@ const app = express();
 const PORT = process.env.PORT || 5000;
 
 // Global Middleware
+const allowedOrigins = process.env.FRONTEND_URL
+  ? process.env.FRONTEND_URL.split(',').map(url => url.trim())
+  : ['http://localhost:5173', 'http://127.0.0.1:5173', 'http://localhost:3000'];
+
 const corsOptions = {
-  origin: '*',
+  origin: (origin, callback) => {
+    // Allow requests with no origin (like mobile apps, curl, postman, or server-to-server)
+    if (!origin) return callback(null, true);
+    
+    if (allowedOrigins.includes('*') || allowedOrigins.includes(origin)) {
+      return callback(null, true);
+    } else {
+      console.warn(`Origin ${origin} blocked by CORS`);
+      return callback(new Error('Not allowed by CORS'));
+    }
+  },
   methods: ['GET', 'POST', 'PUT', 'PATCH', 'DELETE', 'OPTIONS'],
   allowedHeaders: ['Content-Type', 'Authorization', 'x-admin-password'],
   credentials: true,
