@@ -19,7 +19,7 @@ import './App.css';
 function App() {
   const getInitialPage = () => {
     const path = window.location.pathname;
-    if (path === '/admin') return 'admin';
+    if (path === '/dm-admin') return 'admin';
     if (path === '/packages') return 'packages';
     if (path === '/services') return 'services';
     if (path === '/projects') return 'projects';
@@ -56,7 +56,7 @@ function App() {
 
   const setCurrentPage = (page) => {
     setCurrentPageRaw(page);
-    const path = page === 'home' ? '/' : `/${page}`;
+    const path = page === 'home' ? '/' : page === 'admin' ? '/dm-admin' : `/${page}`;
     if (window.location.pathname !== path) {
       window.history.pushState({}, '', path);
     }
