@@ -265,9 +265,9 @@ const Projects = ({ onOpenEstimate, initialFilter = 'all', initialProject = null
             </div>
 
             <div className="project-modal-content">
-              <span className="badge-orange px-3 py-1 rounded-full text-xs font-bold inline-block self-start mb-3">{selectedProjectModal.categoryLabel}</span>
-              <h2 className="text-2xl font-bold text-slate-900 mt-1 mb-2">{selectedProjectModal.title}</h2>
-              <p className="text-sm text-slate-500 mb-3 flex items-center gap-1">
+              <span className="project-modal-category">{selectedProjectModal.categoryLabel}</span>
+              <h2 className="project-modal-title">{selectedProjectModal.title}</h2>
+              <p className="project-modal-location">
                 <MapPin size={14} className="text-orange flex-shrink-0" /> {selectedProjectModal.location}
               </p>
 
@@ -290,11 +290,11 @@ const Projects = ({ onOpenEstimate, initialFilter = 'all', initialProject = null
                 </div>
               </div>
 
-              <p className="text-sm text-slate-600 leading-relaxed mb-6">{selectedProjectModal.description}</p>
+              <p className="project-modal-desc">{selectedProjectModal.description}</p>
 
               <button
                 onClick={() => { setSelectedProjectModal(null); onOpenEstimate(); }}
-                className="btn btn-primary w-full btn-lg mt-auto"
+                className="btn btn-primary project-modal-cta-btn"
               >
                 Request Quote for Similar Project
               </button>
