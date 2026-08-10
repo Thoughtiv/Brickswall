@@ -84,6 +84,20 @@ app.use('/api/testimonials', testimonialsRouter);
 app.use('/api/settings', settingsRouter);
 app.use('/api/chat', chatbotRouter);
 
+// Serve built React frontend (production)
+// FRONTEND_DIST_PATH can be overridden via env var if deployment folder structure differs
+const distPath = process.env.FRONTEND_DIST_PATH || path.join(__dirname, '..', 'brickswall', 'dist');
+app.use(express.static(distPath));
+
+// SPA catch-all: serve index.html for any non-API route
+// This makes /admin, /projects, /contact etc work on direct URL access or refresh
+app.get('*', (req, res) => {
+  if (req.path.startsWith('/api')) {
+    return res.status(404).json({ error: 'API route not found' });
+  }
+  res.sendFile(path.join(distPath, 'index.html'));
+});
+
 // Start server immediately so Hostinger's 3-second listen() check passes
 app.listen(PORT, () => {
   console.log(`Bricks Wall Server running on http://localhost:${PORT}`);
