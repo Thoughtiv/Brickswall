@@ -2,11 +2,16 @@ import React, { useState, useEffect } from 'react';
 import { MapPin, Maximize2, CheckCircle2, ArrowRight, Layers, Eye } from 'lucide-react';
 import { getProjects } from '../utils/api';
 
-const Projects = ({ onOpenEstimate }) => {
-  const [filter, setFilter] = useState('all');
+const Projects = ({ onOpenEstimate, initialFilter = 'all', initialProject = null }) => {
+  const [filter, setFilter] = useState(initialFilter);
   const [beforeAfterToggle, setBeforeAfterToggle] = useState('after');
-  const [selectedProjectModal, setSelectedProjectModal] = useState(null);
+  const [selectedProjectModal, setSelectedProjectModal] = useState(initialProject);
   const [projects, setProjects] = useState([]);
+
+  useEffect(() => {
+    setFilter(initialFilter);
+    setSelectedProjectModal(initialProject);
+  }, [initialFilter, initialProject]);
 
   useEffect(() => {
     const fetchProjects = async () => {

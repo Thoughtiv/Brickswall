@@ -32,7 +32,7 @@ import {
 } from 'lucide-react';
 import { submitInquiry, getProjects, getTestimonials } from '../utils/api';
 
-const Home = ({ setCurrentPage, onOpenEstimate }) => {
+const Home = ({ setCurrentPage, navigateToService, navigateToProject, onOpenEstimate, settings }) => {
   const [activeFaq, setActiveFaq] = useState(0);
   const [heroForm, setHeroForm] = useState({ name: '', phone: '', plotLocation: 'Hyderabad' });
   const [heroSubmitted, setHeroSubmitted] = useState(false);
@@ -147,11 +147,8 @@ const Home = ({ setCurrentPage, onOpenEstimate }) => {
         const liveProjects = await getProjects();
         if (liveProjects && liveProjects.length > 0) {
           setFeaturedProjects(liveProjects.map(p => ({
-            title: p.title,
-            location: p.location,
-            size: p.size,
-            type: p.categoryLabel,
-            image: p.image
+            ...p,
+            type: p.categoryLabel
           })));
         } else {
           setFeaturedProjects(DEFAULT_FEATURED_PROJECTS);
@@ -180,6 +177,10 @@ const Home = ({ setCurrentPage, onOpenEstimate }) => {
       location: 'Jubilee Hills, Hyderabad',
       size: '5,500 sq.ft',
       type: 'Luxury Villa',
+      category: 'villa',
+      categoryLabel: 'Luxury Villa',
+      duration: '11 Months',
+      description: 'A modern 3-story ultra-luxury villa featuring Italian marble flooring, floating staircase, private courtyard pool, and smart home automation.',
       image: 'https://images.unsplash.com/photo-1600596542815-ffad4c1539a9?auto=format&fit=crop&w=800&q=80'
     },
     {
@@ -187,6 +188,10 @@ const Home = ({ setCurrentPage, onOpenEstimate }) => {
       location: 'Gachibowli, Hyderabad',
       size: '3,800 sq.ft',
       type: 'Independent Home',
+      category: 'homes',
+      categoryLabel: 'Independent Home',
+      duration: '9 Months',
+      description: 'Contemporary G+2 independent duplex home with spacious balconies, rooftop solar installation, and premium teak wood joinery.',
       image: 'https://images.unsplash.com/photo-1600585154526-990dced4db0d?auto=format&fit=crop&w=800&q=80'
     },
     {
@@ -194,13 +199,21 @@ const Home = ({ setCurrentPage, onOpenEstimate }) => {
       location: 'Madhapur, Hyderabad',
       size: '12,000 sq.ft',
       type: 'Commercial Complex',
+      category: 'commercial',
+      categoryLabel: 'Commercial Building',
+      duration: '14 Months',
+      description: 'Commercial 5-floor office building with modern glass curtain walls, double basement parking, and high-speed elevators.',
       image: 'https://images.unsplash.com/photo-1486406146926-c627a92ad1ab?auto=format&fit=crop&w=800&q=80'
     },
     {
       title: 'Greenwood Academy Infrastructure',
       location: 'Kukatpally, Hyderabad',
       size: '18,500 sq.ft',
-      type: 'School Construction',
+      type: 'Educational Institution',
+      category: 'school',
+      categoryLabel: 'Educational Institution',
+      duration: '15 Months',
+      description: 'Spacious, fire-safe educational campus building featuring 24 classrooms, science laboratories, and indoor sports hall.',
       image: 'https://images.unsplash.com/photo-1541829070764-84a7d30dd3f3?auto=format&fit=crop&w=800&q=80'
     },
     {
@@ -863,7 +876,7 @@ const Home = ({ setCurrentPage, onOpenEstimate }) => {
             {/* Left Column Cards (01, 02, 03) */}
             <div className="ref-fc-col ref-fc-col-left">
               {/* Card 01 */}
-              <div className="ref-fc-card" onClick={() => setCurrentPage('services')}>
+              <div className="ref-fc-card" onClick={() => navigateToService('residential')}>
                 <div className="ref-fc-badge badge-orange">01</div>
                 <div className="ref-fc-icon-circle icon-orange">
                   <HomeIcon size={22} />
@@ -876,7 +889,7 @@ const Home = ({ setCurrentPage, onOpenEstimate }) => {
               </div>
 
               {/* Card 02 */}
-              <div className="ref-fc-card" onClick={() => setCurrentPage('services')}>
+              <div className="ref-fc-card" onClick={() => navigateToService('villa')}>
                 <div className="ref-fc-badge badge-navy">02</div>
                 <div className="ref-fc-icon-circle icon-navy">
                   <Building2 size={22} />
@@ -889,7 +902,7 @@ const Home = ({ setCurrentPage, onOpenEstimate }) => {
               </div>
 
               {/* Card 03 */}
-              <div className="ref-fc-card" onClick={() => setCurrentPage('services')}>
+              <div className="ref-fc-card" onClick={() => navigateToService('commercial')}>
                 <div className="ref-fc-badge badge-orange">03</div>
                 <div className="ref-fc-icon-circle icon-orange">
                   <Store size={22} />
@@ -937,7 +950,7 @@ const Home = ({ setCurrentPage, onOpenEstimate }) => {
             {/* Right Column Cards (04, 05, 06) */}
             <div className="ref-fc-col ref-fc-col-right">
               {/* Card 04 */}
-              <div className="ref-fc-card card-right" onClick={() => setCurrentPage('services')}>
+              <div className="ref-fc-card card-right" onClick={() => navigateToService('school')}>
                 <div className="connector-line line-right-top"></div>
                 <div className="ref-fc-icon-circle icon-navy">
                   <GraduationCap size={22} />
@@ -950,7 +963,7 @@ const Home = ({ setCurrentPage, onOpenEstimate }) => {
               </div>
 
               {/* Card 05 */}
-              <div className="ref-fc-card card-right" onClick={() => setCurrentPage('services')}>
+              <div className="ref-fc-card card-right" onClick={() => navigateToService('renovation')}>
                 <div className="connector-line line-right-mid"></div>
                 <div className="ref-fc-icon-circle icon-orange">
                   <Wrench size={22} />
@@ -963,7 +976,7 @@ const Home = ({ setCurrentPage, onOpenEstimate }) => {
               </div>
 
               {/* Card 06 */}
-              <div className="ref-fc-card card-right" onClick={() => setCurrentPage('services')}>
+              <div className="ref-fc-card card-right" onClick={() => navigateToService('interior')}>
                 <div className="connector-line line-right-bot"></div>
                 <div className="ref-fc-icon-circle icon-navy">
                   <Armchair size={22} />
@@ -1148,7 +1161,7 @@ const Home = ({ setCurrentPage, onOpenEstimate }) => {
 
           <div className="grid grid-3 gap-6">
             {featuredProjects.map((project, idx) => (
-              <div key={idx} className="project-card">
+              <div key={idx} className="project-card cursor-pointer" onClick={() => navigateToProject(project.category || 'all', project)}>
                 <div className="project-img-box">
                   <img src={project.image} alt={project.title} />
                   <span className="project-type-badge">{project.type}</span>

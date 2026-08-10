@@ -30,6 +30,9 @@ function App() {
   };
 
   const [currentPage, setCurrentPageRaw] = useState(getInitialPage);
+  const [serviceTab, setServiceTab] = useState('residential');
+  const [projectFilter, setProjectFilter] = useState('all');
+  const [initialProject, setInitialProject] = useState(null);
   const [isEstimateModalOpen, setIsEstimateModalOpen] = useState(false);
   const [settings, setSettings] = useState({
     phone_primary: '+91 9949249091',
@@ -62,6 +65,21 @@ function App() {
     }
   };
 
+  // Navigate to a specific service tab
+  const navigateToService = (tabId) => {
+    setServiceTab(tabId);
+    setCurrentPage('services');
+    setTimeout(() => window.scrollTo({ top: 0, behavior: 'smooth' }), 50);
+  };
+
+  // Navigate to specific project or category
+  const navigateToProject = (category, project = null) => {
+    setProjectFilter(category);
+    setInitialProject(project);
+    setCurrentPage('projects');
+    setTimeout(() => window.scrollTo({ top: 0, behavior: 'smooth' }), 50);
+  };
+
   useEffect(() => {
     const handlePopState = () => {
       setCurrentPageRaw(getInitialPage());
@@ -81,11 +99,11 @@ function App() {
   const renderCurrentPage = () => {
     switch (currentPage) {
       case 'home':
-        return <Home setCurrentPage={setCurrentPage} onOpenEstimate={handleOpenEstimate} settings={settings} />;
+        return <Home setCurrentPage={setCurrentPage} navigateToService={navigateToService} navigateToProject={navigateToProject} onOpenEstimate={handleOpenEstimate} settings={settings} />;
       case 'services':
-        return <Services onOpenEstimate={handleOpenEstimate} />;
+        return <Services onOpenEstimate={handleOpenEstimate} initialTab={serviceTab} />;
       case 'projects':
-        return <Projects onOpenEstimate={handleOpenEstimate} />;
+        return <Projects onOpenEstimate={handleOpenEstimate} initialFilter={projectFilter} initialProject={initialProject} />;
       case 'packages':
         return <Packages onOpenEstimate={handleOpenEstimate} />;
       case 'about':
