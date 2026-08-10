@@ -22,7 +22,13 @@ const PORT = process.env.PORT || 5000;
 // Global Middleware
 const allowedOrigins = process.env.FRONTEND_URL
   ? process.env.FRONTEND_URL.split(',').map(url => url.trim())
-  : ['http://localhost:5173', 'http://127.0.0.1:5173', 'http://localhost:3000'];
+  : [
+      'http://localhost:5173',
+      'http://127.0.0.1:5173',
+      'http://localhost:3000',
+      'https://brickswall.in',
+      'https://www.brickswall.in'
+    ];
 
 const corsOptions = {
   origin: (origin, callback) => {
@@ -55,9 +61,12 @@ app.use('/api/testimonials', testimonialsRouter);
 app.use('/api/settings', settingsRouter);
 app.use('/api/chat', chatbotRouter);
 
-// Start Server after connecting to MySQL
-connectWithRetry(initDatabase).then(() => {
-  app.listen(PORT, () => {
-    console.log(`Bricks Wall Server running on http://localhost:${PORT}`);
-  });
+// Start server immediately so Hostinger's 3-second listen() check passes
+app.listen(PORT, () => {
+  console.log(`Bricks Wall Server running on http://localhost:${PORT}`);
+});
+
+// Connect to DB after server is already listening (non-blocking)
+connectWithRetry(initDatabase).catch((err) => {
+  console.error('Fatal: Could not connect to database after retries.', err?.message);
 });
