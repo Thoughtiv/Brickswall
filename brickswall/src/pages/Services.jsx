@@ -16,8 +16,8 @@ import {
   ChevronRight
 } from 'lucide-react';
 
-const Services = ({ onOpenEstimate }) => {
-  const [activeTab, setActiveTab] = useState('residential');
+const Services = ({ onOpenEstimate, initialTab = 'residential' }) => {
+  const [activeTab, setActiveTab] = useState(initialTab);
   const tabsRef = useRef(null);
 
   const scrollTabs = (direction) => {
