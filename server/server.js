@@ -19,8 +19,6 @@ import chatbotRouter from './routes/chatbot.js';
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 dotenv.config({ path: path.join(__dirname, '.env') });
-console.log('CWD:', process.cwd(), '| __dirname:', __dirname);
-console.log('DB_HOST:', process.env.DB_HOST, '| DB_USER:', process.env.DB_USER, '| DB_NAME:', process.env.DB_NAME);
 
 const app = express();
 const PORT = process.env.PORT || 5000;
