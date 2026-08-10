@@ -1,7 +1,9 @@
 import React, { useState, useEffect } from 'react';
 import { Phone, MapPin, Menu, X, ArrowRight, ShieldCheck, ChevronDown, User } from 'lucide-react';
 
-const Header = ({ currentPage, setCurrentPage, onOpenEstimate }) => {
+const Header = ({ currentPage, setCurrentPage, onOpenEstimate, settings }) => {
+  const phonePrimary = settings?.phone_primary || '+91 9949249091';
+  const phoneSecondary = settings?.phone_secondary || '+91 9160202008';
   const [isScrolled, setIsScrolled] = useState(false);
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
 
@@ -51,15 +53,15 @@ const Header = ({ currentPage, setCurrentPage, onOpenEstimate }) => {
           </div>
 
           <div className="top-bar-right">
-            <a href="tel:+919949249091" className="phone-link">
-              <Phone size={14} />
-              <span>+91 9949249091</span>
-            </a>
-            <a href="tel:9160202008" className="phone-link hide-mobile">
-              <span>9160202008</span>
-            </a>
-            <button 
-              onClick={onOpenEstimate} 
+            <a href={`tel:${phonePrimary.replace(/\s+/g, '')}`} className="phone-link">
+               <Phone size={14} />
+               <span>{phonePrimary}</span>
+             </a>
+             <a href={`tel:${phoneSecondary.replace(/\s+/g, '')}`} className="phone-link hide-mobile">
+               <span>{phoneSecondary}</span>
+             </a>
+            <button
+              onClick={onOpenEstimate}
               className="btn btn-primary btn-sm top-quote-btn"
             >
               Get Free Estimate
@@ -73,9 +75,9 @@ const Header = ({ currentPage, setCurrentPage, onOpenEstimate }) => {
         <div className="container nav-container">
           {/* Logo */}
           <div className="logo-wrapper" onClick={() => handleNavClick('home')}>
-            <img 
-              src="/Brickswall-logo_birefnet.png" 
-              alt="Bricks Wall - Hyderabad Construction Experts" 
+            <img
+              src="/Brickswall-logo_birefnet.png"
+              alt="Bricks Wall - Hyderabad Construction Experts"
               className="brand-logo"
             />
           </div>
@@ -95,8 +97,8 @@ const Header = ({ currentPage, setCurrentPage, onOpenEstimate }) => {
 
           {/* Action CTAs */}
           <div className="nav-actions">
-            <button 
-              onClick={onOpenEstimate} 
+            <button
+              onClick={onOpenEstimate}
               className="btn btn-primary nav-cta-btn flex items-center gap-2"
             >
               <User size={16} />
@@ -104,7 +106,7 @@ const Header = ({ currentPage, setCurrentPage, onOpenEstimate }) => {
             </button>
 
             {/* Mobile Hamburger Toggle */}
-            <button 
+            <button
               className="mobile-toggle"
               onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
               aria-label="Toggle menu"
@@ -139,11 +141,11 @@ const Header = ({ currentPage, setCurrentPage, onOpenEstimate }) => {
 
           <div className="mobile-drawer-footer">
             <p className="mobile-contact-title">Quick Connect</p>
-            <a href="tel:+919949249091" className="mobile-phone-btn">
-              <Phone size={16} /> Call +91 9949249091
-            </a>
-            <button 
-              onClick={() => { setMobileMenuOpen(false); onOpenEstimate(); }} 
+            <a href={`tel:${phonePrimary.replace(/\s+/g, '')}`} className="mobile-phone-btn">
+               <Phone size={16} /> Call {phonePrimary}
+             </a>
+            <button
+              onClick={() => { setMobileMenuOpen(false); onOpenEstimate(); }}
               className="mobile-estimate-btn"
             >
               Get Free Estimate

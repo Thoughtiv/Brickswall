@@ -1,9 +1,10 @@
 import React, { useState } from 'react';
 import { MessageCircle, X } from 'lucide-react';
 
-const WhatsAppButton = () => {
+const WhatsAppButton = ({ settings }) => {
+  const whatsappNumber = (settings?.whatsapp || '+91 9160202008').replace(/[^0-9]/g, '');
   const [showTooltip, setShowTooltip] = useState(true);
-  const whatsappUrl = "https://wa.me/919160202008?text=Hi%20Bricks%20Wall,%20I%20am%20interested%20in%20building%20a%20property%20in%20Hyderabad.%20Please%20share%20details.";
+  const whatsappUrl = `https://wa.me/${whatsappNumber}?text=Hi%20Bricks%20Wall,%20I%20am%20interested%20in%20building%20a%20property%20in%20Hyderabad.%20Please%20share%20details.`;
 
   return (
     <div className="whatsapp-floating-container">
@@ -19,10 +20,10 @@ const WhatsAppButton = () => {
         </div>
       )}
 
-      <a 
-        href={whatsappUrl} 
-        target="_blank" 
-        rel="noopener noreferrer" 
+      <a
+        href={whatsappUrl}
+        target="_blank"
+        rel="noopener noreferrer"
         className="whatsapp-btn"
         aria-label="Chat on WhatsApp"
       >

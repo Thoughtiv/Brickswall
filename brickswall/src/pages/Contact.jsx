@@ -2,7 +2,12 @@ import React, { useState } from 'react';
 import { Phone, Mail, MapPin, MessageSquare, CheckCircle2, Send, Clock, ShieldCheck } from 'lucide-react';
 import { submitInquiry } from '../utils/api';
 
-const Contact = ({ onOpenEstimate }) => {
+const Contact = ({ onOpenEstimate, settings }) => {
+  const phonePrimary = settings?.phone_primary || '+91 9949249091';
+  const phoneSecondary = settings?.phone_secondary || '+91 9160202008';
+  const whatsapp = settings?.whatsapp || '+91 9160202008';
+  const email = settings?.email || 'Hello@brickswall.in';
+  const address = settings?.address || 'Hyderabad & Surrounding Areas, Telangana';
   const [formData, setFormData] = useState({
     name: '',
     phone: '',
@@ -92,7 +97,7 @@ const Contact = ({ onOpenEstimate }) => {
                   <div className="c-icon"><MapPin size={20} /></div>
                   <div>
                     <strong className="block text-xs font-bold text-slate-900 mb-0.5">Service Area &amp; Office:</strong>
-                    <p className="text-xs text-slate-600">Hyderabad, Telangana &amp; Surrounding Regions</p>
+                    <p className="text-xs text-slate-600">{address}</p>
                   </div>
                 </div>
 
@@ -101,8 +106,13 @@ const Contact = ({ onOpenEstimate }) => {
                   <div>
                     <strong className="block text-xs font-bold text-slate-900 mb-0.5">Phone Numbers:</strong>
                     <p className="text-xs text-slate-600">
-                      <a href="tel:+919876543210" className="hover:text-orange font-semibold transition-colors">+91 9876543210</a>
+                      <a href={`tel:${phonePrimary.replace(/\s+/g, '')}`} className="hover:text-orange font-semibold transition-colors">{phonePrimary}</a>
                     </p>
+                    {phoneSecondary && (
+                      <p className="text-xs text-slate-600 mt-1">
+                        <a href={`tel:${phoneSecondary.replace(/\s+/g, '')}`} className="hover:text-orange font-semibold transition-colors">{phoneSecondary}</a>
+                      </p>
+                    )}
                   </div>
                 </div>
 
@@ -111,7 +121,7 @@ const Contact = ({ onOpenEstimate }) => {
                   <div>
                     <strong className="block text-xs font-bold text-slate-900 mb-0.5">WhatsApp Direct:</strong>
                     <p className="text-xs text-slate-600">
-                      <a href="https://wa.me/919160202008" target="_blank" rel="noreferrer" className="hover:text-orange font-semibold transition-colors">+91 9160202008</a>
+                      <a href={`https://wa.me/${whatsapp.replace(/[^0-9]/g, '')}`} target="_blank" rel="noreferrer" className="hover:text-orange font-semibold transition-colors">{whatsapp}</a>
                     </p>
                   </div>
                 </div>
@@ -121,7 +131,7 @@ const Contact = ({ onOpenEstimate }) => {
                   <div>
                     <strong className="block text-xs font-bold text-slate-900 mb-0.5">Email Address:</strong>
                     <p className="text-xs text-slate-600">
-                      <a href="mailto:Hello@brickswall.in" className="hover:text-orange font-semibold transition-colors">Hello@brickswall.in</a>
+                      <a href={`mailto:${email}`} className="hover:text-orange font-semibold transition-colors">{email}</a>
                     </p>
                   </div>
                 </div>
@@ -164,7 +174,7 @@ const Contact = ({ onOpenEstimate }) => {
                   <div className="grid grid-2 gap-3">
                     <div className="form-group">
                       <label className="form-label">Service Required</label>
-                      <select 
+                      <select
                         className="form-input"
                         value={formData.serviceType}
                         onChange={(e) => setFormData({ ...formData, serviceType: e.target.value })}
@@ -245,14 +255,14 @@ const Contact = ({ onOpenEstimate }) => {
           </div>
 
           <div className="map-frame-box">
-            <iframe 
+            <iframe
               title="Bricks Wall Hyderabad Service Map"
-              src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d243647.3160417937!2d78.24323136287955!3d17.412299801128383!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x3bcb99daeaebd2c7%3A0xae93b783997c0f27!2sHyderabad%2C%20Telangana!5e0!3m2!1sen!2sin!4v1700000000000!5m2!1sen!2sin" 
-              width="100%" 
-              height="380" 
-              style={{ border: 0, borderRadius: 'var(--radius-lg)' }} 
-              allowFullScreen="" 
-              loading="lazy" 
+              src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d243647.3160417937!2d78.24323136287955!3d17.412299801128383!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x3bcb99daeaebd2c7%3A0xae93b783997c0f27!2sHyderabad%2C%20Telangana!5e0!3m2!1sen!2sin!4v1700000000000!5m2!1sen!2sin"
+              width="100%"
+              height="380"
+              style={{ border: 0, borderRadius: 'var(--radius-lg)' }}
+              allowFullScreen=""
+              loading="lazy"
               referrerPolicy="no-referrer-when-downgrade"
             ></iframe>
           </div>

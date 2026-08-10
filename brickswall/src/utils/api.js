@@ -136,3 +136,193 @@ export async function deleteInquiry(id, adminPassword) {
   }
   return await res.json().catch(() => ({ success: true }));
 }
+
+/**
+ * Fetch all projects (Public)
+ */
+export async function getProjects() {
+  try {
+    const res = await fetch(`${API_BASE_URL}/projects`);
+    if (!res.ok) throw new Error('Failed to fetch projects');
+    return await res.json();
+  } catch (err) {
+    console.error('Error in getProjects:', err.message);
+    return [];
+  }
+}
+
+/**
+ * Add a project (Admin)
+ */
+export async function addProject(projectData, adminPassword) {
+  const res = await fetch(`${API_BASE_URL}/projects`, {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+      'x-admin-password': adminPassword
+    },
+    body: JSON.stringify(projectData)
+  });
+  if (!res.ok) {
+    const errData = await res.json().catch(() => ({}));
+    throw new Error(errData.error || 'Failed to add project');
+  }
+  return await res.json();
+}
+
+/**
+ * Update a project (Admin)
+ */
+export async function updateProject(id, projectData, adminPassword) {
+  const res = await fetch(`${API_BASE_URL}/projects/${id}`, {
+    method: 'PUT',
+    headers: {
+      'Content-Type': 'application/json',
+      'x-admin-password': adminPassword
+    },
+    body: JSON.stringify(projectData)
+  });
+  if (!res.ok) {
+    const errData = await res.json().catch(() => ({}));
+    throw new Error(errData.error || 'Failed to update project');
+  }
+  return await res.json();
+}
+
+/**
+ * Delete a project (Admin)
+ */
+export async function deleteProject(id, adminPassword) {
+  const res = await fetch(`${API_BASE_URL}/projects/${id}`, {
+    method: 'DELETE',
+    headers: {
+      'x-admin-password': adminPassword
+    }
+  });
+  if (!res.ok) {
+    const errData = await res.json().catch(() => ({}));
+    throw new Error(errData.error || 'Failed to delete project');
+  }
+  return await res.json().catch(() => ({ success: true }));
+}
+
+/**
+ * Fetch all testimonials (Public)
+ */
+export async function getTestimonials() {
+  try {
+    const res = await fetch(`${API_BASE_URL}/testimonials`);
+    if (!res.ok) throw new Error('Failed to fetch testimonials');
+    return await res.json();
+  } catch (err) {
+    console.error('Error in getTestimonials:', err.message);
+    return [];
+  }
+}
+
+/**
+ * Add a testimonial (Admin)
+ */
+export async function addTestimonial(testimonialData, adminPassword) {
+  const res = await fetch(`${API_BASE_URL}/testimonials`, {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+      'x-admin-password': adminPassword
+    },
+    body: JSON.stringify(testimonialData)
+  });
+  if (!res.ok) {
+    const errData = await res.json().catch(() => ({}));
+    throw new Error(errData.error || 'Failed to add testimonial');
+  }
+  return await res.json();
+}
+
+/**
+ * Update a testimonial (Admin)
+ */
+export async function updateTestimonial(id, testimonialData, adminPassword) {
+  const res = await fetch(`${API_BASE_URL}/testimonials/${id}`, {
+    method: 'PUT',
+    headers: {
+      'Content-Type': 'application/json',
+      'x-admin-password': adminPassword
+    },
+    body: JSON.stringify(testimonialData)
+  });
+  if (!res.ok) {
+    const errData = await res.json().catch(() => ({}));
+    throw new Error(errData.error || 'Failed to update testimonial');
+  }
+  return await res.json();
+}
+
+/**
+ * Delete a testimonial (Admin)
+ */
+export async function deleteTestimonial(id, adminPassword) {
+  const res = await fetch(`${API_BASE_URL}/testimonials/${id}`, {
+    method: 'DELETE',
+    headers: {
+      'x-admin-password': adminPassword
+    }
+  });
+  if (!res.ok) {
+    const errData = await res.json().catch(() => ({}));
+    throw new Error(errData.error || 'Failed to delete testimonial');
+  }
+  return await res.json().catch(() => ({ success: true }));
+}
+
+/**
+ * Fetch settings (Public)
+ */
+export async function getSettings() {
+  try {
+    const res = await fetch(`${API_BASE_URL}/settings`);
+    if (!res.ok) throw new Error('Failed to fetch settings');
+    return await res.json();
+  } catch (err) {
+    console.error('Error in getSettings:', err.message);
+    return {};
+  }
+}
+
+/**
+ * Update settings (Admin)
+ */
+export async function updateSettings(settings, adminPassword) {
+  const res = await fetch(`${API_BASE_URL}/settings`, {
+    method: 'PUT',
+    headers: {
+      'Content-Type': 'application/json',
+      'x-admin-password': adminPassword
+    },
+    body: JSON.stringify({ settings })
+  });
+  if (!res.ok) {
+    const errData = await res.json().catch(() => ({}));
+    throw new Error(errData.error || 'Failed to update settings');
+  }
+  return await res.json();
+}
+
+/**
+ * Send chat message history to chatbot API
+ */
+export async function sendChatMessage(messages) {
+  const res = await fetch(`${API_BASE_URL}/chat`, {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json'
+    },
+    body: JSON.stringify({ messages })
+  });
+  if (!res.ok) {
+    const errData = await res.json().catch(() => ({}));
+    throw new Error(errData.error || 'Failed to get chatbot response');
+  }
+  return await res.json();
+}
+

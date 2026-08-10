@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import Header from './components/Header';
 import Footer from './components/Footer';
-import WhatsAppButton from './components/WhatsAppButton';
+import Chatbot from './components/Chatbot';
 import EstimateModal from './components/EstimateModal';
 
 import Home from './pages/Home';
@@ -12,6 +12,7 @@ import AboutUs from './pages/AboutUs';
 import Blog from './pages/Blog';
 import Contact from './pages/Contact';
 import AdminDashboard from './pages/AdminDashboard';
+import { getSettings } from './utils/api';
 
 import './App.css';
 
@@ -30,6 +31,28 @@ function App() {
 
   const [currentPage, setCurrentPageRaw] = useState(getInitialPage);
   const [isEstimateModalOpen, setIsEstimateModalOpen] = useState(false);
+  const [settings, setSettings] = useState({
+    phone_primary: '+91 9949249091',
+    phone_secondary: '+91 9160202008',
+    whatsapp: '+91 9160202008',
+    email: 'Hello@brickswall.in',
+    address: 'Hyderabad & Surrounding Areas, Telangana',
+    office_hours: 'Mon - Sat: 9:00 AM - 6:30 PM'
+  });
+
+  useEffect(() => {
+    const fetchSettings = async () => {
+      try {
+        const data = await getSettings();
+        if (data && Object.keys(data).length > 0) {
+          setSettings(prev => ({ ...prev, ...data }));
+        }
+      } catch (err) {
+        console.warn('Could not load settings from server, using default settings.');
+      }
+    };
+    fetchSettings();
+  }, []);
 
   const setCurrentPage = (page) => {
     setCurrentPageRaw(page);
@@ -58,7 +81,7 @@ function App() {
   const renderCurrentPage = () => {
     switch (currentPage) {
       case 'home':
-        return <Home setCurrentPage={setCurrentPage} onOpenEstimate={handleOpenEstimate} />;
+        return <Home setCurrentPage={setCurrentPage} onOpenEstimate={handleOpenEstimate} settings={settings} />;
       case 'services':
         return <Services onOpenEstimate={handleOpenEstimate} />;
       case 'projects':
@@ -70,11 +93,11 @@ function App() {
       case 'blog':
         return <Blog onOpenEstimate={handleOpenEstimate} />;
       case 'contact':
-        return <Contact onOpenEstimate={handleOpenEstimate} />;
+        return <Contact onOpenEstimate={handleOpenEstimate} settings={settings} />;
       case 'admin':
         return <AdminDashboard />;
       default:
-        return <Home setCurrentPage={setCurrentPage} onOpenEstimate={handleOpenEstimate} />;
+        return <Home setCurrentPage={setCurrentPage} onOpenEstimate={handleOpenEstimate} settings={settings} />;
     }
   };
 
@@ -85,10 +108,11 @@ function App() {
   return (
     <div className="app-main-wrapper">
       {/* Top Header Navigation */}
-      <Header 
-        currentPage={currentPage} 
-        setCurrentPage={setCurrentPage} 
-        onOpenEstimate={handleOpenEstimate} 
+      <Header
+        currentPage={currentPage}
+        setCurrentPage={setCurrentPage}
+        onOpenEstimate={handleOpenEstimate}
+        settings={settings}
       />
 
       {/* Main Page Body */}
@@ -97,18 +121,19 @@ function App() {
       </main>
 
       {/* Footer */}
-      <Footer 
-        setCurrentPage={setCurrentPage} 
-        onOpenEstimate={handleOpenEstimate} 
+      <Footer
+        setCurrentPage={setCurrentPage}
+        onOpenEstimate={handleOpenEstimate}
+        settings={settings}
       />
 
-      {/* Floating Sticky WhatsApp Chat Button */}
-      <WhatsAppButton />
+      {/* Floating Sticky AI Chatbot */}
+      <Chatbot />
 
       {/* Free Cost Estimate Modal & Lead Form */}
-      <EstimateModal 
-        isOpen={isEstimateModalOpen} 
-        onClose={handleCloseEstimate} 
+      <EstimateModal
+        isOpen={isEstimateModalOpen}
+        onClose={handleCloseEstimate}
       />
     </div>
   );

@@ -1,19 +1,19 @@
 import React, { useState, useEffect } from 'react';
-import { 
-  Lock, 
-  Search, 
-  Filter, 
-  Trash2, 
-  Save, 
-  Check, 
-  Database, 
-  DollarSign, 
-  Users, 
-  Clock, 
-  AlertCircle, 
-  Edit3, 
-  ChevronDown, 
-  UserCheck, 
+import {
+  Lock,
+  Search,
+  Filter,
+  Trash2,
+  Save,
+  Check,
+  Database,
+  DollarSign,
+  Users,
+  Clock,
+  AlertCircle,
+  Edit3,
+  ChevronDown,
+  UserCheck,
   FileText,
   LogOut,
   ChevronRight,
@@ -22,17 +22,43 @@ import {
   FileSpreadsheet,
   X
 } from 'lucide-react';
-import { getInquiries, updateInquiry, deleteInquiry, getPricing, updatePricing } from '../utils/api';
+import {
+  getInquiries,
+  updateInquiry,
+  deleteInquiry,
+  getPricing,
+  updatePricing,
+  getProjects,
+  addProject,
+  updateProject,
+  deleteProject,
+  getTestimonials,
+  addTestimonial,
+  updateTestimonial,
+  deleteTestimonial,
+  getSettings,
+  updateSettings
+} from '../utils/api';
 
 const AdminDashboard = () => {
   const [isAuthenticated, setIsAuthenticated] = useState(false);
   const [password, setPassword] = useState('');
   const [loginError, setLoginError] = useState('');
   const [activeTab, setActiveTab] = useState('inquiries');
-  
+
   // Data States
   const [inquiries, setInquiries] = useState([]);
   const [pricing, setPricing] = useState(null);
+  const [projects, setProjects] = useState([]);
+  const [testimonials, setTestimonials] = useState([]);
+  const [settings, setSettings] = useState({
+    phone_primary: '',
+    phone_secondary: '',
+    whatsapp: '',
+    email: '',
+    address: '',
+    office_hours: ''
+  });
   const [isLoading, setIsLoading] = useState(false);
   const [saveStatus, setSaveStatus] = useState('');
 
@@ -40,11 +66,10 @@ const AdminDashboard = () => {
   const [searchTerm, setSearchTerm] = useState('');
   const [statusFilter, setStatusFilter] = useState('All');
   const [typeFilter, setTypeFilter] = useState('All');
-  
+
   // Selected Inquiry for details panel
   const [selectedInquiry, setSelectedInquiry] = useState(null);
   const [adminNotesText, setAdminNotesText] = useState('');
-  const [inquiryToDelete, setInquiryToDelete] = useState(null);
 
   // Editable pricing data state
   const [editablePricing, setEditablePricing] = useState({
@@ -55,6 +80,40 @@ const AdminDashboard = () => {
 
   // Calculator preview plot size
   const [previewPlotSize, setPreviewPlotSize] = useState(1500);
+
+  // Modals state
+  const [deleteConfirmModal, setDeleteConfirmModal] = useState({
+    isOpen: false,
+    type: '',
+    targetId: '',
+    targetTitle: ''
+  });
+  const [projectModal, setProjectModal] = useState({
+    isOpen: false,
+    mode: 'add',
+    projectData: {
+      title: '',
+      category: 'homes',
+      categoryLabel: 'Independent Home',
+      location: '',
+      size: '',
+      duration: '',
+      image: '',
+      description: ''
+    }
+  });
+  const [testimonialModal, setTestimonialModal] = useState({
+    isOpen: false,
+    mode: 'add',
+    testimonialData: {
+      name: '',
+      location: '',
+      role: '',
+      quote: '',
+      avatar: '',
+      rating: 5
+    }
+  });
 
   // Load password from localStorage if exists
   useEffect(() => {
@@ -74,11 +133,20 @@ const AdminDashboard = () => {
       setInquiries(data);
       localStorage.setItem('bw_admin_pwd', pwdToTest);
       setIsAuthenticated(true);
-      
-      // Also fetch pricing
+
+      // Also fetch other tables
       const pricingData = await getPricing();
       setPricing(pricingData);
       setEditablePricing(pricingData);
+
+      const projectsData = await getProjects();
+      setProjects(projectsData);
+
+      const testimonialsData = await getTestimonials();
+      setTestimonials(testimonialsData);
+
+      const settingsData = await getSettings();
+      setSettings(settingsData);
     } catch (err) {
       setLoginError(err.message || 'Invalid admin credentials');
       localStorage.removeItem('bw_admin_pwd');
@@ -112,6 +180,15 @@ const AdminDashboard = () => {
       const pricingData = await getPricing();
       setPricing(pricingData);
       setEditablePricing(pricingData);
+
+      const projectsData = await getProjects();
+      setProjects(projectsData);
+
+      const testimonialsData = await getTestimonials();
+      setTestimonials(testimonialsData);
+
+      const settingsData = await getSettings();
+      setSettings(settingsData);
     } catch (err) {
       console.error('Failed to load data:', err);
     } finally {
@@ -143,19 +220,32 @@ const AdminDashboard = () => {
     }
   };
 
-  const handleDeleteInquiryClick = (id) => {
-    const inq = inquiries.find(item => Number(item.id) === Number(id));
-    if (inq) {
-      setInquiryToDelete(inq);
-    }
+  // Deletion confirm triggers
+  const triggerDeleteConfirm = (type, id, title) => {
+    setDeleteConfirmModal({
+      isOpen: true,
+      type,
+      targetId: id,
+      targetTitle: title
+    });
   };
 
-  const executeDeleteInquiry = async (id) => {
+  const executeDelete = async () => {
+    const { type, targetId } = deleteConfirmModal;
+    setDeleteConfirmModal(prev => ({ ...prev, isOpen: false }));
     try {
-      await deleteInquiry(id, password);
-      setInquiries(prev => prev.filter(inq => Number(inq.id) !== Number(id)));
-      if (selectedInquiry && Number(selectedInquiry.id) === Number(id)) {
-        setSelectedInquiry(null);
+      if (type === 'inquiry') {
+        await deleteInquiry(targetId, password);
+        setInquiries(prev => prev.filter(inq => Number(inq.id) !== Number(targetId)));
+        if (selectedInquiry && Number(selectedInquiry.id) === Number(targetId)) {
+          setSelectedInquiry(null);
+        }
+      } else if (type === 'project') {
+        await deleteProject(targetId, password);
+        setProjects(prev => prev.filter(p => Number(p.id) !== Number(targetId)));
+      } else if (type === 'testimonial') {
+        await deleteTestimonial(targetId, password);
+        setTestimonials(prev => prev.filter(t => Number(t.id) !== Number(targetId)));
       }
     } catch (err) {
       alert(`Error deleting record: ${err.message}`);
@@ -188,16 +278,66 @@ const AdminDashboard = () => {
     }
   };
 
+  // Project submits
+  const handleProjectSubmit = async (e) => {
+    e.preventDefault();
+    const { mode, projectData } = projectModal;
+    try {
+      if (mode === 'add') {
+        const added = await addProject(projectData, password);
+        setProjects(prev => [added, ...prev]);
+      } else {
+        const updated = await updateProject(projectData.id, projectData, password);
+        setProjects(prev => prev.map(p => Number(p.id) === Number(projectData.id) ? updated : p));
+      }
+      setProjectModal({ isOpen: false, mode: 'add', projectData: {} });
+    } catch (err) {
+      alert(`Error submitting project: ${err.message}`);
+    }
+  };
+
+  // Testimonial submits
+  const handleTestimonialSubmit = async (e) => {
+    e.preventDefault();
+    const { mode, testimonialData } = testimonialModal;
+    try {
+      if (mode === 'add') {
+        const added = await addTestimonial(testimonialData, password);
+        setTestimonials(prev => [added, ...prev]);
+      } else {
+        const updated = await updateTestimonial(testimonialData.id, testimonialData, password);
+        setTestimonials(prev => prev.map(t => Number(t.id) === Number(testimonialData.id) ? updated : t));
+      }
+      setTestimonialModal({ isOpen: false, mode: 'add', testimonialData: {} });
+    } catch (err) {
+      alert(`Error submitting testimonial: ${err.message}`);
+    }
+  };
+
+  // Settings submit
+  const handleSaveSettings = async (e) => {
+    e.preventDefault();
+    setSaveStatus('Saving Settings...');
+    try {
+      await updateSettings(settings, password);
+      setSaveStatus('Settings saved successfully!');
+      setTimeout(() => setSaveStatus(''), 3000);
+    } catch (err) {
+      setSaveStatus(`Error saving settings: ${err.message}`);
+      setTimeout(() => setSaveStatus(''), 5000);
+    }
+  };
+
   // Helper selectors / aggregation
   const filteredInquiries = inquiries.filter(inq => {
-    const matchesSearch = 
+    const matchesSearch =
       inq.name?.toLowerCase().includes(searchTerm.toLowerCase()) ||
       inq.phone?.includes(searchTerm) ||
       inq.location?.toLowerCase().includes(searchTerm.toLowerCase());
-      
+
     const matchesStatus = statusFilter === 'All' || inq.status === statusFilter;
     const matchesType = typeFilter === 'All' || inq.type === typeFilter;
-    
+
     return matchesSearch && matchesStatus && matchesType;
   });
 
@@ -207,7 +347,7 @@ const AdminDashboard = () => {
     const pending = inquiries.filter(i => i.status === 'New').length;
     const contacted = inquiries.filter(i => i.status === 'Contacted').length;
     const closed = inquiries.filter(i => i.status === 'Closed').length;
-    
+
     // Calculate pipeline value based on estimations
     let totalEstVal = 0;
     inquiries.forEach(inq => {
@@ -226,7 +366,7 @@ const AdminDashboard = () => {
         packagesCount[i.packageType.toLowerCase()]++;
       }
     });
-    
+
     let popularPkg = 'Premium Package';
     let maxCount = packagesCount.premium;
     if (packagesCount.luxury > maxCount) {
@@ -381,12 +521,12 @@ const AdminDashboard = () => {
           </div>
           <h1>Admin Portal Gate</h1>
           <p>Verify password credentials to access dashboard and manage inquiries.</p>
-          
+
           <form onSubmit={handleLoginSubmit}>
             <div className="form-group-login">
               <label>Admin Access Code</label>
-              <input 
-                type="password" 
+              <input
+                type="password"
                 placeholder="Enter password..."
                 className="login-input"
                 value={password}
@@ -1038,111 +1178,8 @@ const AdminDashboard = () => {
             width: 100%;
           }
         }
-
-        /* Custom Deletion Confirmation Modal CSS */
-        .custom-modal-overlay {
-          position: fixed;
-          top: 0;
-          left: 0;
-          right: 0;
-          bottom: 0;
-          background: rgba(15, 23, 42, 0.6) !important;
-          backdrop-filter: blur(8px) !important;
-          display: flex;
-          align-items: center;
-          justify-content: center;
-          z-index: 10000 !important;
-          padding: 20px;
-          animation: modalFadeIn 0.2s ease-out;
-        }
-        
-        .custom-modal-card {
-          background: white !important;
-          border-radius: 16px !important;
-          width: 100%;
-          max-width: 400px;
-          padding: 28px !important;
-          text-align: center;
-          box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04) !important;
-          border: 1px solid #e2e8f0 !important;
-          animation: modalScaleUp 0.2s cubic-bezier(0.16, 1, 0.3, 1);
-        }
-        
-        .custom-modal-icon {
-          width: 56px;
-          height: 56px;
-          background: #fee2e2 !important;
-          color: #ef4444 !important;
-          border-radius: 50% !important;
-          display: flex;
-          align-items: center;
-          justify-content: center;
-          margin: 0 auto 16px;
-        }
-        
-        .custom-modal-card h3 {
-          font-size: 18px !important;
-          font-weight: 800 !important;
-          color: #0f172a !important;
-          margin: 0 0 8px 0 !important;
-        }
-        
-        .custom-modal-card p {
-          font-size: 13px !important;
-          color: #64748b !important;
-          line-height: 1.5 !important;
-          margin: 0 0 24px 0 !important;
-        }
-        
-        .custom-modal-actions {
-          display: flex;
-          gap: 12px;
-        }
-        
-        .modal-btn {
-          flex: 1;
-          padding: 10px 16px;
-          border-radius: 10px;
-          font-size: 13px;
-          font-weight: 700;
-          cursor: pointer;
-          transition: all 0.2s;
-          border: none;
-        }
-        
-        .modal-btn.cancel {
-          background: #f1f5f9 !important;
-          color: #64748b !important;
-          border: 1px solid #e2e8f0 !important;
-        }
-        
-        .modal-btn.cancel:hover {
-          background: #e2e8f0 !important;
-          color: #0f172a !important;
-        }
-        
-        .modal-btn.confirm {
-          background: #ef4444 !important;
-          color: white !important;
-          box-shadow: 0 4px 6px -1px rgba(239, 68, 68, 0.2) !important;
-        }
-        
-        .modal-btn.confirm:hover {
-          background: #dc2626 !important;
-          box-shadow: 0 4px 12px -1px rgba(220, 38, 38, 0.3) !important;
-        }
-        
-        @keyframes modalFadeIn {
-          from { opacity: 0; }
-          to { opacity: 1; }
-        }
-        
-        @keyframes modalScaleUp {
-          from { transform: scale(0.95); opacity: 0; }
-          to { transform: scale(1); opacity: 1; }
-        }
       `}</style>
-      
+
       {/* Header */}
       <header className="admin-header">
         <div className="container admin-header-flex">
@@ -1211,18 +1248,36 @@ const AdminDashboard = () => {
         </div>
 
         {/* Tab Controls */}
-        <div className="nav-tabs">
-          <button 
+        <div className="nav-tabs" style={{ display: 'flex', gap: '8px', overflowX: 'auto', paddingBottom: '4px' }}>
+          <button
             className={`tab-btn ${activeTab === 'inquiries' ? 'active' : ''}`}
             onClick={() => setActiveTab('inquiries')}
           >
             Leads &amp; Inquiries ({filteredInquiries.length})
           </button>
-          <button 
+          <button
+            className={`tab-btn ${activeTab === 'projects' ? 'active' : ''}`}
+            onClick={() => setActiveTab('projects')}
+          >
+            Portfolio Projects ({projects.length})
+          </button>
+          <button
+            className={`tab-btn ${activeTab === 'testimonials' ? 'active' : ''}`}
+            onClick={() => setActiveTab('testimonials')}
+          >
+            Client Reviews ({testimonials.length})
+          </button>
+          <button
             className={`tab-btn ${activeTab === 'pricing' ? 'active' : ''}`}
             onClick={() => setActiveTab('pricing')}
           >
             Construction Cost Pricing
+          </button>
+          <button
+            className={`tab-btn ${activeTab === 'settings' ? 'active' : ''}`}
+            onClick={() => setActiveTab('settings')}
+          >
+            Site Settings
           </button>
         </div>
 
@@ -1235,15 +1290,15 @@ const AdminDashboard = () => {
                 <div className="filters-row">
                   <div className="search-box">
                     <Search size={16} />
-                    <input 
-                      type="text" 
-                      placeholder="Search leads by name, phone, or location..." 
+                    <input
+                      type="text"
+                      placeholder="Search leads by name, phone, or location..."
                       value={searchTerm}
                       onChange={(e) => setSearchTerm(e.target.value)}
                     />
                   </div>
-                  
-                  <select 
+
+                  <select
                     className="filter-select"
                     value={statusFilter}
                     onChange={(e) => setStatusFilter(e.target.value)}
@@ -1255,7 +1310,7 @@ const AdminDashboard = () => {
                     <option value="Closed">Closed</option>
                   </select>
 
-                  <select 
+                  <select
                     className="filter-select"
                     value={typeFilter}
                     onChange={(e) => setTypeFilter(e.target.value)}
@@ -1286,8 +1341,8 @@ const AdminDashboard = () => {
                       </thead>
                       <tbody>
                         {filteredInquiries.map((inq) => (
-                          <tr 
-                            key={inq.id} 
+                          <tr
+                            key={inq.id}
                             onClick={() => handleSelectInquiry(inq)}
                             className={`inq-row ${selectedInquiry && selectedInquiry.id === inq.id ? 'selected' : ''}`}
                           >
@@ -1337,7 +1392,7 @@ const AdminDashboard = () => {
                 ) : (
                   <div>
                     <div className="detail-header" style={{ position: 'relative', paddingRight: '40px' }}>
-                      <button 
+                      <button
                         className="close-detail-modal-btn"
                         onClick={() => setSelectedInquiry(null)}
                         title="Close details"
@@ -1365,7 +1420,7 @@ const AdminDashboard = () => {
                     </div>
 
                     <div className="detail-section-title">Lead Parameters</div>
-                    
+
                     <div className="detail-grid">
                       <div className="detail-item-box">
                         <span className="detail-item-label">Source Type</span>
@@ -1377,7 +1432,7 @@ const AdminDashboard = () => {
                       <div className="detail-item-box">
                         <span className="detail-item-label">Status</span>
                         <div>
-                          <select 
+                          <select
                             className="filter-select"
                             style={{ padding: '4px 8px', fontSize: '12px', marginTop: '4px', width: '100%' }}
                             value={selectedInquiry.status}
@@ -1433,24 +1488,24 @@ const AdminDashboard = () => {
                     </div>
 
                     <div className="detail-section-title">Follow-up Notes (Internal)</div>
-                    <textarea 
-                      className="notes-textarea" 
-                      rows="4" 
+                    <textarea
+                      className="notes-textarea"
+                      rows="4"
                       placeholder="Add conversation summary, site inspection notes, client requirements, budget constraints..."
                       value={adminNotesText}
                       onChange={(e) => setAdminNotesText(e.target.value)}
                     ></textarea>
 
                     <div className="action-row-detail">
-                      <button 
-                        className="btn-action-dt delete" 
-                        onClick={() => handleDeleteInquiryClick(selectedInquiry.id)}
+                      <button
+                        className="btn-action-dt delete"
+                        onClick={() => triggerDeleteConfirm('inquiry', selectedInquiry.id, selectedInquiry.name)}
                       >
                         <Trash2 size={14} /> Delete
                       </button>
-                      
-                      <button 
-                        className="btn-action-dt save" 
+
+                      <button
+                        className="btn-action-dt save"
                         onClick={() => handleSaveNotes(selectedInquiry.id)}
                       >
                         <Save size={14} /> Save Notes
@@ -1481,9 +1536,9 @@ const AdminDashboard = () => {
                       <label>Price Num (₹ per sq.ft)</label>
                       <div className="price-input-wrapper">
                         <span>₹</span>
-                        <input 
-                          type="number" 
-                          className="tier-input" 
+                        <input
+                          type="number"
+                          className="tier-input"
                           value={editablePricing.basic.priceNum}
                           onChange={(e) => handlePriceFieldChange('basic', 'priceNum', e.target.value)}
                         />
@@ -1492,9 +1547,9 @@ const AdminDashboard = () => {
 
                     <div className="tier-form-group">
                       <label>Package Tagline / Badge</label>
-                      <input 
-                        type="text" 
-                        className="tier-input" 
+                      <input
+                        type="text"
+                        className="tier-input"
                         value={editablePricing.basic.badge}
                         onChange={(e) => handlePriceFieldChange('basic', 'badge', e.target.value)}
                       />
@@ -1502,9 +1557,9 @@ const AdminDashboard = () => {
 
                     <div className="tier-form-group">
                       <label>Short Description</label>
-                      <textarea 
+                      <textarea
                         rows="3"
-                        className="tier-input" 
+                        className="tier-input"
                         value={editablePricing.basic.desc}
                         onChange={(e) => handlePriceFieldChange('basic', 'desc', e.target.value)}
                         style={{ resize: 'none' }}
@@ -1522,9 +1577,9 @@ const AdminDashboard = () => {
                       <label>Price Num (₹ per sq.ft)</label>
                       <div className="price-input-wrapper">
                         <span>₹</span>
-                        <input 
-                          type="number" 
-                          className="tier-input" 
+                        <input
+                          type="number"
+                          className="tier-input"
                           value={editablePricing.premium.priceNum}
                           onChange={(e) => handlePriceFieldChange('premium', 'priceNum', e.target.value)}
                         />
@@ -1533,9 +1588,9 @@ const AdminDashboard = () => {
 
                     <div className="tier-form-group">
                       <label>Package Tagline / Badge</label>
-                      <input 
-                        type="text" 
-                        className="tier-input" 
+                      <input
+                        type="text"
+                        className="tier-input"
                         value={editablePricing.premium.badge}
                         onChange={(e) => handlePriceFieldChange('premium', 'badge', e.target.value)}
                       />
@@ -1543,9 +1598,9 @@ const AdminDashboard = () => {
 
                     <div className="tier-form-group">
                       <label>Short Description</label>
-                      <textarea 
+                      <textarea
                         rows="3"
-                        className="tier-input" 
+                        className="tier-input"
                         value={editablePricing.premium.desc}
                         onChange={(e) => handlePriceFieldChange('premium', 'desc', e.target.value)}
                         style={{ resize: 'none' }}
@@ -1563,9 +1618,9 @@ const AdminDashboard = () => {
                       <label>Price Num (₹ per sq.ft)</label>
                       <div className="price-input-wrapper">
                         <span>₹</span>
-                        <input 
-                          type="number" 
-                          className="tier-input" 
+                        <input
+                          type="number"
+                          className="tier-input"
                           value={editablePricing.luxury.priceNum}
                           onChange={(e) => handlePriceFieldChange('luxury', 'priceNum', e.target.value)}
                         />
@@ -1574,9 +1629,9 @@ const AdminDashboard = () => {
 
                     <div className="tier-form-group">
                       <label>Package Tagline / Badge</label>
-                      <input 
-                        type="text" 
-                        className="tier-input" 
+                      <input
+                        type="text"
+                        className="tier-input"
                         value={editablePricing.luxury.badge}
                         onChange={(e) => handlePriceFieldChange('luxury', 'badge', e.target.value)}
                       />
@@ -1584,9 +1639,9 @@ const AdminDashboard = () => {
 
                     <div className="tier-form-group">
                       <label>Short Description</label>
-                      <textarea 
+                      <textarea
                         rows="3"
-                        className="tier-input" 
+                        className="tier-input"
                         value={editablePricing.luxury.desc}
                         onChange={(e) => handlePriceFieldChange('luxury', 'desc', e.target.value)}
                         style={{ resize: 'none' }}
@@ -1598,8 +1653,8 @@ const AdminDashboard = () => {
                 <div className="save-pricing-bar">
                   <div style={{ fontSize: '13px', color: '#64748b' }}>
                     {saveStatus && (
-                      <span style={{ 
-                        color: saveStatus.includes('Error') ? '#ef4444' : '#22c55e', 
+                      <span style={{
+                        color: saveStatus.includes('Error') ? '#ef4444' : '#22c55e',
                         fontWeight: 700,
                         display: 'flex',
                         alignItems: 'center',
@@ -1629,7 +1684,7 @@ const AdminDashboard = () => {
                     <span>Plot / Built-up Size</span>
                     <strong style={{ color: '#d9531e' }}>{previewPlotSize.toLocaleString()} sq.ft</strong>
                   </div>
-                  <input 
+                  <input
                     type="range"
                     min="500"
                     max="10000"
@@ -1668,32 +1723,611 @@ const AdminDashboard = () => {
               </div>
             </div>
           )}
+
+          {activeTab === 'projects' && (
+            <div className="projects-manager-section animate-fade-in" style={{ padding: '8px' }}>
+              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '20px', flexWrap: 'wrap', gap: '12px' }}>
+                <div>
+                  <h3 style={{ fontSize: '20px', fontWeight: 800, color: '#0f172a' }}>Portfolio Projects</h3>
+                  <p style={{ fontSize: '13px', color: '#64748b' }}>Manage the list of construction projects displayed on the main Projects page and home portfolio gallery.</p>
+                </div>
+                <button
+                  onClick={() => setProjectModal({
+                    isOpen: true,
+                    mode: 'add',
+                    projectData: {
+                      title: '',
+                      category: 'homes',
+                      categoryLabel: 'Independent Home',
+                      location: '',
+                      size: '',
+                      duration: '',
+                      image: '',
+                      description: ''
+                    }
+                  })}
+                  className="save-pricing-btn"
+                  style={{ width: 'auto', padding: '10px 16px', borderRadius: '8px', cursor: 'pointer' }}
+                >
+                  + Add New Project
+                </button>
+              </div>
+
+              <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(280px, 1fr))', gap: '20px' }}>
+                {projects.map(project => (
+                  <div key={project.id} className="detail-item-box" style={{ padding: '16px', display: 'flex', flexDirection: 'column', gap: '12px', border: '1px solid #e2e8f0', background: 'white', borderRadius: '12px', minHeight: '380px' }}>
+                    <img
+                      src={project.image}
+                      alt={project.title}
+                      style={{ width: '100%', height: '160px', objectFit: 'cover', borderRadius: '8px', background: '#f1f5f9' }}
+                    />
+                    <div>
+                      <span className="type-badge calc" style={{ marginBottom: '4px' }}>{project.categoryLabel}</span>
+                      <h4 style={{ fontSize: '15px', fontWeight: 800, color: '#0f172a', margin: '4px 0' }}>{project.title}</h4>
+                      <p style={{ fontSize: '12px', color: '#64748b', display: 'flex', alignItems: 'center', gap: '4px', margin: '2px 0' }}>
+                        <MapPin size={12} /> {project.location}
+                      </p>
+                    </div>
+                    <div style={{ display: 'flex', justifyContent: 'space-between', borderTop: '1px solid #f1f5f9', pt: '8px', fontSize: '12px', color: '#475569' }}>
+                      <span><strong>Size:</strong> {project.size}</span>
+                      <span><strong>Duration:</strong> {project.duration}</span>
+                    </div>
+                    <p style={{ fontSize: '12px', color: '#64748b', display: '-webkit-box', WebkitLineClamp: 2, WebkitBoxOrient: 'vertical', overflow: 'hidden', textOverflow: 'ellipsis', margin: 0 }}>
+                      {project.description}
+                    </p>
+                    <div style={{ display: 'flex', gap: '8px', marginTop: 'auto' }}>
+                      <button
+                        onClick={() => setProjectModal({ isOpen: true, mode: 'edit', projectData: project })}
+                        className="btn-action-dt"
+                        style={{ flex: 1, display: 'flex', justifyContent: 'center', alignItems: 'center', gap: '4px', background: '#f1f5f9', border: '1px solid #e2e8f0', color: '#475569', padding: '8px', borderRadius: '6px', fontSize: '12px', fontWeight: 600, cursor: 'pointer' }}
+                      >
+                        <Edit3 size={14} /> Edit
+                      </button>
+                      <button
+                        onClick={() => triggerDeleteConfirm('project', project.id, project.title)}
+                        className="btn-action-dt delete"
+                        style={{ flex: 1, display: 'flex', justifyContent: 'center', alignItems: 'center', gap: '4px', padding: '8px', borderRadius: '6px', fontSize: '12px', fontWeight: 600, cursor: 'pointer', border: '1px solid #fee2e2' }}
+                      >
+                        <Trash2 size={14} /> Delete
+                      </button>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </div>
+          )}
+
+          {activeTab === 'testimonials' && (
+            <div className="testimonials-manager-section animate-fade-in" style={{ padding: '8px' }}>
+              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '20px', flexWrap: 'wrap', gap: '12px' }}>
+                <div>
+                  <h3 style={{ fontSize: '20px', fontWeight: 800, color: '#0f172a' }}>Client Reviews</h3>
+                  <p style={{ fontSize: '13px', color: '#64748b' }}>Manage client testimonials displayed on the website homepage.</p>
+                </div>
+                <button
+                  onClick={() => setTestimonialModal({
+                    isOpen: true,
+                    mode: 'add',
+                    testimonialData: {
+                      name: '',
+                      location: '',
+                      role: '',
+                      quote: '',
+                      avatar: 'https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?auto=format&fit=crop&w=200&q=80',
+                      rating: 5
+                    }
+                  })}
+                  className="save-pricing-btn"
+                  style={{ width: 'auto', padding: '10px 16px', borderRadius: '8px', cursor: 'pointer' }}
+                >
+                  + Add New Testimonial
+                </button>
+              </div>
+
+              <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(280px, 1fr))', gap: '20px' }}>
+                {testimonials.map(testimonial => (
+                  <div key={testimonial.id} className="detail-item-box" style={{ padding: '16px', display: 'flex', flexDirection: 'column', gap: '12px', border: '1px solid #e2e8f0', background: 'white', borderRadius: '12px', minHeight: '220px' }}>
+                    <div style={{ display: 'flex', gap: '12px', alignItems: 'center' }}>
+                      <img
+                        src={testimonial.avatar}
+                        alt={testimonial.name}
+                        style={{ width: '48px', height: '48px', borderRadius: '50%', objectFit: 'cover', background: '#f1f5f9' }}
+                      />
+                      <div>
+                        <h4 style={{ fontSize: '14px', fontWeight: 800, color: '#0f172a', margin: 0 }}>{testimonial.name}</h4>
+                        <p style={{ fontSize: '11px', color: '#64748b', margin: 0 }}>{testimonial.role} &bull; {testimonial.location}</p>
+                      </div>
+                    </div>
+                    <div style={{ display: 'flex', gap: '2px', color: '#fbbf24' }}>
+                      {Array.from({ length: testimonial.rating }).map((_, i) => (
+                        <span key={i}>★</span>
+                      ))}
+                    </div>
+                    <p style={{ fontSize: '12px', color: '#475569', fontStyle: 'italic', margin: 0, flex: 1 }}>
+                      "{testimonial.quote}"
+                    </p>
+                    <div style={{ display: 'flex', gap: '8px', marginTop: '12px' }}>
+                      <button
+                        onClick={() => setTestimonialModal({ isOpen: true, mode: 'edit', testimonialData: testimonial })}
+                        className="btn-action-dt"
+                        style={{ flex: 1, display: 'flex', justifyContent: 'center', alignItems: 'center', gap: '4px', background: '#f1f5f9', border: '1px solid #e2e8f0', color: '#475569', padding: '8px', borderRadius: '6px', fontSize: '12px', fontWeight: 600, cursor: 'pointer' }}
+                      >
+                        <Edit3 size={14} /> Edit
+                      </button>
+                      <button
+                        onClick={() => triggerDeleteConfirm('testimonial', testimonial.id, testimonial.name)}
+                        className="btn-action-dt delete"
+                        style={{ flex: 1, display: 'flex', justifyContent: 'center', alignItems: 'center', gap: '4px', padding: '8px', borderRadius: '6px', fontSize: '12px', fontWeight: 600, cursor: 'pointer', border: '1px solid #fee2e2' }}
+                      >
+                        <Trash2 size={14} /> Delete
+                      </button>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </div>
+          )}
+
+          {activeTab === 'settings' && (
+            <div className="pricing-grid-layout animate-fade-in" style={{ padding: '8px' }}>
+              <form onSubmit={handleSaveSettings} className="pricing-manager-card" style={{ maxWidth: '600px', margin: '0 auto', background: 'white', border: '1px solid #e2e8f0', borderRadius: '16px', padding: '24px' }}>
+                <div style={{ marginBottom: '20px' }}>
+                  <h3 style={{ fontSize: '20px', fontWeight: 800 }}>Site Configuration &amp; Contact Details</h3>
+                  <p style={{ fontSize: '13px', color: '#64748b' }}>Update contact numbers, email addresses, service areas, and operational hours dynamically across the entire website.</p>
+                </div>
+
+                <div style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
+                  <div>
+                    <label style={{ fontSize: '12px', fontWeight: 700, color: '#475569', display: 'block', marginBottom: '6px' }}>Primary Phone (Header, Footer, Mobile Drawer)</label>
+                    <input
+                      type="text"
+                      required
+                      value={settings.phone_primary || ''}
+                      onChange={(e) => setSettings(prev => ({ ...prev, phone_primary: e.target.value }))}
+                      style={{ width: '100%', padding: '10px 14px', borderRadius: '8px', border: '1px solid #cbd5e1', fontSize: '13px' }}
+                    />
+                  </div>
+
+                  <div>
+                    <label style={{ fontSize: '12px', fontWeight: 700, color: '#475569', display: 'block', marginBottom: '6px' }}>Secondary Phone (Header &amp; Footer)</label>
+                    <input
+                      type="text"
+                      value={settings.phone_secondary || ''}
+                      onChange={(e) => setSettings(prev => ({ ...prev, phone_secondary: e.target.value }))}
+                      style={{ width: '100%', padding: '10px 14px', borderRadius: '8px', border: '1px solid #cbd5e1', fontSize: '13px' }}
+                    />
+                  </div>
+
+                  <div>
+                    <label style={{ fontSize: '12px', fontWeight: 700, color: '#475569', display: 'block', marginBottom: '6px' }}>WhatsApp Number (Floating button &amp; Contact Page)</label>
+                    <input
+                      type="text"
+                      required
+                      value={settings.whatsapp || ''}
+                      onChange={(e) => setSettings(prev => ({ ...prev, whatsapp: e.target.value }))}
+                      style={{ width: '100%', padding: '10px 14px', borderRadius: '8px', border: '1px solid #cbd5e1', fontSize: '13px' }}
+                    />
+                  </div>
+
+                  <div>
+                    <label style={{ fontSize: '12px', fontWeight: 700, color: '#475569', display: 'block', marginBottom: '6px' }}>Email Address</label>
+                    <input
+                      type="email"
+                      required
+                      value={settings.email || ''}
+                      onChange={(e) => setSettings(prev => ({ ...prev, email: e.target.value }))}
+                      style={{ width: '100%', padding: '10px 14px', borderRadius: '8px', border: '1px solid #cbd5e1', fontSize: '13px' }}
+                    />
+                  </div>
+
+                  <div>
+                    <label style={{ fontSize: '12px', fontWeight: 700, color: '#475569', display: 'block', marginBottom: '6px' }}>Service Area &amp; Office Address</label>
+                    <input
+                      type="text"
+                      required
+                      value={settings.address || ''}
+                      onChange={(e) => setSettings(prev => ({ ...prev, address: e.target.value }))}
+                      style={{ width: '100%', padding: '10px 14px', borderRadius: '8px', border: '1px solid #cbd5e1', fontSize: '13px' }}
+                    />
+                  </div>
+
+                  <div>
+                    <label style={{ fontSize: '12px', fontWeight: 700, color: '#475569', display: 'block', marginBottom: '6px' }}>Office Hours</label>
+                    <input
+                      type="text"
+                      required
+                      value={settings.office_hours || ''}
+                      onChange={(e) => setSettings(prev => ({ ...prev, office_hours: e.target.value }))}
+                      style={{ width: '100%', padding: '10px 14px', borderRadius: '8px', border: '1px solid #cbd5e1', fontSize: '13px' }}
+                    />
+                  </div>
+                </div>
+
+                <div className="save-pricing-bar" style={{ marginTop: '24px' }}>
+                  <div style={{ fontSize: '13px', color: '#64748b' }}>
+                    {saveStatus && (
+                      <span style={{
+                        color: saveStatus.includes('Error') ? '#ef4444' : '#22c55e',
+                        fontWeight: 700,
+                        display: 'flex',
+                        alignItems: 'center',
+                        gap: '6px'
+                      }}>
+                        <Check size={16} /> {saveStatus}
+                      </span>
+                    )}
+                  </div>
+                  <button type="submit" className="save-pricing-btn">
+                    <Save size={16} /> Save &amp; Update Settings
+                  </button>
+                </div>
+              </form>
+            </div>
+          )}
         </div>
       </div>
+
       {/* Custom Deletion Confirmation Modal */}
-      {inquiryToDelete && (
-        <div className="custom-modal-overlay">
-          <div className="custom-modal-card">
-            <div className="custom-modal-icon">
-              <AlertCircle size={28} />
+      {deleteConfirmModal.isOpen && (
+        <div style={{
+          position: 'fixed',
+          top: 0,
+          left: 0,
+          width: '100%',
+          height: '100%',
+          backgroundColor: 'rgba(15, 23, 42, 0.65)',
+          backdropFilter: 'blur(4px)',
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: 'center',
+          zIndex: 10000,
+          padding: '16px'
+        }}>
+          <div style={{
+            background: 'white',
+            borderRadius: '16px',
+            width: '100%',
+            maxWidth: '400px',
+            padding: '24px',
+            boxShadow: '0 20px 25px -5px rgba(0,0,0,0.1), 0 10px 10px -5px rgba(0,0,0,0.04)',
+            textAlign: 'center'
+          }}>
+            <div style={{
+              display: 'inline-flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+              width: '48px',
+              height: '48px',
+              borderRadius: '50%',
+              backgroundColor: '#fee2e2',
+              color: '#ef4444',
+              marginBottom: '16px'
+            }}>
+              <Trash2 size={24} />
             </div>
-            <h3>Confirm Deletion</h3>
-            <p>Are you sure you want to delete the inquiry from <strong>{inquiryToDelete.name}</strong> permanently? This action cannot be undone.</p>
-            <div className="custom-modal-actions">
-              <button className="modal-btn cancel" onClick={() => setInquiryToDelete(null)}>
+            <h3 style={{ fontSize: '18px', fontWeight: 800, color: '#0f172a', marginBottom: '8px' }}>
+              Confirm Deletion
+            </h3>
+            <p style={{ fontSize: '13px', color: '#64748b', marginBottom: '24px', lineHeight: '1.5' }}>
+              Are you sure you want to permanently delete <strong>{deleteConfirmModal.targetTitle}</strong>? This action cannot be undone.
+            </p>
+            <div style={{ display: 'flex', gap: '12px', justifyContent: 'center' }}>
+              <button
+                onClick={() => setDeleteConfirmModal({ isOpen: false, type: '', targetId: '', targetTitle: '' })}
+                style={{
+                  flex: 1,
+                  padding: '10px 16px',
+                  borderRadius: '8px',
+                  border: '1px solid #cbd5e1',
+                  background: 'white',
+                  color: '#475569',
+                  fontWeight: 600,
+                  fontSize: '13px',
+                  cursor: 'pointer'
+                }}
+              >
                 Cancel
               </button>
-              <button 
-                className="modal-btn confirm" 
-                onClick={async () => {
-                  const id = inquiryToDelete.id;
-                  setInquiryToDelete(null);
-                  await executeDeleteInquiry(id);
+              <button
+                onClick={executeDelete}
+                style={{
+                  flex: 1,
+                  padding: '10px 16px',
+                  borderRadius: '8px',
+                  border: 'none',
+                  background: '#ef4444',
+                  color: 'white',
+                  fontWeight: 600,
+                  fontSize: '13px',
+                  cursor: 'pointer'
                 }}
               >
                 Yes, Delete
               </button>
             </div>
+          </div>
+        </div>
+      )}
+
+      {/* Project Add/Edit Modal */}
+      {projectModal.isOpen && (
+        <div style={{
+          position: 'fixed',
+          top: 0,
+          left: 0,
+          width: '100%',
+          height: '100%',
+          backgroundColor: 'rgba(15, 23, 42, 0.65)',
+          backdropFilter: 'blur(4px)',
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: 'center',
+          zIndex: 10000,
+          padding: '16px'
+        }}>
+          <div style={{
+            background: 'white',
+            borderRadius: '16px',
+            width: '100%',
+            maxWidth: '600px',
+            padding: '24px',
+            boxShadow: '0 20px 25px -5px rgba(0,0,0,0.1), 0 10px 10px -5px rgba(0,0,0,0.04)',
+            maxHeight: '90vh',
+            overflowY: 'auto'
+          }}>
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '20px' }}>
+              <h3 style={{ fontSize: '18px', fontWeight: 800, color: '#0f172a' }}>
+                {projectModal.mode === 'add' ? 'Add New Portfolio Project' : 'Edit Portfolio Project'}
+              </h3>
+              <button
+                onClick={() => setProjectModal({ isOpen: false, mode: 'add', projectData: {} })}
+                style={{ background: 'none', border: 'none', cursor: 'pointer', color: '#64748b' }}
+              >
+                <X size={20} />
+              </button>
+            </div>
+
+            <form onSubmit={handleProjectSubmit} style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
+              <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '16px' }}>
+                <div>
+                  <label style={{ fontSize: '12px', fontWeight: 700, color: '#475569', display: 'block', marginBottom: '6px' }}>Project Title</label>
+                  <input
+                    type="text"
+                    required
+                    value={projectModal.projectData.title || ''}
+                    onChange={(e) => setProjectModal(prev => ({ ...prev, projectData: { ...prev.projectData, title: e.target.value } }))}
+                    style={{ width: '100%', padding: '10px 14px', borderRadius: '8px', border: '1px solid #cbd5e1', fontSize: '13px' }}
+                  />
+                </div>
+                <div>
+                  <label style={{ fontSize: '12px', fontWeight: 700, color: '#475569', display: 'block', marginBottom: '6px' }}>Category Key (e.g. villa, homes, commercial)</label>
+                  <select
+                    value={projectModal.projectData.category || 'homes'}
+                    onChange={(e) => setProjectModal(prev => ({ ...prev, projectData: { ...prev.projectData, category: e.target.value } }))}
+                    style={{ width: '100%', padding: '10px 14px', borderRadius: '8px', border: '1px solid #cbd5e1', fontSize: '13px' }}
+                  >
+                    <option value="homes">Independent Homes (homes)</option>
+                    <option value="villa">Luxury Villas (villa)</option>
+                    <option value="commercial">Commercial Building (commercial)</option>
+                    <option value="school">Educational Institution (school)</option>
+                    <option value="renovation">Renovation & Remodeling (renovation)</option>
+                  </select>
+                </div>
+              </div>
+
+              <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '16px' }}>
+                <div>
+                  <label style={{ fontSize: '12px', fontWeight: 700, color: '#475569', display: 'block', marginBottom: '6px' }}>Category Label (e.g. Luxury Villa, Independent Home)</label>
+                  <input
+                    type="text"
+                    required
+                    value={projectModal.projectData.categoryLabel || ''}
+                    onChange={(e) => setProjectModal(prev => ({ ...prev, projectData: { ...prev.projectData, categoryLabel: e.target.value } }))}
+                    style={{ width: '100%', padding: '10px 14px', borderRadius: '8px', border: '1px solid #cbd5e1', fontSize: '13px' }}
+                  />
+                </div>
+                <div>
+                  <label style={{ fontSize: '12px', fontWeight: 700, color: '#475569', display: 'block', marginBottom: '6px' }}>Location (e.g. Jubilee Hills, Hyderabad)</label>
+                  <input
+                    type="text"
+                    required
+                    value={projectModal.projectData.location || ''}
+                    onChange={(e) => setProjectModal(prev => ({ ...prev, projectData: { ...prev.projectData, location: e.target.value } }))}
+                    style={{ width: '100%', padding: '10px 14px', borderRadius: '8px', border: '1px solid #cbd5e1', fontSize: '13px' }}
+                  />
+                </div>
+              </div>
+
+              <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '16px' }}>
+                <div>
+                  <label style={{ fontSize: '12px', fontWeight: 700, color: '#475569', display: 'block', marginBottom: '6px' }}>Built-up Size (e.g. 5,500 sq.ft)</label>
+                  <input
+                    type="text"
+                    required
+                    value={projectModal.projectData.size || ''}
+                    onChange={(e) => setProjectModal(prev => ({ ...prev, projectData: { ...prev.projectData, size: e.target.value } }))}
+                    style={{ width: '100%', padding: '10px 14px', borderRadius: '8px', border: '1px solid #cbd5e1', fontSize: '13px' }}
+                  />
+                </div>
+                <div>
+                  <label style={{ fontSize: '12px', fontWeight: 700, color: '#475569', display: 'block', marginBottom: '6px' }}>Duration (e.g. 11 Months)</label>
+                  <input
+                    type="text"
+                    required
+                    value={projectModal.projectData.duration || ''}
+                    onChange={(e) => setProjectModal(prev => ({ ...prev, projectData: { ...prev.projectData, duration: e.target.value } }))}
+                    style={{ width: '100%', padding: '10px 14px', borderRadius: '8px', border: '1px solid #cbd5e1', fontSize: '13px' }}
+                  />
+                </div>
+              </div>
+
+              <div>
+                <label style={{ fontSize: '12px', fontWeight: 700, color: '#475569', display: 'block', marginBottom: '6px' }}>Image URL</label>
+                <input
+                  type="text"
+                  required
+                  value={projectModal.projectData.image || ''}
+                  onChange={(e) => setProjectModal(prev => ({ ...prev, projectData: { ...prev.projectData, image: e.target.value } }))}
+                  style={{ width: '100%', padding: '10px 14px', borderRadius: '8px', border: '1px solid #cbd5e1', fontSize: '13px' }}
+                />
+              </div>
+
+              <div>
+                <label style={{ fontSize: '12px', fontWeight: 700, color: '#475569', display: 'block', marginBottom: '6px' }}>Description</label>
+                <textarea
+                  rows="3"
+                  required
+                  value={projectModal.projectData.description || ''}
+                  onChange={(e) => setProjectModal(prev => ({ ...prev, projectData: { ...prev.projectData, description: e.target.value } }))}
+                  style={{ width: '100%', padding: '10px 14px', borderRadius: '8px', border: '1px solid #cbd5e1', fontSize: '13px', resize: 'none' }}
+                ></textarea>
+              </div>
+
+              <div style={{ display: 'flex', gap: '12px', justifyContent: 'flex-end', marginTop: '10px' }}>
+                <button
+                  type="button"
+                  onClick={() => setProjectModal({ isOpen: false, mode: 'add', projectData: {} })}
+                  style={{ padding: '10px 20px', borderRadius: '8px', border: '1px solid #cbd5e1', background: 'white', color: '#475569', fontWeight: 600, fontSize: '13px', cursor: 'pointer' }}
+                >
+                  Cancel
+                </button>
+                <button
+                  type="submit"
+                  style={{ padding: '10px 20px', borderRadius: '8px', border: 'none', background: '#d9531e', color: 'white', fontWeight: 600, fontSize: '13px', cursor: 'pointer' }}
+                >
+                  {projectModal.mode === 'add' ? 'Add Project' : 'Save Changes'}
+                </button>
+              </div>
+            </form>
+          </div>
+        </div>
+      )}
+
+      {/* Testimonial Add/Edit Modal */}
+      {testimonialModal.isOpen && (
+        <div style={{
+          position: 'fixed',
+          top: 0,
+          left: 0,
+          width: '100%',
+          height: '100%',
+          backgroundColor: 'rgba(15, 23, 42, 0.65)',
+          backdropFilter: 'blur(4px)',
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: 'center',
+          zIndex: 10000,
+          padding: '16px'
+        }}>
+          <div style={{
+            background: 'white',
+            borderRadius: '16px',
+            width: '100%',
+            maxWidth: '500px',
+            padding: '24px',
+            boxShadow: '0 20px 25px -5px rgba(0,0,0,0.1), 0 10px 10px -5px rgba(0,0,0,0.04)',
+          }}>
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '20px' }}>
+              <h3 style={{ fontSize: '18px', fontWeight: 800, color: '#0f172a' }}>
+                {testimonialModal.mode === 'add' ? 'Add New Testimonial' : 'Edit Testimonial'}
+              </h3>
+              <button
+                onClick={() => setTestimonialModal({ isOpen: false, mode: 'add', testimonialData: {} })}
+                style={{ background: 'none', border: 'none', cursor: 'pointer', color: '#64748b' }}
+              >
+                <X size={20} />
+              </button>
+            </div>
+
+            <form onSubmit={handleTestimonialSubmit} style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
+              <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '16px' }}>
+                <div>
+                  <label style={{ fontSize: '12px', fontWeight: 700, color: '#475569', display: 'block', marginBottom: '6px' }}>Client Name</label>
+                  <input
+                    type="text"
+                    required
+                    value={testimonialModal.testimonialData.name || ''}
+                    onChange={(e) => setTestimonialModal(prev => ({ ...prev, testimonialData: { ...prev.testimonialData, name: e.target.value } }))}
+                    style={{ width: '100%', padding: '10px 14px', borderRadius: '8px', border: '1px solid #cbd5e1', fontSize: '13px' }}
+                  />
+                </div>
+                <div>
+                  <label style={{ fontSize: '12px', fontWeight: 700, color: '#475569', display: 'block', marginBottom: '6px' }}>Location (e.g. Jubilee Hills, Hyd)</label>
+                  <input
+                    type="text"
+                    required
+                    value={testimonialModal.testimonialData.location || ''}
+                    onChange={(e) => setTestimonialModal(prev => ({ ...prev, testimonialData: { ...prev.testimonialData, location: e.target.value } }))}
+                    style={{ width: '100%', padding: '10px 14px', borderRadius: '8px', border: '1px solid #cbd5e1', fontSize: '13px' }}
+                  />
+                </div>
+              </div>
+
+              <div style={{ display: 'grid', gridTemplateColumns: '2fr 1fr', gap: '16px' }}>
+                <div>
+                  <label style={{ fontSize: '12px', fontWeight: 700, color: '#475569', display: 'block', marginBottom: '6px' }}>Role / Tagline (e.g. Villa Owner, Homeowner)</label>
+                  <input
+                    type="text"
+                    required
+                    value={testimonialModal.testimonialData.role || ''}
+                    onChange={(e) => setTestimonialModal(prev => ({ ...prev, testimonialData: { ...prev.testimonialData, role: e.target.value } }))}
+                    style={{ width: '100%', padding: '10px 14px', borderRadius: '8px', border: '1px solid #cbd5e1', fontSize: '13px' }}
+                  />
+                </div>
+                <div>
+                  <label style={{ fontSize: '12px', fontWeight: 700, color: '#475569', display: 'block', marginBottom: '6px' }}>Rating (1-5)</label>
+                  <select
+                    value={testimonialModal.testimonialData.rating || 5}
+                    onChange={(e) => setTestimonialModal(prev => ({ ...prev, testimonialData: { ...prev.testimonialData, rating: Number(e.target.value) } }))}
+                    style={{ width: '100%', padding: '10px 14px', borderRadius: '8px', border: '1px solid #cbd5e1', fontSize: '13px' }}
+                  >
+                    <option value={5}>5 Stars</option>
+                    <option value={4}>4 Stars</option>
+                    <option value={3}>3 Stars</option>
+                    <option value={2}>2 Stars</option>
+                    <option value={1}>1 Star</option>
+                  </select>
+                </div>
+              </div>
+
+              <div>
+                <label style={{ fontSize: '12px', fontWeight: 700, color: '#475569', display: 'block', marginBottom: '6px' }}>Avatar URL</label>
+                <input
+                  type="text"
+                  required
+                  value={testimonialModal.testimonialData.avatar || ''}
+                  onChange={(e) => setTestimonialModal(prev => ({ ...prev, testimonialData: { ...prev.testimonialData, avatar: e.target.value } }))}
+                  style={{ width: '100%', padding: '10px 14px', borderRadius: '8px', border: '1px solid #cbd5e1', fontSize: '13px' }}
+                />
+              </div>
+
+              <div>
+                <label style={{ fontSize: '12px', fontWeight: 700, color: '#475569', display: 'block', marginBottom: '6px' }}>Client Quote</label>
+                <textarea
+                  rows="3"
+                  required
+                  value={testimonialModal.testimonialData.quote || ''}
+                  onChange={(e) => setTestimonialModal(prev => ({ ...prev, testimonialData: { ...prev.testimonialData, quote: e.target.value } }))}
+                  style={{ width: '100%', padding: '10px 14px', borderRadius: '8px', border: '1px solid #cbd5e1', fontSize: '13px', resize: 'none' }}
+                ></textarea>
+              </div>
+
+              <div style={{ display: 'flex', gap: '12px', justifyContent: 'flex-end', marginTop: '10px' }}>
+                <button
+                  type="button"
+                  onClick={() => setTestimonialModal({ isOpen: false, mode: 'add', testimonialData: {} })}
+                  style={{ padding: '10px 20px', borderRadius: '8px', border: '1px solid #cbd5e1', background: 'white', color: '#475569', fontWeight: 600, fontSize: '13px', cursor: 'pointer' }}
+                >
+                  Cancel
+                </button>
+                <button
+                  type="submit"
+                  style={{ padding: '10px 20px', borderRadius: '8px', border: 'none', background: '#d9531e', color: 'white', fontWeight: 600, fontSize: '13px', cursor: 'pointer' }}
+                >
+                  {testimonialModal.mode === 'add' ? 'Add Testimonial' : 'Save Changes'}
+                </button>
+              </div>
+            </form>
           </div>
         </div>
       )}

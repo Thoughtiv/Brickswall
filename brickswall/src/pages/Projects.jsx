@@ -1,12 +1,26 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { MapPin, Maximize2, CheckCircle2, ArrowRight, Layers, Eye } from 'lucide-react';
+import { getProjects } from '../utils/api';
 
 const Projects = ({ onOpenEstimate }) => {
   const [filter, setFilter] = useState('all');
   const [beforeAfterToggle, setBeforeAfterToggle] = useState('after');
   const [selectedProjectModal, setSelectedProjectModal] = useState(null);
+  const [projects, setProjects] = useState([]);
 
-  const projectsData = [
+  useEffect(() => {
+    const fetchProjects = async () => {
+      const data = await getProjects();
+      if (data && data.length > 0) {
+        setProjects(data);
+      } else {
+        setProjects(DEFAULT_PROJECTS);
+      }
+    };
+    fetchProjects();
+  }, []);
+
+  const DEFAULT_PROJECTS = [
     {
       id: 1,
       title: 'The Crest Luxury Villa',
@@ -114,9 +128,9 @@ const Projects = ({ onOpenEstimate }) => {
     }
   ];
 
-  const filteredProjects = filter === 'all' 
-    ? projectsData 
-    : projectsData.filter(p => p.category === filter);
+  const filteredProjects = filter === 'all'
+    ? projects
+    : projects.filter(p => p.category === filter);
 
   return (
     <div className="projects-page">
@@ -159,7 +173,7 @@ const Projects = ({ onOpenEstimate }) => {
                 <div className="project-img-box">
                   <img src={project.image} alt={project.title} />
                   <span className="project-type-badge">{project.categoryLabel}</span>
-                  <button 
+                  <button
                     onClick={() => setSelectedProjectModal(project)}
                     className="quick-view-overlay"
                   >
@@ -190,13 +204,13 @@ const Projects = ({ onOpenEstimate }) => {
             </p>
 
             <div className="before-after-toggle-btns mt-4">
-              <button 
+              <button
                 onClick={() => setBeforeAfterToggle('before')}
                 className={`btn btn-sm ${beforeAfterToggle === 'before' ? 'btn-secondary' : 'btn-outline'}`}
               >
                 Show BEFORE State
               </button>
-              <button 
+              <button
                 onClick={() => setBeforeAfterToggle('after')}
                 className={`btn btn-sm ${beforeAfterToggle === 'after' ? 'btn-primary' : 'btn-outline'}`}
               >
@@ -209,9 +223,9 @@ const Projects = ({ onOpenEstimate }) => {
             {beforeAfterList.map((item, idx) => (
               <div key={idx} className="before-after-card">
                 <div className="ba-img-box">
-                  <img 
-                    src={beforeAfterToggle === 'after' ? item.afterImg : item.beforeImg} 
-                    alt={item.title} 
+                  <img
+                    src={beforeAfterToggle === 'after' ? item.afterImg : item.beforeImg}
+                    alt={item.title}
                   />
                   <span className={`ba-state-badge ${beforeAfterToggle === 'after' ? 'badge-orange' : 'badge-navy'}`}>
                     {beforeAfterToggle === 'after' ? '✨ AFTER COMPLETED' : '🏚️ BEFORE RENOVATION'}
@@ -237,11 +251,11 @@ const Projects = ({ onOpenEstimate }) => {
             <button className="modal-close" onClick={() => setSelectedProjectModal(null)} aria-label="Close modal">
               &times;
             </button>
-            
+
             <div className="project-modal-img-box">
-              <img 
-                src={selectedProjectModal.image} 
-                alt={selectedProjectModal.title} 
+              <img
+                src={selectedProjectModal.image}
+                alt={selectedProjectModal.title}
               />
             </div>
 
@@ -251,7 +265,7 @@ const Projects = ({ onOpenEstimate }) => {
               <p className="text-sm text-slate-500 mb-3 flex items-center gap-1">
                 <MapPin size={14} className="text-orange flex-shrink-0" /> {selectedProjectModal.location}
               </p>
-              
+
               <div className="project-modal-specs">
                 <div className="project-modal-spec-item">
                   <span className="spec-label">Built-up Area</span>
@@ -272,9 +286,9 @@ const Projects = ({ onOpenEstimate }) => {
               </div>
 
               <p className="text-sm text-slate-600 leading-relaxed mb-6">{selectedProjectModal.description}</p>
-              
-              <button 
-                onClick={() => { setSelectedProjectModal(null); onOpenEstimate(); }} 
+
+              <button
+                onClick={() => { setSelectedProjectModal(null); onOpenEstimate(); }}
                 className="btn btn-primary w-full btn-lg"
               >
                 Request Quote for Similar Project

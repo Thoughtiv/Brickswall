@@ -1,17 +1,17 @@
-import React, { useState } from 'react';
-import { 
-  ShieldCheck, 
-  Building2, 
-  CheckCircle2, 
-  ArrowRight, 
-  Phone, 
-  Award, 
-  Users, 
-  Clock, 
-  FileCheck, 
-  HelpCircle, 
-  ChevronDown, 
-  ChevronUp, 
+import React, { useState, useEffect } from 'react';
+import {
+  ShieldCheck,
+  Building2,
+  CheckCircle2,
+  ArrowRight,
+  Phone,
+  Award,
+  Users,
+  Clock,
+  FileCheck,
+  HelpCircle,
+  ChevronDown,
+  ChevronUp,
   Calculator,
   Home as HomeIcon,
   Sparkles,
@@ -30,7 +30,7 @@ import {
   Armchair,
   Store
 } from 'lucide-react';
-import { submitInquiry } from '../utils/api';
+import { submitInquiry, getProjects, getTestimonials } from '../utils/api';
 
 const Home = ({ setCurrentPage, onOpenEstimate }) => {
   const [activeFaq, setActiveFaq] = useState(0);
@@ -39,7 +39,7 @@ const Home = ({ setCurrentPage, onOpenEstimate }) => {
 
   const handleHeroSubmit = async (e) => {
     e.preventDefault();
-    
+
     const inquiryData = {
       type: 'contact',
       name: heroForm.name,
@@ -138,7 +138,43 @@ const Home = ({ setCurrentPage, onOpenEstimate }) => {
     { step: '06', title: 'Final Inspection & Handover', desc: 'Comprehensive quality checks before delivering your completed project.' }
   ];
 
-  const featuredProjects = [
+  const [featuredProjects, setFeaturedProjects] = useState([]);
+  const [testimonials, setTestimonials] = useState([]);
+
+  useEffect(() => {
+    const fetchHomeData = async () => {
+      try {
+        const liveProjects = await getProjects();
+        if (liveProjects && liveProjects.length > 0) {
+          setFeaturedProjects(liveProjects.map(p => ({
+            title: p.title,
+            location: p.location,
+            size: p.size,
+            type: p.categoryLabel,
+            image: p.image
+          })));
+        } else {
+          setFeaturedProjects(DEFAULT_FEATURED_PROJECTS);
+        }
+      } catch (err) {
+        setFeaturedProjects(DEFAULT_FEATURED_PROJECTS);
+      }
+
+      try {
+        const liveTestimonials = await getTestimonials();
+        if (liveTestimonials && liveTestimonials.length > 0) {
+          setTestimonials(liveTestimonials);
+        } else {
+          setTestimonials(DEFAULT_TESTIMONIALS);
+        }
+      } catch (err) {
+        setTestimonials(DEFAULT_TESTIMONIALS);
+      }
+    };
+    fetchHomeData();
+  }, []);
+
+  const DEFAULT_FEATURED_PROJECTS = [
     {
       title: 'The Crest Luxury Villa',
       location: 'Jubilee Hills, Hyderabad',
@@ -183,7 +219,7 @@ const Home = ({ setCurrentPage, onOpenEstimate }) => {
     }
   ];
 
-  const testimonials = [
+  const DEFAULT_TESTIMONIALS = [
     {
       name: 'Ramesh Reddy',
       location: 'Jubilee Hills, Hyderabad',
@@ -234,9 +270,9 @@ const Home = ({ setCurrentPage, onOpenEstimate }) => {
       {/* Reference Matched Hero Section */}
       <section className="ref-hero-section">
         <div className="ref-hero-backdrop">
-          <img 
-            src="https://images.unsplash.com/photo-1600585154340-be6161a56a0c?auto=format&fit=crop&w=1920&q=80" 
-            alt="Hyderabad Construction Experts" 
+          <img
+            src="https://images.unsplash.com/photo-1600585154340-be6161a56a0c?auto=format&fit=crop&w=1920&q=80"
+            alt="Hyderabad Construction Experts"
             className="ref-hero-bg"
           />
           <div className="ref-hero-gradient-overlay"></div>
@@ -323,7 +359,7 @@ const Home = ({ setCurrentPage, onOpenEstimate }) => {
 
                 <div className="ref-input-group">
                   <MapPin size={18} className="ref-input-icon" />
-                  <select 
+                  <select
                     className="ref-input ref-select"
                     value={heroForm.plotLocation}
                     onChange={(e) => setHeroForm({ ...heroForm, plotLocation: e.target.value })}
@@ -526,12 +562,12 @@ const Home = ({ setCurrentPage, onOpenEstimate }) => {
             {/* Left Column Image & Floating Badge */}
             <div className="about-image-column">
               <div className="about-img-frame">
-                <img 
-                  src="https://images.unsplash.com/photo-1581094794329-c8112a89af12?auto=format&fit=crop&w=1000&q=80" 
-                  alt="Architect drafting blueprint for Bricks Wall Hyderabad" 
+                <img
+                  src="https://images.unsplash.com/photo-1581094794329-c8112a89af12?auto=format&fit=crop&w=1000&q=80"
+                  alt="Architect drafting blueprint for Bricks Wall Hyderabad"
                   className="about-main-img"
                 />
-                
+
                 {/* Floating Orange Experience Badge */}
                 <div className="about-exp-badge">
                   <div className="exp-icon-circle">
@@ -1180,8 +1216,8 @@ const Home = ({ setCurrentPage, onOpenEstimate }) => {
 
           <div className="faq-wrapper max-w-3xl mx-auto">
             {faqs.map((faq, idx) => (
-              <div 
-                key={idx} 
+              <div
+                key={idx}
                 className={`faq-item ${activeFaq === idx ? 'open' : ''}`}
                 onClick={() => setActiveFaq(activeFaq === idx ? null : idx)}
               >

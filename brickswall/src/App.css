@@ -1687,8 +1687,8 @@
   color: #ffffff;
 }
 
-/* Floating WhatsApp Button */
-.whatsapp-floating-container {
+/* Floating Chatbot Button & Window */
+.chatbot-floating-container {
   position: fixed;
   bottom: 1.5rem;
   right: 1.5rem;
@@ -1698,36 +1698,45 @@
   align-items: flex-end;
 }
 
-.whatsapp-btn {
-  width: 58px;
-  height: 58px;
-  background-color: #25d366;
+.chatbot-toggle-btn {
+  width: 56px;
+  height: 56px;
+  background: linear-gradient(135deg, #d9531e 0%, #c44312 100%);
   color: #ffffff;
+  border: none;
   border-radius: 50%;
   display: flex;
   align-items: center;
   justify-content: center;
-  box-shadow: 0 8px 24px rgba(37, 211, 102, 0.4);
+  box-shadow: 0 8px 24px rgba(217, 83, 30, 0.35);
   position: relative;
-  transition: transform 0.25s;
+  transition: transform 0.25s, background-color 0.25s;
+  cursor: pointer;
+  outline: none;
 }
 
-.whatsapp-btn:hover {
-  transform: scale(1.1);
+.chatbot-toggle-btn:hover {
+  transform: scale(1.08);
+  box-shadow: 0 10px 28px rgba(217, 83, 30, 0.45);
 }
 
-.online-badge {
+.chatbot-toggle-btn.open {
+  background: #0f172a;
+  box-shadow: 0 8px 24px rgba(15, 23, 42, 0.35);
+}
+
+.unread-dot {
   position: absolute;
-  top: 4px;
-  right: 4px;
+  top: 2px;
+  right: 2px;
   width: 12px;
   height: 12px;
-  background-color: #ffffff;
-  border: 2px solid #25d366;
+  background-color: #10b981;
+  border: 2px solid #ffffff;
   border-radius: 50%;
 }
 
-.whatsapp-tooltip {
+.chatbot-tooltip {
   background: #ffffff;
   border-radius: var(--radius-md);
   padding: 0.85rem 1rem;
@@ -1743,6 +1752,9 @@
   top: 4px;
   right: 4px;
   color: var(--text-muted);
+  background: transparent;
+  border: none;
+  cursor: pointer;
 }
 
 .tooltip-title {
@@ -1755,6 +1767,238 @@
   font-size: 0.75rem;
   color: var(--text-muted);
   margin-top: 0.1rem;
+}
+
+/* Chatbot Window Styling */
+.chatbot-window {
+  width: 370px;
+  height: 500px;
+  max-height: 80vh;
+  background: #ffffff;
+  border-radius: 16px;
+  box-shadow: 0 12px 36px rgba(15, 23, 42, 0.15);
+  border: 1px solid rgba(15, 23, 42, 0.08);
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  margin-bottom: 0.75rem;
+}
+
+@media (max-width: 480px) {
+  .chatbot-window {
+    width: calc(100vw - 2rem);
+    height: 450px;
+  }
+}
+
+.chatbot-header {
+  background: #0f172a;
+  padding: 0.9rem 1.25rem;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  border-bottom: 1.5px solid rgba(217, 83, 30, 0.2);
+}
+
+.chatbot-header-info {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+}
+
+.chatbot-avatar-active {
+  position: relative;
+  background: rgba(255, 255, 255, 0.1);
+  padding: 6px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.active-dot {
+  position: absolute;
+  bottom: 1px;
+  right: 1px;
+  width: 9px;
+  height: 9px;
+  background-color: #10b981;
+  border: 2px solid #0f172a;
+  border-radius: 50%;
+}
+
+.chatbot-header-info h4 {
+  font-size: 0.95rem;
+  font-weight: 700;
+  color: #ffffff;
+  margin: 0;
+  line-height: 1.2;
+}
+
+.chatbot-header-info p {
+  font-size: 0.725rem;
+  color: #94a3b8;
+  margin: 0;
+  line-height: 1.2;
+}
+
+.chatbot-close-btn {
+  background: transparent;
+  border: none;
+  color: #94a3b8;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: color 0.2s;
+}
+
+.chatbot-close-btn:hover {
+  color: #ffffff;
+}
+
+.chatbot-messages {
+  flex: 1;
+  padding: 1rem;
+  overflow-y: auto;
+  background: #f8fafc;
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+}
+
+.chat-bubble-wrapper {
+  display: flex;
+  gap: 0.5rem;
+  max-width: 85%;
+}
+
+.assistant-wrapper {
+  align-self: flex-start;
+}
+
+.user-wrapper {
+  align-self: flex-end;
+  flex-direction: row-reverse;
+}
+
+.chat-bubble-avatar {
+  width: 24px;
+  height: 24px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: #e2e8f0;
+  color: #64748b;
+  flex-shrink: 0;
+  font-size: 0.7rem;
+}
+
+.user-wrapper .chat-bubble-avatar {
+  background: #fff2ed;
+  color: #d9531e;
+}
+
+.chat-bubble {
+  padding: 0.65rem 0.85rem;
+  border-radius: 12px;
+  font-size: 0.825rem;
+  line-height: 1.45;
+}
+
+.assistant-bubble {
+  background: #ffffff;
+  color: #334155;
+  border: 1px solid #e2e8f0;
+  border-top-left-radius: 2px;
+}
+
+.user-bubble {
+  background: linear-gradient(135deg, #d9531e 0%, #c44312 100%);
+  color: #ffffff;
+  border-top-right-radius: 2px;
+  box-shadow: 0 2px 8px rgba(217, 83, 30, 0.12);
+}
+
+.typing-bubble {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  color: #64748b;
+  background: #ffffff;
+  border: 1px solid #e2e8f0;
+}
+
+.chatbot-suggestions {
+  display: flex;
+  gap: 0.4rem;
+  padding: 0.5rem 0.75rem;
+  overflow-x: auto;
+  background: #f8fafc;
+  border-top: 1px solid #f1f5f9;
+  scrollbar-width: none; /* Firefox */
+}
+
+.chatbot-suggestions::-webkit-scrollbar {
+  display: none; /* Safari & Chrome */
+}
+
+.suggestion-chip {
+  white-space: nowrap;
+  background: #ffffff;
+  border: 1px solid #cbd5e1;
+  color: #475569;
+  padding: 0.3rem 0.65rem;
+  border-radius: 50px;
+  font-size: 0.725rem;
+  cursor: pointer;
+  transition: all 0.2s;
+  flex-shrink: 0;
+}
+
+.suggestion-chip:hover {
+  background: #fff2ed;
+  border-color: #d9531e;
+  color: #d9531e;
+}
+
+.chatbot-input-area {
+  display: flex;
+  padding: 0.65rem 0.75rem;
+  background: #ffffff;
+  border-top: 1px solid #e2e8f0;
+  align-items: center;
+}
+
+.chatbot-input-area input {
+  flex: 1;
+  border: none;
+  outline: none;
+  font-size: 0.825rem;
+  color: #334155;
+  padding: 0.25rem;
+}
+
+.chatbot-send-btn {
+  background: transparent;
+  border: none;
+  color: #d9531e;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 6px;
+  transition: transform 0.2s, color 0.2s;
+}
+
+.chatbot-send-btn:hover:not(:disabled) {
+  transform: scale(1.1);
+}
+
+.chatbot-send-btn:disabled {
+  color: #cbd5e1;
+  cursor: not-allowed;
 }
 
 /* Subpage Hero Header */

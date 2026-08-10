@@ -1,13 +1,13 @@
 import React, { useState, useEffect } from 'react';
-import { 
-  X, 
-  CheckCircle2, 
-  Calculator, 
-  ArrowRight, 
-  Home, 
-  Building2, 
-  Store, 
-  PaintRoller 
+import {
+  X,
+  CheckCircle2,
+  Calculator,
+  ArrowRight,
+  Home,
+  Building2,
+  Store,
+  PaintRoller
 } from 'lucide-react';
 import { getPricing, submitInquiry } from '../utils/api';
 
@@ -17,7 +17,7 @@ const EstimateModal = ({ isOpen, onClose }) => {
   const [plotArea, setPlotArea] = useState(2500);
   const [floors, setFloors] = useState(2);
   const [packageType, setPackageType] = useState('premium');
-  
+
   // Lead info
   const [formData, setFormData] = useState({
     name: '',
@@ -25,7 +25,7 @@ const EstimateModal = ({ isOpen, onClose }) => {
     location: 'Hyderabad',
     notes: ''
   });
-  
+
   const [isSubmitted, setIsSubmitted] = useState(false);
   const [pricingData, setPricingData] = useState(null);
 
@@ -83,27 +83,27 @@ const EstimateModal = ({ isOpen, onClose }) => {
   };
 
   const typesList = [
-    { 
-      id: 'residential', 
-      title: 'Independent Home', 
+    {
+      id: 'residential',
+      title: 'Independent Home',
       desc: 'Duplex / Triplex House',
       icon: <Home size={20} className="text-orange" />
     },
-    { 
-      id: 'villa', 
-      title: 'Luxury Villa', 
+    {
+      id: 'villa',
+      title: 'Luxury Villa',
       desc: 'Contemporary architecture',
       icon: <Building2 size={20} className="text-orange" />
     },
-    { 
-      id: 'commercial', 
-      title: 'Commercial Space', 
+    {
+      id: 'commercial',
+      title: 'Commercial Space',
       desc: 'Offices & Stores',
       icon: <Store size={20} className="text-orange" />
     },
-    { 
-      id: 'renovation', 
-      title: 'Renovation', 
+    {
+      id: 'renovation',
+      title: 'Renovation',
       desc: 'Remodeling existing space',
       icon: <PaintRoller size={20} className="text-orange" />
     },
@@ -186,7 +186,7 @@ const EstimateModal = ({ isOpen, onClose }) => {
                     <label className="section-label-bold">Plot / Built-up Area</label>
                     <span className="slider-val-text">{plotArea.toLocaleString()} sq.ft</span>
                   </div>
-                  
+
                   <div className="slider-box mb-2">
                     <input
                       type="range"

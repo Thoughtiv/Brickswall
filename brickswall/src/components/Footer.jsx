@@ -1,18 +1,23 @@
 import React from 'react';
-import { 
-  Phone, 
-  Mail, 
-  MapPin, 
-  MessageSquare, 
-  ArrowUp, 
-  ShieldCheck, 
-  CheckCircle2, 
-  Calendar, 
-  Headphones, 
+import {
+  Phone,
+  Mail,
+  MapPin,
+  MessageSquare,
+  ArrowUp,
+  ShieldCheck,
+  CheckCircle2,
+  Calendar,
+  Headphones,
   ChevronRight
 } from 'lucide-react';
 
-const Footer = ({ setCurrentPage, onOpenEstimate }) => {
+const Footer = ({ setCurrentPage, onOpenEstimate, settings }) => {
+  const phonePrimary = settings?.phone_primary || '+91 9949249091';
+  const phoneSecondary = settings?.phone_secondary || '+91 9160202008';
+  const whatsapp = settings?.whatsapp || '+91 9160202008';
+  const email = settings?.email || 'Hello@brickswall.in';
+  const address = settings?.address || 'Hyderabad & Surrounding Areas, Telangana';
   const scrollToTop = () => {
     window.scrollTo({ top: 0, behavior: 'smooth' });
   };
@@ -43,9 +48,9 @@ const Footer = ({ setCurrentPage, onOpenEstimate }) => {
                 <Calendar size={18} className="bw-icon-orange" />
                 <span>Get Free Consultation</span>
               </button>
-              <a href="tel:+919949249091" className="bw-btn-prefooter-outline">
+              <a href={`tel:${phonePrimary.replace(/\s+/g, '')}`} className="bw-btn-prefooter-outline">
                 <Phone size={18} />
-                <span>Call +91 9949249091</span>
+                <span>Call {phonePrimary}</span>
               </a>
             </div>
           </div>
@@ -58,15 +63,15 @@ const Footer = ({ setCurrentPage, onOpenEstimate }) => {
           <div className="bw-footer-grid">
             {/* Column 1: Company Profile */}
             <div className="bw-footer-col bw-brand-col">
-              <img 
-                src="/Brickswall-logo_birefnet.png" 
-                alt="Bricks Wall Hyderabad" 
+              <img
+                src="/Brickswall-logo_birefnet.png"
+                alt="Bricks Wall Hyderabad"
                 className="bw-footer-logo"
               />
               <p className="bw-footer-desc">
                 Building Quality. Building Trust. Building Hyderabad. Over 15 years of construction excellence delivering 50+ homes, commercial spaces, and educational infrastructure.
               </p>
-              
+
               {/* Trust Badges */}
               <div className="bw-footer-badges">
                 <span className="bw-badge-warranty">
@@ -81,24 +86,24 @@ const Footer = ({ setCurrentPage, onOpenEstimate }) => {
               <div className="bw-footer-socials">
                 <a href="#facebook" aria-label="Facebook" className="bw-social-btn">
                   <svg width="15" height="15" fill="currentColor" viewBox="0 0 24 24">
-                    <path d="M22 12c0-5.52-4.48-10-10-10S2 6.48 2 12c0 4.84 3.44 8.87 8 9.8V15H7.5v-3H10V9.5C10 7.01 11.49 5.65 13.75 5.65c1.08 0 2.21.19 2.21.19v2.43h-1.25c-1.23 0-1.61.77-1.61 1.56V12h2.74l-.44 3h-2.3v6.8c4.56-.93 8-4.96 8-9.8z"/>
+                    <path d="M22 12c0-5.52-4.48-10-10-10S2 6.48 2 12c0 4.84 3.44 8.87 8 9.8V15H7.5v-3H10V9.5C10 7.01 11.49 5.65 13.75 5.65c1.08 0 2.21.19 2.21.19v2.43h-1.25c-1.23 0-1.61.77-1.61 1.56V12h2.74l-.44 3h-2.3v6.8c4.56-.93 8-4.96 8-9.8z" />
                   </svg>
                 </a>
                 <a href="#instagram" aria-label="Instagram" className="bw-social-btn">
                   <svg width="15" height="15" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" viewBox="0 0 24 24">
-                    <rect x="2" y="2" width="20" height="20" rx="5" ry="5"/>
-                    <path d="M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z"/>
-                    <line x1="17.5" y1="6.5" x2="17.51" y2="6.5"/>
+                    <rect x="2" y="2" width="20" height="20" rx="5" ry="5" />
+                    <path d="M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z" />
+                    <line x1="17.5" y1="6.5" x2="17.51" y2="6.5" />
                   </svg>
                 </a>
                 <a href="#linkedin" aria-label="LinkedIn" className="bw-social-btn">
                   <svg width="15" height="15" fill="currentColor" viewBox="0 0 24 24">
-                    <path d="M19 3a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h14m-.5 15.5v-5.3a3.26 3.26 0 0 0-3.26-3.26c-.85 0-1.84.52-2.28 1.3v-1.11h-2.79v8.37h2.79v-4.93c0-.77.62-1.4 1.39-1.4a1.4 1.4 0 0 1 1.4 1.4v4.93h2.75M6.46 10.9v8.37H9.25V10.9H6.46M7.86 6.72a1.49 1.49 0 1 0 0 2.98 1.49 1.49 0 0 0 0-2.98z"/>
+                    <path d="M19 3a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h14m-.5 15.5v-5.3a3.26 3.26 0 0 0-3.26-3.26c-.85 0-1.84.52-2.28 1.3v-1.11h-2.79v8.37h2.79v-4.93c0-.77.62-1.4 1.39-1.4a1.4 1.4 0 0 1 1.4 1.4v4.93h2.75M6.46 10.9v8.37H9.25V10.9H6.46M7.86 6.72a1.49 1.49 0 1 0 0 2.98 1.49 1.49 0 0 0 0-2.98z" />
                   </svg>
                 </a>
                 <a href="#youtube" aria-label="YouTube" className="bw-social-btn">
                   <svg width="15" height="15" fill="currentColor" viewBox="0 0 24 24">
-                    <path d="M23.498 6.186a3.016 3.016 0 0 0-2.122-2.136C19.505 3.545 12 3.545 12 3.545s-7.505 0-9.377.505A3.017 3.017 0 0 0 .502 6.186C0 8.07 0 12 0 12s0 3.93.502 5.814a3.016 3.016 0 0 0 2.122 2.136c1.871.505 9.376.505 9.376.505s7.505 0 9.377-.505a3.015 3.015 0 0 0 2.122-2.136C24 15.93 24 12 24 12s0-3.93-.502-5.814zM9.545 15.568V8.432L15.818 12l-6.273 3.568z"/>
+                    <path d="M23.498 6.186a3.016 3.016 0 0 0-2.122-2.136C19.505 3.545 12 3.545 12 3.545s-7.505 0-9.377.505A3.017 3.017 0 0 0 .502 6.186C0 8.07 0 12 0 12s0 3.93.502 5.814a3.016 3.016 0 0 0 2.122 2.136c1.871.505 9.376.505 9.376.505s7.505 0 9.377-.505a3.015 3.015 0 0 0 2.122-2.136C24 15.93 24 12 24 12s0-3.93-.502-5.814zM9.545 15.568V8.432L15.818 12l-6.273 3.568z" />
                   </svg>
                 </a>
               </div>
@@ -189,7 +194,7 @@ const Footer = ({ setCurrentPage, onOpenEstimate }) => {
                   <MapPin size={18} className="bw-contact-icon" />
                   <div>
                     <strong className="bw-contact-label">Service Area:</strong>
-                    <p className="bw-contact-val">Hyderabad &amp; Surrounding Areas, Telangana</p>
+                    <p className="bw-contact-val">{address}</p>
                   </div>
                 </div>
 
@@ -198,11 +203,13 @@ const Footer = ({ setCurrentPage, onOpenEstimate }) => {
                   <div>
                     <strong className="bw-contact-label">Phone Numbers:</strong>
                     <p className="bw-contact-val">
-                      <a href="tel:+919949249091">+91 9949249091</a>
+                      <a href={`tel:${phonePrimary.replace(/\s+/g, '')}`}>{phonePrimary}</a>
                     </p>
-                    <p className="bw-contact-val">
-                      <a href="tel:9160202008">+91 9160202008</a>
-                    </p>
+                    {phoneSecondary && (
+                      <p className="bw-contact-val">
+                        <a href={`tel:${phoneSecondary.replace(/\s+/g, '')}`}>{phoneSecondary}</a>
+                      </p>
+                    )}
                   </div>
                 </div>
 
@@ -211,7 +218,7 @@ const Footer = ({ setCurrentPage, onOpenEstimate }) => {
                   <div>
                     <strong className="bw-contact-label">WhatsApp:</strong>
                     <p className="bw-contact-val">
-                      <a href="https://wa.me/919160202008" target="_blank" rel="noreferrer">+91 9160202008</a>
+                      <a href={`https://wa.me/${whatsapp.replace(/[^0-9]/g, '')}`} target="_blank" rel="noreferrer">{whatsapp}</a>
                     </p>
                   </div>
                 </div>
@@ -221,7 +228,7 @@ const Footer = ({ setCurrentPage, onOpenEstimate }) => {
                   <div>
                     <strong className="bw-contact-label">Email:</strong>
                     <p className="bw-contact-val">
-                      <a href="mailto:Hello@brickswall.in">Hello@brickswall.in</a>
+                      <a href={`mailto:${email}`}>{email}</a>
                     </p>
                   </div>
                 </div>

@@ -8,6 +8,10 @@ import { initDatabase } from './models/schema.js';
 
 import pricingRouter from './routes/pricing.js';
 import inquiriesRouter from './routes/inquiries.js';
+import projectsRouter from './routes/projects.js';
+import testimonialsRouter from './routes/testimonials.js';
+import settingsRouter from './routes/settings.js';
+import chatbotRouter from './routes/chatbot.js';
 
 // Load Env variables
 dotenv.config();
@@ -24,7 +28,7 @@ const corsOptions = {
   origin: (origin, callback) => {
     // Allow requests with no origin (like mobile apps, curl, postman, or server-to-server)
     if (!origin) return callback(null, true);
-    
+
     if (allowedOrigins.includes('*') || allowedOrigins.includes(origin)) {
       return callback(null, true);
     } else {
@@ -46,6 +50,10 @@ app.use(morgan('dev'));
 // Routes
 app.use('/api/pricing', pricingRouter);
 app.use('/api/inquiries', inquiriesRouter);
+app.use('/api/projects', projectsRouter);
+app.use('/api/testimonials', testimonialsRouter);
+app.use('/api/settings', settingsRouter);
+app.use('/api/chat', chatbotRouter);
 
 // Start Server after connecting to MySQL
 connectWithRetry(initDatabase).then(() => {
