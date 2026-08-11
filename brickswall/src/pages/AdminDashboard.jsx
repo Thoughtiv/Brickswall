@@ -20,7 +20,11 @@ import {
   TrendingUp,
   MapPin,
   FileSpreadsheet,
-  X
+  X,
+  Upload,
+  Plus,
+  BookOpen,
+  Image
 } from 'lucide-react';
 import {
   getInquiries,
@@ -37,7 +41,14 @@ import {
   updateTestimonial,
   deleteTestimonial,
   getSettings,
-  updateSettings
+  updateSettings,
+  getBlogs,
+  addBlog,
+  updateBlog,
+  deleteBlog,
+  getPackageMatrix,
+  updatePackageMatrix,
+  uploadImage
 } from '../utils/api';
 
 const AdminDashboard = () => {
@@ -51,6 +62,8 @@ const AdminDashboard = () => {
   const [pricing, setPricing] = useState(null);
   const [projects, setProjects] = useState([]);
   const [testimonials, setTestimonials] = useState([]);
+  const [blogs, setBlogs] = useState([]);
+  const [packageMatrix, setPackageMatrix] = useState([]);
   const [settings, setSettings] = useState({
     phone_primary: '',
     phone_secondary: '',
@@ -114,6 +127,44 @@ const AdminDashboard = () => {
       rating: 5
     }
   });
+  const [blogModal, setBlogModal] = useState({
+    isOpen: false,
+    mode: 'add',
+    blogData: {
+      title: '',
+      category: 'Construction Tips',
+      date: new Date().toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' }),
+      readTime: '5 min read',
+      image: '',
+      excerpt: '',
+      content: '',
+      author: 'Bricks Wall Editorial'
+    }
+  });
+
+  // Image Upload Helper
+  const handleFileUpload = async (file, onUploadSuccess) => {
+    if (!file) return;
+    setIsLoading(true);
+    try {
+      const reader = new FileReader();
+      reader.onload = async (e) => {
+        try {
+          const base64 = e.target.result;
+          const uploadedUrl = await uploadImage(base64, file.name);
+          onUploadSuccess(uploadedUrl);
+        } catch (err) {
+          alert(`Image upload error: ${err.message}`);
+        } finally {
+          setIsLoading(false);
+        }
+      };
+      reader.readAsDataURL(file);
+    } catch (err) {
+      alert(`File reading error: ${err.message}`);
+      setIsLoading(false);
+    }
+  };
 
   // Load password from localStorage if exists
   useEffect(() => {
@@ -144,6 +195,12 @@ const AdminDashboard = () => {
 
       const testimonialsData = await getTestimonials();
       setTestimonials(testimonialsData);
+
+      const blogsData = await getBlogs();
+      setBlogs(blogsData);
+
+      const matrixData = await getPackageMatrix();
+      if (Array.isArray(matrixData)) setPackageMatrix(matrixData);
 
       const settingsData = await getSettings();
       setSettings(settingsData);
@@ -186,6 +243,12 @@ const AdminDashboard = () => {
 
       const testimonialsData = await getTestimonials();
       setTestimonials(testimonialsData);
+
+      const blogsData = await getBlogs();
+      setBlogs(blogsData);
+
+      const matrixData = await getPackageMatrix();
+      if (Array.isArray(matrixData)) setPackageMatrix(matrixData);
 
       const settingsData = await getSettings();
       setSettings(settingsData);
@@ -246,6 +309,9 @@ const AdminDashboard = () => {
       } else if (type === 'testimonial') {
         await deleteTestimonial(targetId, password);
         setTestimonials(prev => prev.filter(t => Number(t.id) !== Number(targetId)));
+      } else if (type === 'blog') {
+        await deleteBlog(targetId, password);
+        setBlogs(prev => prev.filter(b => Number(b.id) !== Number(targetId)));
       }
     } catch (err) {
       alert(`Error deleting record: ${err.message}`);
@@ -275,6 +341,62 @@ const AdminDashboard = () => {
     } catch (err) {
       setSaveStatus(`Error: ${err.message}`);
       setTimeout(() => setSaveStatus(''), 5000);
+    }
+  };
+
+  // Package Matrix Handlers
+  const handleSaveMatrix = async () => {
+    setSaveStatus('Saving Matrix Table...');
+    try {
+      await updatePackageMatrix(packageMatrix, password);
+      setSaveStatus('Comparison Matrix saved successfully!');
+      setTimeout(() => setSaveStatus(''), 3000);
+    } catch (err) {
+      setSaveStatus(`Error saving matrix: ${err.message}`);
+      setTimeout(() => setSaveStatus(''), 5000);
+    }
+  };
+
+  const handleMatrixCellChange = (index, field, value) => {
+    setPackageMatrix(prev => {
+      const updated = [...prev];
+      updated[index] = { ...updated[index], [field]: value };
+      return updated;
+    });
+  };
+
+  const handleAddMatrixRow = () => {
+    setPackageMatrix(prev => [
+      ...prev,
+      {
+        id: Date.now().toString(),
+        feature: 'New Specification',
+        basic: 'Standard Option',
+        premium: 'High Customization',
+        luxury: 'Bespoke Quality'
+      }
+    ]);
+  };
+
+  const handleDeleteMatrixRow = (index) => {
+    setPackageMatrix(prev => prev.filter((_, i) => i !== index));
+  };
+
+  // Blog Submits
+  const handleBlogSubmit = async (e) => {
+    e.preventDefault();
+    const { mode, blogData } = blogModal;
+    try {
+      if (mode === 'add') {
+        const added = await addBlog(blogData, password);
+        setBlogs(prev => [added, ...prev]);
+      } else {
+        const updated = await updateBlog(blogData.id, blogData, password);
+        setBlogs(prev => prev.map(b => Number(b.id) === Number(blogData.id) ? updated : b));
+      }
+      setBlogModal({ isOpen: false, mode: 'add', blogData: {} });
+    } catch (err) {
+      alert(`Error submitting blog post: ${err.message}`);
     }
   };
 
@@ -1268,6 +1390,12 @@ const AdminDashboard = () => {
             Client Reviews ({testimonials.length})
           </button>
           <button
+            className={`tab-btn ${activeTab === 'blogs' ? 'active' : ''}`}
+            onClick={() => setActiveTab('blogs')}
+          >
+            Blogs &amp; Hub ({blogs.length})
+          </button>
+          <button
             className={`tab-btn ${activeTab === 'pricing' ? 'active' : ''}`}
             onClick={() => setActiveTab('pricing')}
           >
@@ -1721,6 +1849,95 @@ const AdminDashboard = () => {
                   </div>
                 </div>
               </div>
+
+              {/* Package Comparison Matrix Table Editor */}
+              <div style={{ marginTop: '32px', background: 'white', padding: '24px', borderRadius: '16px', border: '1px solid #e2e8f0', width: '100%' }}>
+                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '16px', flexWrap: 'wrap', gap: '12px' }}>
+                  <div>
+                    <h3 style={{ fontSize: '18px', fontWeight: 800, color: '#0f172a' }}>Features &amp; Specifications Comparison Matrix</h3>
+                    <p style={{ fontSize: '13px', color: '#64748b' }}>Dynamically edit the comparison matrix displayed on the frontend pricing page.</p>
+                  </div>
+                  <button
+                    type="button"
+                    onClick={handleAddMatrixRow}
+                    style={{ background: '#3b82f6', color: 'white', border: 'none', padding: '8px 16px', borderRadius: '8px', fontWeight: 600, fontSize: '13px', cursor: 'pointer', display: 'flex', alignItems: 'center', gap: '6px' }}
+                  >
+                    <Plus size={16} /> Add Specification Row
+                  </button>
+                </div>
+
+                <div style={{ overflowX: 'auto', borderRadius: '8px', border: '1px solid #e2e8f0' }}>
+                  <table style={{ width: '100%', borderCollapse: 'collapse', fontSize: '13px' }}>
+                    <thead>
+                      <tr style={{ background: '#f8fafc', textTransform: 'uppercase', fontSize: '11px', color: '#475569', borderBottom: '2px solid #e2e8f0' }}>
+                        <th style={{ padding: '12px', textAlign: 'left', minWidth: '200px' }}>Features &amp; Specifications</th>
+                        <th style={{ padding: '12px', textAlign: 'left', minWidth: '160px' }}>Basic Package</th>
+                        <th style={{ padding: '12px', textAlign: 'left', minWidth: '160px' }}>Premium Package</th>
+                        <th style={{ padding: '12px', textAlign: 'left', minWidth: '160px' }}>Luxury Package</th>
+                        <th style={{ padding: '12px', width: '60px', textAlign: 'center' }}>Action</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      {packageMatrix.map((row, idx) => (
+                        <tr key={row.id || idx} style={{ borderBottom: '1px solid #f1f5f9' }}>
+                          <td style={{ padding: '8px' }}>
+                            <input
+                              type="text"
+                              value={row.feature || ''}
+                              onChange={(e) => handleMatrixCellChange(idx, 'feature', e.target.value)}
+                              style={{ width: '100%', padding: '8px 10px', borderRadius: '6px', border: '1px solid #cbd5e1', fontSize: '13px', fontWeight: 700 }}
+                            />
+                          </td>
+                          <td style={{ padding: '8px' }}>
+                            <input
+                              type="text"
+                              value={row.basic || ''}
+                              onChange={(e) => handleMatrixCellChange(idx, 'basic', e.target.value)}
+                              style={{ width: '100%', padding: '8px 10px', borderRadius: '6px', border: '1px solid #cbd5e1', fontSize: '13px' }}
+                            />
+                          </td>
+                          <td style={{ padding: '8px' }}>
+                            <input
+                              type="text"
+                              value={row.premium || ''}
+                              onChange={(e) => handleMatrixCellChange(idx, 'premium', e.target.value)}
+                              style={{ width: '100%', padding: '8px 10px', borderRadius: '6px', border: '1px solid #cbd5e1', fontSize: '13px' }}
+                            />
+                          </td>
+                          <td style={{ padding: '8px' }}>
+                            <input
+                              type="text"
+                              value={row.luxury || ''}
+                              onChange={(e) => handleMatrixCellChange(idx, 'luxury', e.target.value)}
+                              style={{ width: '100%', padding: '8px 10px', borderRadius: '6px', border: '1px solid #cbd5e1', fontSize: '13px' }}
+                            />
+                          </td>
+                          <td style={{ padding: '8px', textAlign: 'center' }}>
+                            <button
+                              type="button"
+                              onClick={() => handleDeleteMatrixRow(idx)}
+                              style={{ background: 'none', border: 'none', color: '#ef4444', cursor: 'pointer', padding: '4px' }}
+                              title="Delete Row"
+                            >
+                              <Trash2 size={16} />
+                            </button>
+                          </td>
+                        </tr>
+                      ))}
+                    </tbody>
+                  </table>
+                </div>
+
+                <div style={{ marginTop: '20px', display: 'flex', justifyContent: 'flex-end' }}>
+                  <button
+                    type="button"
+                    onClick={handleSaveMatrix}
+                    style={{ background: '#d9531e', color: 'white', border: 'none', padding: '10px 20px', borderRadius: '8px', fontWeight: 700, fontSize: '13px', cursor: 'pointer', display: 'flex', alignItems: 'center', gap: '8px' }}
+                  >
+                    <Save size={16} /> Save Matrix Changes
+                  </button>
+                </div>
+              </div>
             </div>
           )}
 
@@ -1856,6 +2073,82 @@ const AdminDashboard = () => {
                       </button>
                       <button
                         onClick={() => triggerDeleteConfirm('testimonial', testimonial.id, testimonial.name)}
+                        className="btn-action-dt delete"
+                        style={{ flex: 1, display: 'flex', justifyContent: 'center', alignItems: 'center', gap: '4px', padding: '8px', borderRadius: '6px', fontSize: '12px', fontWeight: 600, cursor: 'pointer', border: '1px solid #fee2e2' }}
+                      >
+                        <Trash2 size={14} /> Delete
+                      </button>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </div>
+          )}
+
+          {activeTab === 'blogs' && (
+            <div className="blogs-manager-section animate-fade-in" style={{ padding: '8px' }}>
+              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '20px', flexWrap: 'wrap', gap: '12px' }}>
+                <div>
+                  <h3 style={{ fontSize: '20px', fontWeight: 800, color: '#0f172a' }}>Blog Articles &amp; Hub</h3>
+                  <p style={{ fontSize: '13px', color: '#64748b' }}>Manage construction guides, tips, and design ideas published on the Blog page.</p>
+                </div>
+                <button
+                  onClick={() => setBlogModal({
+                    isOpen: true,
+                    mode: 'add',
+                    blogData: {
+                      title: '',
+                      category: 'Construction Tips',
+                      date: new Date().toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' }),
+                      readTime: '5 min read',
+                      image: 'https://images.unsplash.com/photo-1600585154340-be6161a56a0c?auto=format&fit=crop&w=800&q=80',
+                      excerpt: '',
+                      content: '',
+                      author: 'Bricks Wall Editorial'
+                    }
+                  })}
+                  className="save-pricing-btn"
+                  style={{ width: 'auto', padding: '10px 16px', borderRadius: '8px', cursor: 'pointer', display: 'flex', alignItems: 'center', gap: '6px' }}
+                >
+                  <Plus size={16} /> Add New Blog Post
+                </button>
+              </div>
+
+              <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(300px, 1fr))', gap: '20px' }}>
+                {blogs.map(blog => (
+                  <div key={blog.id} className="detail-item-box" style={{ padding: '16px', display: 'flex', flexDirection: 'column', gap: '12px', border: '1px solid #e2e8f0', background: 'white', borderRadius: '12px' }}>
+                    <div style={{ position: 'relative', width: '100%', height: '140px', borderRadius: '8px', overflow: 'hidden', background: '#f1f5f9' }}>
+                      <img
+                        src={blog.image}
+                        alt={blog.title}
+                        style={{ width: '100%', height: '100%', objectFit: 'cover' }}
+                      />
+                      <span style={{ position: 'absolute', top: '8px', left: '8px', background: '#d9531e', color: 'white', fontSize: '10px', fontWeight: 700, padding: '3px 8px', borderRadius: '4px', textTransform: 'uppercase' }}>
+                        {blog.category}
+                      </span>
+                    </div>
+
+                    <div style={{ flex: 1 }}>
+                      <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '11px', color: '#64748b', marginBottom: '4px' }}>
+                        <span>{blog.date}</span>
+                        <span>{blog.readTime}</span>
+                      </div>
+                      <h4 style={{ fontSize: '15px', fontWeight: 800, color: '#0f172a', margin: '0 0 6px 0', lineHeight: 1.3 }}>{blog.title}</h4>
+                      <p style={{ fontSize: '12px', color: '#475569', margin: 0, display: '-webkit-box', WebkitLineClamp: 2, WebkitBoxOrient: 'vertical', overflow: 'hidden' }}>
+                        {blog.excerpt || blog.content}
+                      </p>
+                    </div>
+
+                    <div style={{ display: 'flex', gap: '8px', marginTop: '12px' }}>
+                      <button
+                        onClick={() => setBlogModal({ isOpen: true, mode: 'edit', blogData: blog })}
+                        className="btn-action-dt"
+                        style={{ flex: 1, display: 'flex', justifyContent: 'center', alignItems: 'center', gap: '4px', background: '#f1f5f9', border: '1px solid #e2e8f0', color: '#475569', padding: '8px', borderRadius: '6px', fontSize: '12px', fontWeight: 600, cursor: 'pointer' }}
+                      >
+                        <Edit3 size={14} /> Edit
+                      </button>
+                      <button
+                        onClick={() => triggerDeleteConfirm('blog', blog.id, blog.title)}
                         className="btn-action-dt delete"
                         style={{ flex: 1, display: 'flex', justifyContent: 'center', alignItems: 'center', gap: '4px', padding: '8px', borderRadius: '6px', fontSize: '12px', fontWeight: 600, cursor: 'pointer', border: '1px solid #fee2e2' }}
                       >
@@ -2162,14 +2455,51 @@ const AdminDashboard = () => {
               </div>
 
               <div>
-                <label style={{ fontSize: '12px', fontWeight: 700, color: '#475569', display: 'block', marginBottom: '6px' }}>Image URL</label>
-                <input
-                  type="text"
-                  required
-                  value={projectModal.projectData.image || ''}
-                  onChange={(e) => setProjectModal(prev => ({ ...prev, projectData: { ...prev.projectData, image: e.target.value } }))}
-                  style={{ width: '100%', padding: '10px 14px', borderRadius: '8px', border: '1px solid #cbd5e1', fontSize: '13px' }}
-                />
+                <label style={{ fontSize: '12px', fontWeight: 700, color: '#475569', display: 'block', marginBottom: '6px' }}>Project Image (Upload File or Enter URL)</label>
+                <div style={{ display: 'flex', gap: '8px', alignItems: 'center' }}>
+                  <input
+                    type="text"
+                    required
+                    placeholder="https://..."
+                    value={projectModal.projectData.image || ''}
+                    onChange={(e) => setProjectModal(prev => ({ ...prev, projectData: { ...prev.projectData, image: e.target.value } }))}
+                    style={{ flex: 1, padding: '10px 14px', borderRadius: '8px', border: '1px solid #cbd5e1', fontSize: '13px' }}
+                  />
+                  <label style={{
+                    background: '#3b82f6',
+                    color: 'white',
+                    padding: '10px 14px',
+                    borderRadius: '8px',
+                    fontSize: '12px',
+                    fontWeight: 700,
+                    cursor: 'pointer',
+                    display: 'inline-flex',
+                    alignItems: 'center',
+                    gap: '6px',
+                    whiteSpace: 'nowrap'
+                  }}>
+                    <Upload size={14} /> Upload File
+                    <input
+                      type="file"
+                      accept="image/*"
+                      style={{ display: 'none' }}
+                      onChange={(e) => {
+                        const file = e.target.files?.[0];
+                        if (file) {
+                          handleFileUpload(file, (uploadedUrl) => {
+                            setProjectModal(prev => ({ ...prev, projectData: { ...prev.projectData, image: uploadedUrl } }));
+                          });
+                        }
+                      }}
+                    />
+                  </label>
+                </div>
+                {projectModal.projectData.image && (
+                  <div style={{ marginTop: '8px', display: 'flex', alignItems: 'center', gap: '10px' }}>
+                    <img src={projectModal.projectData.image} alt="Preview" style={{ width: '48px', height: '48px', objectFit: 'cover', borderRadius: '6px', border: '1px solid #cbd5e1' }} />
+                    <span style={{ fontSize: '11px', color: '#64748b' }}>Image Preview</span>
+                  </div>
+                )}
               </div>
 
               <div>
@@ -2291,14 +2621,51 @@ const AdminDashboard = () => {
               </div>
 
               <div>
-                <label style={{ fontSize: '12px', fontWeight: 700, color: '#475569', display: 'block', marginBottom: '6px' }}>Avatar URL</label>
-                <input
-                  type="text"
-                  required
-                  value={testimonialModal.testimonialData.avatar || ''}
-                  onChange={(e) => setTestimonialModal(prev => ({ ...prev, testimonialData: { ...prev.testimonialData, avatar: e.target.value } }))}
-                  style={{ width: '100%', padding: '10px 14px', borderRadius: '8px', border: '1px solid #cbd5e1', fontSize: '13px' }}
-                />
+                <label style={{ fontSize: '12px', fontWeight: 700, color: '#475569', display: 'block', marginBottom: '6px' }}>Avatar Image (Upload File or Enter URL)</label>
+                <div style={{ display: 'flex', gap: '8px', alignItems: 'center' }}>
+                  <input
+                    type="text"
+                    required
+                    placeholder="https://..."
+                    value={testimonialModal.testimonialData.avatar || ''}
+                    onChange={(e) => setTestimonialModal(prev => ({ ...prev, testimonialData: { ...prev.testimonialData, avatar: e.target.value } }))}
+                    style={{ flex: 1, padding: '10px 14px', borderRadius: '8px', border: '1px solid #cbd5e1', fontSize: '13px' }}
+                  />
+                  <label style={{
+                    background: '#3b82f6',
+                    color: 'white',
+                    padding: '10px 14px',
+                    borderRadius: '8px',
+                    fontSize: '12px',
+                    fontWeight: 700,
+                    cursor: 'pointer',
+                    display: 'inline-flex',
+                    alignItems: 'center',
+                    gap: '6px',
+                    whiteSpace: 'nowrap'
+                  }}>
+                    <Upload size={14} /> Upload File
+                    <input
+                      type="file"
+                      accept="image/*"
+                      style={{ display: 'none' }}
+                      onChange={(e) => {
+                        const file = e.target.files?.[0];
+                        if (file) {
+                          handleFileUpload(file, (uploadedUrl) => {
+                            setTestimonialModal(prev => ({ ...prev, testimonialData: { ...prev.testimonialData, avatar: uploadedUrl } }));
+                          });
+                        }
+                      }}
+                    />
+                  </label>
+                </div>
+                {testimonialModal.testimonialData.avatar && (
+                  <div style={{ marginTop: '8px', display: 'flex', alignItems: 'center', gap: '10px' }}>
+                    <img src={testimonialModal.testimonialData.avatar} alt="Preview" style={{ width: '40px', height: '40px', objectFit: 'cover', borderRadius: '50%', border: '1px solid #cbd5e1' }} />
+                    <span style={{ fontSize: '11px', color: '#64748b' }}>Avatar Preview</span>
+                  </div>
+                )}
               </div>
 
               <div>
@@ -2325,6 +2692,183 @@ const AdminDashboard = () => {
                   style={{ padding: '10px 20px', borderRadius: '8px', border: 'none', background: '#d9531e', color: 'white', fontWeight: 600, fontSize: '13px', cursor: 'pointer' }}
                 >
                   {testimonialModal.mode === 'add' ? 'Add Testimonial' : 'Save Changes'}
+                </button>
+              </div>
+            </form>
+          </div>
+        </div>
+      )}
+
+      {/* Blog Article Add/Edit Modal */}
+      {blogModal.isOpen && (
+        <div style={{
+          position: 'fixed',
+          top: 0,
+          left: 0,
+          width: '100%',
+          height: '100%',
+          backgroundColor: 'rgba(15, 23, 42, 0.65)',
+          backdropFilter: 'blur(4px)',
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: 'center',
+          zIndex: 10000,
+          padding: '16px'
+        }}>
+          <div style={{
+            background: 'white',
+            borderRadius: '16px',
+            width: '100%',
+            maxWidth: '650px',
+            padding: '24px',
+            boxShadow: '0 20px 25px -5px rgba(0,0,0,0.1), 0 10px 10px -5px rgba(0,0,0,0.04)',
+            maxHeight: '90vh',
+            overflowY: 'auto'
+          }}>
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '20px' }}>
+              <h3 style={{ fontSize: '18px', fontWeight: 800, color: '#0f172a' }}>
+                {blogModal.mode === 'add' ? 'Add New Blog Post' : 'Edit Blog Post'}
+              </h3>
+              <button
+                onClick={() => setBlogModal({ isOpen: false, mode: 'add', blogData: {} })}
+                style={{ background: 'none', border: 'none', cursor: 'pointer', color: '#64748b' }}
+              >
+                <X size={20} />
+              </button>
+            </div>
+
+            <form onSubmit={handleBlogSubmit} style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
+              <div>
+                <label style={{ fontSize: '12px', fontWeight: 700, color: '#475569', display: 'block', marginBottom: '6px' }}>Article Title</label>
+                <input
+                  type="text"
+                  required
+                  value={blogModal.blogData.title || ''}
+                  onChange={(e) => setBlogModal(prev => ({ ...prev, blogData: { ...prev.blogData, title: e.target.value } }))}
+                  style={{ width: '100%', padding: '10px 14px', borderRadius: '8px', border: '1px solid #cbd5e1', fontSize: '13px' }}
+                />
+              </div>
+
+              <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 1fr', gap: '16px' }}>
+                <div>
+                  <label style={{ fontSize: '12px', fontWeight: 700, color: '#475569', display: 'block', marginBottom: '6px' }}>Category</label>
+                  <input
+                    type="text"
+                    required
+                    placeholder="e.g. Cost Guides"
+                    value={blogModal.blogData.category || ''}
+                    onChange={(e) => setBlogModal(prev => ({ ...prev, blogData: { ...prev.blogData, category: e.target.value } }))}
+                    style={{ width: '100%', padding: '10px 14px', borderRadius: '8px', border: '1px solid #cbd5e1', fontSize: '13px' }}
+                  />
+                </div>
+                <div>
+                  <label style={{ fontSize: '12px', fontWeight: 700, color: '#475569', display: 'block', marginBottom: '6px' }}>Author</label>
+                  <input
+                    type="text"
+                    required
+                    value={blogModal.blogData.author || ''}
+                    onChange={(e) => setBlogModal(prev => ({ ...prev, blogData: { ...prev.blogData, author: e.target.value } }))}
+                    style={{ width: '100%', padding: '10px 14px', borderRadius: '8px', border: '1px solid #cbd5e1', fontSize: '13px' }}
+                  />
+                </div>
+                <div>
+                  <label style={{ fontSize: '12px', fontWeight: 700, color: '#475569', display: 'block', marginBottom: '6px' }}>Read Time</label>
+                  <input
+                    type="text"
+                    required
+                    placeholder="e.g. 5 min read"
+                    value={blogModal.blogData.readTime || ''}
+                    onChange={(e) => setBlogModal(prev => ({ ...prev, blogData: { ...prev.blogData, readTime: e.target.value } }))}
+                    style={{ width: '100%', padding: '10px 14px', borderRadius: '8px', border: '1px solid #cbd5e1', fontSize: '13px' }}
+                  />
+                </div>
+              </div>
+
+              <div>
+                <label style={{ fontSize: '12px', fontWeight: 700, color: '#475569', display: 'block', marginBottom: '6px' }}>Cover Image (Upload File or Enter URL)</label>
+                <div style={{ display: 'flex', gap: '8px', alignItems: 'center' }}>
+                  <input
+                    type="text"
+                    required
+                    placeholder="https://..."
+                    value={blogModal.blogData.image || ''}
+                    onChange={(e) => setBlogModal(prev => ({ ...prev, blogData: { ...prev.blogData, image: e.target.value } }))}
+                    style={{ flex: 1, padding: '10px 14px', borderRadius: '8px', border: '1px solid #cbd5e1', fontSize: '13px' }}
+                  />
+                  <label style={{
+                    background: '#3b82f6',
+                    color: 'white',
+                    padding: '10px 14px',
+                    borderRadius: '8px',
+                    fontSize: '12px',
+                    fontWeight: 700,
+                    cursor: 'pointer',
+                    display: 'inline-flex',
+                    alignItems: 'center',
+                    gap: '6px',
+                    whiteSpace: 'nowrap'
+                  }}>
+                    <Upload size={14} /> Upload File
+                    <input
+                      type="file"
+                      accept="image/*"
+                      style={{ display: 'none' }}
+                      onChange={(e) => {
+                        const file = e.target.files?.[0];
+                        if (file) {
+                          handleFileUpload(file, (uploadedUrl) => {
+                            setBlogModal(prev => ({ ...prev, blogData: { ...prev.blogData, image: uploadedUrl } }));
+                          });
+                        }
+                      }}
+                    />
+                  </label>
+                </div>
+                {blogModal.blogData.image && (
+                  <div style={{ marginTop: '8px', display: 'flex', alignItems: 'center', gap: '10px' }}>
+                    <img src={blogModal.blogData.image} alt="Preview" style={{ width: '60px', height: '40px', objectFit: 'cover', borderRadius: '6px', border: '1px solid #cbd5e1' }} />
+                    <span style={{ fontSize: '11px', color: '#64748b' }}>Image Preview</span>
+                  </div>
+                )}
+              </div>
+
+              <div>
+                <label style={{ fontSize: '12px', fontWeight: 700, color: '#475569', display: 'block', marginBottom: '6px' }}>Short Summary / Excerpt</label>
+                <input
+                  type="text"
+                  required
+                  placeholder="Brief 1-2 sentence preview..."
+                  value={blogModal.blogData.excerpt || ''}
+                  onChange={(e) => setBlogModal(prev => ({ ...prev, blogData: { ...prev.blogData, excerpt: e.target.value } }))}
+                  style={{ width: '100%', padding: '10px 14px', borderRadius: '8px', border: '1px solid #cbd5e1', fontSize: '13px' }}
+                />
+              </div>
+
+              <div>
+                <label style={{ fontSize: '12px', fontWeight: 700, color: '#475569', display: 'block', marginBottom: '6px' }}>Full Article Content</label>
+                <textarea
+                  rows="6"
+                  required
+                  placeholder="Write full article body text..."
+                  value={blogModal.blogData.content || ''}
+                  onChange={(e) => setBlogModal(prev => ({ ...prev, blogData: { ...prev.blogData, content: e.target.value } }))}
+                  style={{ width: '100%', padding: '10px 14px', borderRadius: '8px', border: '1px solid #cbd5e1', fontSize: '13px', resize: 'vertical' }}
+                ></textarea>
+              </div>
+
+              <div style={{ display: 'flex', gap: '12px', justifyContent: 'flex-end', marginTop: '10px' }}>
+                <button
+                  type="button"
+                  onClick={() => setBlogModal({ isOpen: false, mode: 'add', blogData: {} })}
+                  style={{ padding: '10px 20px', borderRadius: '8px', border: '1px solid #cbd5e1', background: 'white', color: '#475569', fontWeight: 600, fontSize: '13px', cursor: 'pointer' }}
+                >
+                  Cancel
+                </button>
+                <button
+                  type="submit"
+                  style={{ padding: '10px 20px', borderRadius: '8px', border: 'none', background: '#d9531e', color: 'white', fontWeight: 600, fontSize: '13px', cursor: 'pointer' }}
+                >
+                  {blogModal.mode === 'add' ? 'Publish Article' : 'Save Article Changes'}
                 </button>
               </div>
             </form>

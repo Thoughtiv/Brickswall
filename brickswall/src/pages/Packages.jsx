@@ -1,15 +1,34 @@
 import React, { useState, useEffect } from 'react';
 import { Check, X, ShieldCheck, Calculator, ArrowRight, HelpCircle } from 'lucide-react';
-import { getPricing } from '../utils/api';
+import { getPricing, getPackageMatrix } from '../utils/api';
+
+const defaultMatrix = [
+  { id: '1', feature: 'Price per Built-up Sq.Ft', basic: '₹1,850 / sq.ft', premium: '₹2,150 / sq.ft', luxury: '₹2,750 / sq.ft' },
+  { id: '2', feature: 'Structural Warranty', basic: '5 Years', premium: '10 Years', luxury: '15 Years' },
+  { id: '3', feature: 'Cement Grade', basic: '53 Grade ACC / Ultratech', premium: 'Ultratech Super / Coromandel', luxury: 'Ultratech Premium High-Grade' },
+  { id: '4', feature: 'Steel Quality', basic: 'Simhadri / Vizag TMT Fe500', premium: 'Tata Tiscon / JSW Fe550', luxury: 'Tata Tiscon Super Ductile Fe550D' },
+  { id: '5', feature: 'Flooring Tiles Rate', basic: 'Up to ₹60 / sq.ft', premium: 'Up to ₹100 / sq.ft', luxury: 'Italian Marble / Granite (₹250+)' },
+  { id: '6', feature: 'Main Door', basic: 'Flush Door with Wood Frame', premium: 'Teak Wood Door & Frame', luxury: 'Teak Wood with Smart Digital Lock' },
+  { id: '7', feature: '3D Architectural Elevation', basic: 'Basic 2D Floor Plan', premium: '3D Elevation', luxury: 'Full VR 3D Walkthrough' },
+  { id: '8', feature: 'Site Supervision', basic: 'Periodic Engineer Visits', premium: 'Dedicated Site Manager', luxury: 'Senior Resident Civil Engineer' },
+  { id: '9', feature: 'Sanitary Fittings', basic: 'Cera / Parryware', premium: 'Kohler / Jaquar', luxury: 'Grohe / Hansgrohe Premium' },
+  { id: '10', feature: 'Customization Level', basic: 'Standard Options', premium: 'High Customization', luxury: 'Complete Bespoke Architecture' }
+];
 
 const Packages = ({ onOpenEstimate }) => {
   const [plotSize, setPlotSize] = useState(1500);
   const [pricingData, setPricingData] = useState(null);
+  const [matrixData, setMatrixData] = useState(defaultMatrix);
 
   useEffect(() => {
     let active = true;
     getPricing().then(data => {
       if (active) setPricingData(data);
+    });
+    getPackageMatrix().then(data => {
+      if (active && Array.isArray(data) && data.length > 0) {
+        setMatrixData(data);
+      }
     });
     return () => { active = false; };
   }, []);
@@ -194,66 +213,14 @@ const Packages = ({ onOpenEstimate }) => {
                 </tr>
               </thead>
               <tbody>
-                <tr>
-                  <td><strong>Price per Built-up Sq.Ft</strong></td>
-                  <td>{packages.find(p => p.id === 'basic')?.pricePerSqFt}</td>
-                  <td><strong className="text-orange">{packages.find(p => p.id === 'premium')?.pricePerSqFt}</strong></td>
-                  <td>{packages.find(p => p.id === 'luxury')?.pricePerSqFt}</td>
-                </tr>
-                <tr>
-                  <td><strong>Structural Warranty</strong></td>
-                  <td>5 Years</td>
-                  <td><strong className="text-orange">10 Years</strong></td>
-                  <td>15 Years</td>
-                </tr>
-                <tr>
-                  <td><strong>Cement Grade</strong></td>
-                  <td>53 Grade ACC / Ultratech</td>
-                  <td>Ultratech Super / Coromandel</td>
-                  <td>Ultratech Premium High-Grade</td>
-                </tr>
-                <tr>
-                  <td><strong>Steel Quality</strong></td>
-                  <td>Simhadri / Vizag TMT Fe500</td>
-                  <td>Tata Tiscon / JSW Fe550</td>
-                  <td>Tata Tiscon Super Ductile Fe550D</td>
-                </tr>
-                <tr>
-                  <td><strong>Flooring Tiles Rate</strong></td>
-                  <td>Up to ₹60 / sq.ft</td>
-                  <td>Up to ₹100 / sq.ft</td>
-                  <td>Italian Marble / Granite (₹250+)</td>
-                </tr>
-                <tr>
-                  <td><strong>Main Door</strong></td>
-                  <td>Flush Door with Wood Frame</td>
-                  <td>Teak Wood Door &amp; Frame</td>
-                  <td>Teak Wood with Smart Digital Lock</td>
-                </tr>
-                <tr>
-                  <td><strong>3D Architectural Elevation</strong></td>
-                  <td>Basic 2D Floor Plan</td>
-                  <td><Check className="text-orange mx-auto" /> 3D Elevation</td>
-                  <td><Check className="text-orange mx-auto" /> Full VR 3D Walkthrough</td>
-                </tr>
-                <tr>
-                  <td><strong>Site Supervision</strong></td>
-                  <td>Periodic Engineer Visits</td>
-                  <td>Dedicated Site Manager</td>
-                  <td>Senior Resident Civil Engineer</td>
-                </tr>
-                <tr>
-                  <td><strong>Sanitary Fittings</strong></td>
-                  <td>Cera / Parryware</td>
-                  <td>Kohler / Jaquar</td>
-                  <td>Grohe / Hansgrohe Premium</td>
-                </tr>
-                <tr>
-                  <td><strong>Customization Level</strong></td>
-                  <td>Standard Options</td>
-                  <td>High Customization</td>
-                  <td>Complete Bespoke Architecture</td>
-                </tr>
+                {matrixData.map((row, idx) => (
+                  <tr key={row.id || idx}>
+                    <td><strong>{row.feature}</strong></td>
+                    <td>{row.basic}</td>
+                    <td><strong className="text-orange">{row.premium}</strong></td>
+                    <td>{row.luxury}</td>
+                  </tr>
+                ))}
               </tbody>
             </table>
           </div>
