@@ -4,7 +4,6 @@ import { getProjects } from '../utils/api';
 
 const Projects = ({ onOpenEstimate, initialFilter = 'all', initialProject = null }) => {
   const [filter, setFilter] = useState(initialFilter);
-  const [beforeAfterToggle, setBeforeAfterToggle] = useState('after');
   const [selectedProjectModal, setSelectedProjectModal] = useState(initialProject);
   const [projects, setProjects] = useState([]);
 
@@ -116,23 +115,6 @@ const Projects = ({ onOpenEstimate, initialFilter = 'all', initialProject = null
     }
   ];
 
-  const beforeAfterList = [
-    {
-      title: 'Banjara Hills Residence Transformation',
-      location: 'Banjara Hills, Hyderabad',
-      beforeImg: 'https://images.unsplash.com/photo-1513694203232-719a280e022f?auto=format&fit=crop&w=800&q=80',
-      afterImg: 'https://images.unsplash.com/photo-1600585154340-be6161a56a0c?auto=format&fit=crop&w=800&q=80',
-      details: 'Transformed an outdated 1990s brick structure into a sleek minimalist modern villa.'
-    },
-    {
-      title: 'Kukatpally Commercial Facade Overhaul',
-      location: 'Kukatpally, Hyderabad',
-      beforeImg: 'https://images.unsplash.com/photo-1541888946425-d0fbb186a5b7?auto=format&fit=crop&w=800&q=80',
-      afterImg: 'https://images.unsplash.com/photo-1486406146926-c627a92ad1ab?auto=format&fit=crop&w=800&q=80',
-      details: 'Replaced decaying plaster facade with structural glass and aluminum cladding.'
-    }
-  ];
-
   const filteredProjects = filter === 'all'
     ? projects
     : projects.filter(p => p.category === filter);
@@ -191,57 +173,6 @@ const Projects = ({ onOpenEstimate, initialFilter = 'all', initialProject = null
                     <span><MapPin size={14} className="text-orange" /> {project.location}</span>
                     <span><Maximize2 size={14} className="text-orange" /> {project.size}</span>
                   </div>
-                </div>
-              </div>
-            ))}
-          </div>
-        </div>
-      </section>
-
-      {/* Before & After Section */}
-      <section className="section-padding bg-subtle">
-        <div className="container">
-          <div className="section-title-wrapper">
-            <span className="section-subtitle">Renovation Showcase</span>
-            <h2 className="section-heading">Before &amp; After Remodeling Transformations</h2>
-            <p className="section-desc">
-              See how we breathe new life into older structures across Hyderabad with structural upgrades and modern design.
-            </p>
-
-            <div className="before-after-toggle-btns mt-4">
-              <button
-                onClick={() => setBeforeAfterToggle('before')}
-                className={`btn btn-sm ${beforeAfterToggle === 'before' ? 'btn-secondary' : 'btn-outline'}`}
-              >
-                Show BEFORE State
-              </button>
-              <button
-                onClick={() => setBeforeAfterToggle('after')}
-                className={`btn btn-sm ${beforeAfterToggle === 'after' ? 'btn-primary' : 'btn-outline'}`}
-              >
-                Show AFTER Transformation
-              </button>
-            </div>
-          </div>
-
-          <div className="grid grid-2 gap-8">
-            {beforeAfterList.map((item, idx) => (
-              <div key={idx} className="before-after-card">
-                <div className="ba-img-box">
-                  <img
-                    src={beforeAfterToggle === 'after' ? item.afterImg : item.beforeImg}
-                    alt={item.title}
-                  />
-                  <span className={`ba-state-badge ${beforeAfterToggle === 'after' ? 'badge-orange' : 'badge-navy'}`}>
-                    {beforeAfterToggle === 'after' ? '✨ AFTER COMPLETED' : '🏚️ BEFORE RENOVATION'}
-                  </span>
-                </div>
-                <div className="p-4">
-                  <h3>{item.title}</h3>
-                  <p className="text-xs text-muted flex items-center gap-1 my-1">
-                    <MapPin size={12} className="text-orange" /> {item.location}
-                  </p>
-                  <p className="text-sm text-slate-600 mt-2">{item.details}</p>
                 </div>
               </div>
             ))}
