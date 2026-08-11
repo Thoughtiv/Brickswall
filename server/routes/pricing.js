@@ -49,4 +49,37 @@ router.put('/', adminAuth, async (req, res) => {
   }
 });
 
+// GET Package Comparison Matrix (Public)
+router.get('/matrix', async (req, res) => {
+  try {
+    const [rows] = await pool.query('SELECT value FROM settings WHERE key_name = "package_matrix"');
+    if (rows.length > 0 && rows[0].value) {
+      return res.json(JSON.parse(rows[0].value));
+    }
+    res.json([]);
+  } catch (err) {
+    console.error('Error fetching matrix:', err);
+    res.status(500).json({ error: 'Failed to retrieve package comparison matrix' });
+  }
+});
+
+// Update Package Comparison Matrix (Admin)
+router.put('/matrix', adminAuth, async (req, res) => {
+  const { matrix } = req.body;
+  if (!Array.isArray(matrix)) {
+    return res.status(400).json({ error: 'Invalid payload: matrix array is required' });
+  }
+  try {
+    const matrixJson = JSON.stringify(matrix);
+    await pool.query(
+      'INSERT INTO settings (key_name, value) VALUES ("package_matrix", ?) ON DUPLICATE KEY UPDATE value = ?',
+      [matrixJson, matrixJson]
+    );
+    res.json({ success: true, message: 'Package comparison matrix updated successfully', matrix });
+  } catch (err) {
+    console.error('Error updating matrix:', err);
+    res.status(500).json({ error: 'Failed to update package comparison matrix' });
+  }
+});
+
 export default router;

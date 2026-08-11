@@ -14,6 +14,8 @@ import projectsRouter from './routes/projects.js';
 import testimonialsRouter from './routes/testimonials.js';
 import settingsRouter from './routes/settings.js';
 import chatbotRouter from './routes/chatbot.js';
+import blogsRouter from './routes/blogs.js';
+import uploadRouter from './routes/upload.js';
 
 // Load .env from the same directory as server.js (works on any host)
 const __filename = fileURLToPath(import.meta.url);
@@ -24,15 +26,23 @@ const app = express();
 const PORT = process.env.PORT || 5000;
 
 // Global Middleware
-const allowedOrigins = process.env.FRONTEND_URL
+const defaultOrigins = [
+  'http://localhost:5173',
+  'http://127.0.0.1:5173',
+  'http://localhost:3000',
+  'http://127.0.0.1:3000',
+  'http://localhost:5000',
+  'http://127.0.0.1:5000',
+  'https://brickswall.in',
+  'https://www.brickswall.in',
+  'https://skyblue-finch-435742.hostingersite.com'
+];
+
+const envOrigins = process.env.FRONTEND_URL
   ? process.env.FRONTEND_URL.split(',').map(url => url.trim())
-  : [
-    'http://localhost:5173',
-    'http://127.0.0.1:5173',
-    'http://localhost:3000',
-    'https://brickswall.in',
-    'https://www.brickswall.in'
-  ];
+  : [];
+
+const allowedOrigins = Array.from(new Set([...defaultOrigins, ...envOrigins]));
 
 const corsOptions = {
   origin: (origin, callback) => {
@@ -54,8 +64,12 @@ const corsOptions = {
 
 app.use(cors(corsOptions));
 app.options('*', cors(corsOptions));
-app.use(express.json());
+app.use(express.json({ limit: '50mb' }));
+app.use(express.urlencoded({ limit: '50mb', extended: true }));
 app.use(morgan('dev'));
+
+// Serve uploaded files statically
+app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
 
 // Health / debug endpoint (safe – passwords are masked)
 app.get('/api/health', (req, res) => {
@@ -83,6 +97,8 @@ app.use('/api/projects', projectsRouter);
 app.use('/api/testimonials', testimonialsRouter);
 app.use('/api/settings', settingsRouter);
 app.use('/api/chat', chatbotRouter);
+app.use('/api/blogs', blogsRouter);
+app.use('/api/upload', uploadRouter);
 
 // Serve built React frontend (production)
 // FRONTEND_DIST_PATH can be overridden via env var if deployment folder structure differs

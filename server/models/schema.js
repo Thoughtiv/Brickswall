@@ -78,7 +78,24 @@ export async function initDatabase() {
     `);
     console.log('Settings table initialized.');
 
-    // 6. Seed pricing table if empty
+    // 6. Create blogs table
+    await pool.query(`
+      CREATE TABLE IF NOT EXISTS blogs (
+        id INT AUTO_INCREMENT PRIMARY KEY,
+        title VARCHAR(255) NOT NULL,
+        category VARCHAR(100) NOT NULL,
+        date VARCHAR(100) NOT NULL,
+        readTime VARCHAR(50) NOT NULL,
+        image TEXT NOT NULL,
+        excerpt TEXT NOT NULL,
+        content LONGTEXT NOT NULL,
+        author VARCHAR(100) DEFAULT 'Bricks Wall Editorial',
+        createdAt TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+      )
+    `);
+    console.log('Blogs table initialized.');
+
+    // 7. Seed pricing table if empty
     const [rowsPricing] = await pool.query('SELECT COUNT(*) as count FROM pricing');
     if (rowsPricing[0].count === 0) {
       console.log('Seeding default pricing details...');
@@ -92,7 +109,7 @@ export async function initDatabase() {
       }
     }
 
-    // 7. Seed projects table if empty
+    // 8. Seed projects table if empty
     const [rowsProjects] = await pool.query('SELECT COUNT(*) as count FROM projects');
     if (rowsProjects[0].count === 0) {
       console.log('Seeding default projects...');
@@ -111,7 +128,7 @@ export async function initDatabase() {
       }
     }
 
-    // 8. Seed testimonials table if empty
+    // 9. Seed testimonials table if empty
     const [rowsTestimonials] = await pool.query('SELECT COUNT(*) as count FROM testimonials');
     if (rowsTestimonials[0].count === 0) {
       console.log('Seeding default testimonials...');
@@ -125,21 +142,85 @@ export async function initDatabase() {
       }
     }
 
-    // 9. Seed settings table if empty
+    // 10. Seed blogs table if empty
+    const [rowsBlogs] = await pool.query('SELECT COUNT(*) as count FROM blogs');
+    if (rowsBlogs[0].count === 0) {
+      console.log('Seeding default blogs...');
+      const defaultBlogs = [
+        [
+          'Essential Tips for Residential Construction in Hyderabad (2026 Guide)',
+          'Residential Construction',
+          'August 5, 2026',
+          '6 min read',
+          'https://images.unsplash.com/photo-1541888946425-d0fbb186a5b7?auto=format&fit=crop&w=800&q=80',
+          'Planning to build your dream home in Hyderabad? Learn about soil testing, GHMC approvals, Grade 53 cement choices, and turnkey contractor selection.',
+          'Building a independent house or villa in Hyderabad requires meticulous planning across architectural layout, Municipal (GHMC/HMDA) sanction permits, structural safety, and high-quality material sourcing.\n\n### 1. Soil Testing & Foundation Design\nBefore digging column footings, perform a professional soil bearing capacity (SBC) test. Hyderabad soil conditions vary from hard granite rock in Jubilee Hills to black cotton clay soil in Kondapur. Foundation design must be customized accordingly to avoid structural cracks.\n\n### 2. Choosing Cement & Steel Grades\nUse Grade 53 OPC cement for structural slabs and columns, and PPC cement for masonry plastering. For steel reinforcement, specify primary TMT bars like Tata Tiscon or Vizag Steel Fe550 grade for superior tensile strength.\n\n### 3. Turnkey Package Advantage\nPartnering with a turnkey construction firm like Bricks Wall locks in a fixed rate per sq.ft, protecting you against rising steel and sand costs while providing a single point of accountability.',
+          'Bricks Wall Engineering Team'
+        ],
+        [
+          'Understanding Turnkey Construction vs Labor Contracts',
+          'Cost & Planning',
+          'July 28, 2026',
+          '5 min read',
+          'https://images.unsplash.com/photo-1503387762-592deb58ef4e?auto=format&fit=crop&w=800&q=80',
+          'Compare turnkey house construction with item-rate labor contracts. Discover why fixed rate per sq.ft protects against material price inflation.',
+          'When embarking on home construction, property owners usually evaluate two execution models: Item-rate Labor Contracts vs Turnkey Full Construction Packages.\n\n### Labor Contracts: The Hidden Pitfalls\nWith labor-only contracts, the homeowner bears full responsibility for purchasing cement, steel, bricks, electrical conduits, tiles, and plumbing fittings daily. Any delay in material delivery stops site work, while unexpected price surges in raw materials directly hit your wallet.\n\n### Turnkey Solution: Guaranteed Peace of Mind\nIn turnkey construction, the contractor manages end-to-end design, material procurement, site supervision, and regulatory compliance at a pre-agreed fixed price per built-up square foot.',
+          'Garvit Reddy, Lead Estimator'
+        ],
+        [
+          'Why Structural Warranty Matters: 10 vs 15 Year Protections',
+          'Quality Assurance',
+          'July 14, 2026',
+          '4 min read',
+          'https://images.unsplash.com/photo-1581094794329-c8112a89af12?auto=format&fit=crop&w=800&q=80',
+          'Discover what structural warranties cover in modern RCC framed buildings, from foundation settling to slab waterproofing.',
+          'A reliable structural warranty is the true benchmark of building quality. Structural components including RCC columns, footings, plinth beams, roof slabs, and load-bearing walls form the backbone of your home.\n\n### What Does a 10 to 15-Year Warranty Cover?\n- Protection against concrete slab honeycombing or spalling\n- Resistance against foundation settlement and shear cracks\n- Multi-layer slab waterproofing against moisture ingress\n\nBricks Wall provides up to 15 Years Written Structural Warranty across all our Premium and Luxury packages.',
+          'Bricks Wall QA Division'
+        ]
+      ];
+      for (const b of defaultBlogs) {
+        await pool.query(
+          'INSERT INTO blogs (title, category, date, readTime, image, excerpt, content, author) VALUES (?, ?, ?, ?, ?, ?, ?, ?)',
+          b
+        );
+      }
+    }
+
+    // 11. Seed settings table if empty
     const [rowsSettings] = await pool.query('SELECT COUNT(*) as count FROM settings');
+    const defaultSettings = [
+      ['phone_primary', '+91 9949249091'],
+      ['phone_secondary', '+91 9160202008'],
+      ['whatsapp', '+91 9160202008'],
+      ['email', 'Hello@brickswall.in'],
+      ['address', 'Hyderabad & Surrounding Areas, Telangana'],
+      ['office_hours', 'Mon - Sat: 9:00 AM - 6:30 PM']
+    ];
+
     if (rowsSettings[0].count === 0) {
       console.log('Seeding default settings...');
-      const defaultSettings = [
-        ['phone_primary', '+91 9949249091'],
-        ['phone_secondary', '+91 9160202008'],
-        ['whatsapp', '+91 9160202008'],
-        ['email', 'Hello@brickswall.in'],
-        ['address', 'Hyderabad & Surrounding Areas, Telangana'],
-        ['office_hours', 'Mon - Sat: 9:00 AM - 6:30 PM']
-      ];
       for (const s of defaultSettings) {
         await pool.query('INSERT INTO settings (key_name, value) VALUES (?, ?)', s);
       }
+    }
+
+    // 12. Seed default package matrix in settings if not present
+    const [matrixCheck] = await pool.query('SELECT * FROM settings WHERE key_name = "package_matrix"');
+    if (matrixCheck.length === 0) {
+      console.log('Seeding default package comparison matrix...');
+      const defaultMatrix = [
+        { id: '1', feature: 'Price per Built-up Sq.Ft', basic: '₹1,850 / sq.ft', premium: '₹2,150 / sq.ft', luxury: '₹2,750 / sq.ft' },
+        { id: '2', feature: 'Structural Warranty', basic: '5 Years', premium: '10 Years', luxury: '15 Years' },
+        { id: '3', feature: 'Cement Grade', basic: '53 Grade ACC / Ultratech', premium: 'Ultratech Super / Coromandel', luxury: 'Ultratech Premium High-Grade' },
+        { id: '4', feature: 'Steel Quality', basic: 'Simhadri / Vizag TMT Fe500', premium: 'Tata Tiscon / JSW Fe550', luxury: 'Tata Tiscon Super Ductile Fe550D' },
+        { id: '5', feature: 'Flooring Tiles Rate', basic: 'Up to ₹60 / sq.ft', premium: 'Up to ₹100 / sq.ft', luxury: 'Italian Marble / Granite (₹250+)' },
+        { id: '6', feature: 'Main Door', basic: 'Flush Door with Wood Frame', premium: 'Teak Wood Door & Frame', luxury: 'Teak Wood with Smart Digital Lock' },
+        { id: '7', feature: '3D Architectural Elevation', basic: 'Basic 2D Floor Plan', premium: '3D Elevation', luxury: 'Full VR 3D Walkthrough' },
+        { id: '8', feature: 'Site Supervision', basic: 'Periodic Engineer Visits', premium: 'Dedicated Site Manager', luxury: 'Senior Resident Civil Engineer' },
+        { id: '9', feature: 'Sanitary Fittings', basic: 'Cera / Parryware', premium: 'Kohler / Jaquar', luxury: 'Grohe / Hansgrohe Premium' },
+        { id: '10', feature: 'Customization Level', basic: 'Standard Options', premium: 'High Customization', luxury: 'Complete Bespoke Architecture' }
+      ];
+      await pool.query('INSERT INTO settings (key_name, value) VALUES ("package_matrix", ?)', [JSON.stringify(defaultMatrix)]);
     }
 
     console.log('Database initialization completed.');

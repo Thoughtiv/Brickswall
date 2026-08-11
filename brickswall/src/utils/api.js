@@ -309,6 +309,127 @@ export async function updateSettings(settings, adminPassword) {
 }
 
 /**
+ * Fetch package comparison matrix (Public)
+ */
+export async function getPackageMatrix() {
+  try {
+    const res = await fetch(`${API_BASE_URL}/pricing/matrix`);
+    if (!res.ok) throw new Error('Failed to fetch package matrix');
+    return await res.json();
+  } catch (err) {
+    console.error('Error in getPackageMatrix:', err.message);
+    return [];
+  }
+}
+
+/**
+ * Update package comparison matrix (Admin)
+ */
+export async function updatePackageMatrix(matrix, adminPassword) {
+  const res = await fetch(`${API_BASE_URL}/pricing/matrix`, {
+    method: 'PUT',
+    headers: {
+      'Content-Type': 'application/json',
+      'x-admin-password': adminPassword
+    },
+    body: JSON.stringify({ matrix })
+  });
+  if (!res.ok) {
+    const errData = await res.json().catch(() => ({}));
+    throw new Error(errData.error || 'Failed to update package matrix');
+  }
+  return await res.json();
+}
+
+/**
+ * Fetch all blogs (Public)
+ */
+export async function getBlogs() {
+  try {
+    const res = await fetch(`${API_BASE_URL}/blogs`);
+    if (!res.ok) throw new Error('Failed to fetch blogs');
+    return await res.json();
+  } catch (err) {
+    console.error('Error in getBlogs:', err.message);
+    return [];
+  }
+}
+
+/**
+ * Add a blog post (Admin)
+ */
+export async function addBlog(blogData, adminPassword) {
+  const res = await fetch(`${API_BASE_URL}/blogs`, {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+      'x-admin-password': adminPassword
+    },
+    body: JSON.stringify(blogData)
+  });
+  if (!res.ok) {
+    const errData = await res.json().catch(() => ({}));
+    throw new Error(errData.error || 'Failed to add blog post');
+  }
+  return await res.json();
+}
+
+/**
+ * Update a blog post (Admin)
+ */
+export async function updateBlog(id, blogData, adminPassword) {
+  const res = await fetch(`${API_BASE_URL}/blogs/${id}`, {
+    method: 'PUT',
+    headers: {
+      'Content-Type': 'application/json',
+      'x-admin-password': adminPassword
+    },
+    body: JSON.stringify(blogData)
+  });
+  if (!res.ok) {
+    const errData = await res.json().catch(() => ({}));
+    throw new Error(errData.error || 'Failed to update blog post');
+  }
+  return await res.json();
+}
+
+/**
+ * Delete a blog post (Admin)
+ */
+export async function deleteBlog(id, adminPassword) {
+  const res = await fetch(`${API_BASE_URL}/blogs/${id}`, {
+    method: 'DELETE',
+    headers: {
+      'x-admin-password': adminPassword
+    }
+  });
+  if (!res.ok) {
+    const errData = await res.json().catch(() => ({}));
+    throw new Error(errData.error || 'Failed to delete blog post');
+  }
+  return await res.json().catch(() => ({ success: true }));
+}
+
+/**
+ * Upload an image file (Admin)
+ */
+export async function uploadImage(imageBase64, name = 'image') {
+  const res = await fetch(`${API_BASE_URL}/upload`, {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json'
+    },
+    body: JSON.stringify({ imageBase64, name })
+  });
+  if (!res.ok) {
+    const errData = await res.json().catch(() => ({}));
+    throw new Error(errData.error || 'Failed to upload image');
+  }
+  const data = await res.json();
+  return data.url;
+}
+
+/**
  * Send chat message history to chatbot API
  */
 export async function sendChatMessage(messages) {
