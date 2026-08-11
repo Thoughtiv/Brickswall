@@ -19,7 +19,7 @@ const Chatbot = () => {
   const suggestionChips = [
     'What are your pricing packages?',
     'What locations do you cover?',
-    'Tell me about the 10-year warranty',
+    'Tell me about warranty options',
     'Do you build commercial spaces?',
     'How can I contact you?'
   ];

@@ -86,7 +86,7 @@ const Contact = ({ onOpenEstimate, settings }) => {
                       <CheckCircle2 size={16} className="text-orange flex-shrink-0" /> Expert Engineering Guidance &amp; Vastu Layouts
                     </li>
                     <li className="flex items-center gap-3 text-xs font-semibold text-slate-700">
-                      <CheckCircle2 size={16} className="text-orange flex-shrink-0" /> 10-Year Warranty &amp; Professional Support
+                      <CheckCircle2 size={16} className="text-orange flex-shrink-0" /> We Provide Warranty &amp; Professional Support
                     </li>
                   </ul>
                 </div>

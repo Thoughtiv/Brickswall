@@ -424,16 +424,16 @@ const Home = ({ setCurrentPage, navigateToService, navigateToProject, onOpenEsti
               <div className="ref-stat-right-col">
                 <div className="ref-badge-line">
                   <ShieldCheck size={22} className="text-orange shrink-0" />
-                  <div>
-                    <strong className="block text-sm">10-Year</strong>
-                    <span className="block text-xs text-slate-500">Structure Warranty</span>
+                  <div className="flex flex-col text-left">
+                    <strong className="block text-sm font-bold text-slate-800 leading-snug">We Provide</strong>
+                    <span className="block text-xs text-slate-500 font-medium leading-snug">Warranty</span>
                   </div>
                 </div>
                 <div className="ref-badge-line">
                   <Award size={22} className="text-orange shrink-0" />
-                  <div>
-                    <strong className="block text-sm">Premium</strong>
-                    <span className="block text-xs text-slate-500">Quality Materials</span>
+                  <div className="flex flex-col text-left">
+                    <strong className="block text-sm font-bold text-slate-800 leading-snug">Premium Quality</strong>
+                    <span className="block text-xs text-slate-500 font-medium leading-snug">Materials</span>
                   </div>
                 </div>
               </div>
@@ -449,51 +449,51 @@ const Home = ({ setCurrentPage, navigateToService, navigateToProject, onOpenEsti
           <div className="ref-ribbon-grid">
             <div className="ref-ribbon-item">
               <div className="ref-ribbon-icon-wrapper">
-                <HomeIcon size={24} className="ref-ribbon-icon" />
+                <HomeIcon size={22} className="ref-ribbon-icon" />
               </div>
-              <div className="text-left">
-                <strong className="block text-sm text-slate-800">Residential</strong>
-                <span className="text-xs text-slate-500">Homes</span>
-              </div>
-            </div>
-
-            <div className="ref-ribbon-item">
-              <div className="ref-ribbon-icon-wrapper">
-                <Building2 size={24} className="ref-ribbon-icon" />
-              </div>
-              <div className="text-left">
-                <strong className="block text-sm text-slate-800">Luxury</strong>
-                <span className="text-xs text-slate-500">Villas</span>
+              <div className="ref-ribbon-text flex flex-col text-left">
+                <strong className="font-bold text-sm text-slate-800 leading-tight">Residential Homes</strong>
+                <span className="text-xs text-slate-500 font-medium">Construction</span>
               </div>
             </div>
 
             <div className="ref-ribbon-item">
               <div className="ref-ribbon-icon-wrapper">
-                <Blocks size={24} className="ref-ribbon-icon" />
+                <Building2 size={22} className="ref-ribbon-icon" />
               </div>
-              <div className="text-left">
-                <strong className="block text-sm text-slate-800">Commercial</strong>
-                <span className="text-xs text-slate-500">Buildings</span>
-              </div>
-            </div>
-
-            <div className="ref-ribbon-item">
-              <div className="ref-ribbon-icon-wrapper">
-                <Award size={24} className="ref-ribbon-icon" />
-              </div>
-              <div className="text-left">
-                <strong className="block text-sm text-slate-800">Schools &amp;</strong>
-                <span className="text-xs text-slate-500">Institutions</span>
+              <div className="ref-ribbon-text flex flex-col text-left">
+                <strong className="font-bold text-sm text-slate-800 leading-tight">Luxury Villas</strong>
+                <span className="text-xs text-slate-500 font-medium">Ultra High-End</span>
               </div>
             </div>
 
             <div className="ref-ribbon-item">
               <div className="ref-ribbon-icon-wrapper">
-                <HardHat size={24} className="ref-ribbon-icon" />
+                <Blocks size={22} className="ref-ribbon-icon" />
               </div>
-              <div className="text-left">
-                <strong className="block text-sm text-slate-800">Renovation &amp;</strong>
-                <span className="text-xs text-slate-500">Remodeling</span>
+              <div className="ref-ribbon-text flex flex-col text-left">
+                <strong className="font-bold text-sm text-slate-800 leading-tight">Commercial Buildings</strong>
+                <span className="text-xs text-slate-500 font-medium">Plazas &amp; Offices</span>
+              </div>
+            </div>
+
+            <div className="ref-ribbon-item">
+              <div className="ref-ribbon-icon-wrapper">
+                <Award size={22} className="ref-ribbon-icon" />
+              </div>
+              <div className="ref-ribbon-text flex flex-col text-left">
+                <strong className="font-bold text-sm text-slate-800 leading-tight">Schools &amp; Institutions</strong>
+                <span className="text-xs text-slate-500 font-medium">Campus Infra</span>
+              </div>
+            </div>
+
+            <div className="ref-ribbon-item">
+              <div className="ref-ribbon-icon-wrapper">
+                <HardHat size={22} className="ref-ribbon-icon" />
+              </div>
+              <div className="ref-ribbon-text flex flex-col text-left">
+                <strong className="font-bold text-sm text-slate-800 leading-tight">Renovation &amp; Remodeling</strong>
+                <span className="text-xs text-slate-500 font-medium">Upgrades</span>
               </div>
             </div>
           </div>
@@ -653,7 +653,7 @@ const Home = ({ setCurrentPage, navigateToService, navigateToProject, onOpenEsti
                     <Boxes size={22} />
                   </div>
                   <div className="feat-text-box">
-                    <div className="feat-title">Premium</div>
+                    <div className="feat-title">Premium Quality</div>
                     <div className="feat-sub">Materials</div>
                   </div>
                 </div>
@@ -663,8 +663,8 @@ const Home = ({ setCurrentPage, navigateToService, navigateToProject, onOpenEsti
                     <ShieldCheck size={22} />
                   </div>
                   <div className="feat-text-box">
-                    <div className="feat-title">10-Year</div>
-                    <div className="feat-sub">Structure Warranty</div>
+                    <div className="feat-title">We Provide</div>
+                    <div className="feat-sub">Warranty</div>
                   </div>
                 </div>
               </div>

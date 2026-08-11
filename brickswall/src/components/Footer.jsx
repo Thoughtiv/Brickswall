@@ -75,7 +75,7 @@ const Footer = ({ setCurrentPage, onOpenEstimate, settings }) => {
               {/* Trust Badges */}
               <div className="bw-footer-badges">
                 <span className="bw-badge-warranty">
-                  <ShieldCheck size={14} /> 10 Year Warranty
+                  <ShieldCheck size={14} /> We Provide Warranty
                 </span>
                 <span className="bw-badge-transparency">
                   <CheckCircle2 size={14} /> 100% Transparency
