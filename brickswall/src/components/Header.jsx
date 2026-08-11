@@ -99,10 +99,11 @@ const Header = ({ currentPage, setCurrentPage, onOpenEstimate, settings }) => {
           <div className="nav-actions">
             <button
               onClick={onOpenEstimate}
-              className="btn btn-primary nav-cta-btn flex items-center gap-2"
+              className="btn btn-primary nav-cta-btn"
             >
               <User size={16} />
-              <span>Request Free Estimate</span>
+              <span className="cta-full-text">Request Free Estimate</span>
+              <span className="cta-short-text">Estimate</span>
             </button>
 
             {/* Mobile Hamburger Toggle */}
