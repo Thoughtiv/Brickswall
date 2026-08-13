@@ -256,8 +256,8 @@ const Contact = ({ onOpenEstimate, settings }) => {
 
           <div className="map-frame-box">
             <iframe
-              title="Bricks Wall Hyderabad Service Map"
-              src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d243647.3160417937!2d78.24323136287955!3d17.412299801128383!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x3bcb99daeaebd2c7%3A0xae93b783997c0f27!2sHyderabad%2C%20Telangana!5e0!3m2!1sen!2sin!4v1700000000000!5m2!1sen!2sin"
+              title="Bricks Wall Hyderabad Office Location"
+              src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3807.560699319417!2d78.56620537331766!3d17.384859302881665!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x3bcb9f2bad03f969%3A0x1bc09a5585c3235b!2sRoad%20No.12%2C%20Lakshmi%20Narasimha%20Colony%2C%20Mallikarjun%20Hills%2C%20Nagole%2C%20Hyderabad%2C%20Telangana%20500068!5e0!3m2!1sen!2sin!4v1786441391420!5m2!1sen!2sin"
               width="100%"
               height="380"
               style={{ border: 0, borderRadius: 'var(--radius-lg)' }}

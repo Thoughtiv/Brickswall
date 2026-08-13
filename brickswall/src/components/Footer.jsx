@@ -84,12 +84,12 @@ const Footer = ({ setCurrentPage, onOpenEstimate, settings }) => {
 
               {/* Social Media Icons with Inline SVGs */}
               <div className="bw-footer-socials">
-                <a href="#facebook" aria-label="Facebook" className="bw-social-btn">
+                <a href="https://www.facebook.com/brickswallin" target="_blank" rel="noreferrer" aria-label="Facebook" className="bw-social-btn">
                   <svg width="15" height="15" fill="currentColor" viewBox="0 0 24 24">
                     <path d="M22 12c0-5.52-4.48-10-10-10S2 6.48 2 12c0 4.84 3.44 8.87 8 9.8V15H7.5v-3H10V9.5C10 7.01 11.49 5.65 13.75 5.65c1.08 0 2.21.19 2.21.19v2.43h-1.25c-1.23 0-1.61.77-1.61 1.56V12h2.74l-.44 3h-2.3v6.8c4.56-.93 8-4.96 8-9.8z" />
                   </svg>
                 </a>
-                <a href="#instagram" aria-label="Instagram" className="bw-social-btn">
+                <a href="https://www.instagram.com/brickswallin" target="_blank" rel="noreferrer" aria-label="Instagram" className="bw-social-btn">
                   <svg width="15" height="15" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" viewBox="0 0 24 24">
                     <rect x="2" y="2" width="20" height="20" rx="5" ry="5" />
                     <path d="M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z" />
