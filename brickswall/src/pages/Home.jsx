@@ -576,8 +576,8 @@ const Home = ({ setCurrentPage, navigateToService, navigateToProject, onOpenEsti
             <div className="about-image-column">
               <div className="about-img-frame">
                 <img
-                  src="https://images.unsplash.com/photo-1581094794329-c8112a89af12?auto=format&fit=crop&w=1000&q=80"
-                  alt="Architect drafting blueprint for Bricks Wall Hyderabad"
+                  src="/hero.png"
+                  alt="Bricks Wall Construction Hyderabad"
                   className="about-main-img"
                 />
 
