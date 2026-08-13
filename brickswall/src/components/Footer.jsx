@@ -17,7 +17,7 @@ const Footer = ({ setCurrentPage, onOpenEstimate, settings }) => {
   const phoneSecondary = settings?.phone_secondary || '+91 9160202008';
   const whatsapp = settings?.whatsapp || '+91 9160202008';
   const email = settings?.email || 'Hello@brickswall.in';
-  const address = settings?.address || 'Hyderabad & Surrounding Areas, Telangana';
+  const address = settings?.address || 'Lakshmi Narsimha Colony, Road No.12, Dattatreya Nivas, No.591, Nagole, Hyderabad, Telangana, Bharath (India)';
   const scrollToTop = () => {
     window.scrollTo({ top: 0, behavior: 'smooth' });
   };
@@ -191,10 +191,10 @@ const Footer = ({ setCurrentPage, onOpenEstimate, settings }) => {
               <div className="bw-title-underline"></div>
               <div className="bw-contact-block">
                 <div className="bw-contact-item">
-                  <MapPin size={18} className="bw-contact-icon" />
+                  <MapPin size={18} className="bw-contact-icon shrink-0 mt-1" />
                   <div>
-                    <strong className="bw-contact-label">Service Area:</strong>
-                    <p className="bw-contact-val">{address}</p>
+                    <strong className="bw-contact-label">Office Address (VISIT US):</strong>
+                    <p className="bw-contact-val">Head Office: {address}</p>
                   </div>
                 </div>
 

@@ -193,7 +193,7 @@ export async function initDatabase() {
       ['phone_secondary', '+91 9160202008'],
       ['whatsapp', '+91 9160202008'],
       ['email', 'Hello@brickswall.in'],
-      ['address', 'Hyderabad & Surrounding Areas, Telangana'],
+      ['address', 'Lakshmi Narsimha Colony, Road No.12, Dattatreya Nivas, No.591, Nagole, Hyderabad, Telangana, Bharath (India)'],
       ['office_hours', 'Mon - Sat: 9:00 AM - 6:30 PM']
     ];
 

@@ -853,7 +853,7 @@ const Home = ({ setCurrentPage, navigateToService, navigateToProject, onOpenEsti
           </div>
 
           {/* Main Title */}
-          <h2 className="ref-fc-title">
+          <h2 className="ref-fc-title text-center">
             All Services, <span className="text-orange">One Commitment.</span>
           </h2>
 

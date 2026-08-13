@@ -4393,6 +4393,7 @@
   line-height: 1.2;
   letter-spacing: -0.5px;
   margin-bottom: 0.5rem;
+  text-align: center;
 }
 
 @media (min-width: 768px) {

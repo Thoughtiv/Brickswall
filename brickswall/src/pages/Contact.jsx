@@ -7,7 +7,7 @@ const Contact = ({ onOpenEstimate, settings }) => {
   const phoneSecondary = settings?.phone_secondary || '+91 9160202008';
   const whatsapp = settings?.whatsapp || '+91 9160202008';
   const email = settings?.email || 'Hello@brickswall.in';
-  const address = settings?.address || 'Hyderabad & Surrounding Areas, Telangana';
+  const address = settings?.address || 'Lakshmi Narsimha Colony, Road No.12, Dattatreya Nivas, No.591, Nagole, Hyderabad, Telangana, Bharath (India)';
   const [formData, setFormData] = useState({
     name: '',
     phone: '',
