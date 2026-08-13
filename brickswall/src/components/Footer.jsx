@@ -240,25 +240,56 @@ const Footer = ({ setCurrentPage, onOpenEstimate, settings }) => {
           <div className="bw-footer-regions-section">
             <div className="bw-regions-title">
               <MapPin size={15} className="bw-icon-orange" />
-              <span>POPULAR CONSTRUCTION REGIONS IN HYDERABAD</span>
+              <span>POPULAR CONSTRUCTION LOCATIONS IN HYDERABAD</span>
             </div>
             <div className="bw-regions-list">
-              <span>Gachibowli Homes</span>
+              <span>HITEC City</span>
               <span className="bw-pipe">|</span>
-              <span>Jubilee Hills Villas</span>
+              <span>Jubilee Hills</span>
               <span className="bw-pipe">|</span>
-              <span>Banjara Hills Projects</span>
+              <span>Banjara Hills</span>
               <span className="bw-pipe">|</span>
-              <span>Kukatpally Residential</span>
+              <span>Gachibowli</span>
               <span className="bw-pipe">|</span>
-              <span>Kondapur Construction</span>
+              <span>Kondapur</span>
+              <span className="bw-pipe">|</span>
+              <span>Kokapet</span>
+              <span className="bw-pipe">|</span>
+              <span>Tellapur</span>
+              <span className="bw-pipe">|</span>
+              <span>Madhapur</span>
             </div>
             <div className="bw-regions-list bw-mt-1">
-              <span>Tellapur Villa Projects</span>
+              <span>Financial District</span>
               <span className="bw-pipe">|</span>
-              <span>Manikonda Commercial</span>
+              <span>Nanakramguda</span>
               <span className="bw-pipe">|</span>
-              <span>Miyapur House Construction</span>
+              <span>Manikonda</span>
+              <span className="bw-pipe">|</span>
+              <span>Narsingi</span>
+              <span className="bw-pipe">|</span>
+              <span>Kukatpally</span>
+              <span className="bw-pipe">|</span>
+              <span>Bachupally</span>
+              <span className="bw-pipe">|</span>
+              <span>Miyapur</span>
+              <span className="bw-pipe">|</span>
+              <span>Nagole</span>
+            </div>
+            <div className="bw-regions-list bw-mt-1">
+              <span>Dilsukhnagar</span>
+              <span className="bw-pipe">|</span>
+              <span>Uppal</span>
+              <span className="bw-pipe">|</span>
+              <span>LB Nagar</span>
+              <span className="bw-pipe">|</span>
+              <span>Begumpet</span>
+              <span className="bw-pipe">|</span>
+              <span>Somajiguda</span>
+              <span className="bw-pipe">|</span>
+              <span>Himayatnagar</span>
+              <span className="bw-pipe">|</span>
+              <span>Secunderabad</span>
             </div>
           </div>
 
