@@ -12,6 +12,7 @@ import AboutUs from './pages/AboutUs';
 import Blog from './pages/Blog';
 import Contact from './pages/Contact';
 import AdminDashboard from './pages/AdminDashboard';
+import QuotationEditor from './pages/QuotationEditor';
 import { getSettings } from './utils/api';
 
 import './App.css';
@@ -20,6 +21,7 @@ function App() {
   const getInitialPage = () => {
     const path = window.location.pathname;
     if (path === '/dm-admin') return 'admin';
+    if (path === '/editor') return 'editor';
     if (path === '/packages') return 'packages';
     if (path === '/services') return 'services';
     if (path === '/projects') return 'projects';
@@ -119,8 +121,13 @@ function App() {
     }
   };
 
+  // Standalone internal tools render without the marketing chrome
   if (currentPage === 'admin') {
     return <AdminDashboard />;
+  }
+
+  if (currentPage === 'editor') {
+    return <QuotationEditor />;
   }
 
   return (

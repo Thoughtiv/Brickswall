@@ -16,6 +16,8 @@ import settingsRouter from './routes/settings.js';
 import chatbotRouter from './routes/chatbot.js';
 import blogsRouter from './routes/blogs.js';
 import uploadRouter from './routes/upload.js';
+import editorAuthRouter from './routes/editorAuth.js';
+import editorUsersRouter from './routes/editorUsers.js';
 
 // Load .env from the same directory as server.js (works on any host)
 const __filename = fileURLToPath(import.meta.url);
@@ -57,7 +59,7 @@ const corsOptions = {
     }
   },
   methods: ['GET', 'POST', 'PUT', 'PATCH', 'DELETE', 'OPTIONS'],
-  allowedHeaders: ['Content-Type', 'Authorization', 'x-admin-password'],
+  allowedHeaders: ['Content-Type', 'Authorization', 'x-admin-password', 'x-editor-token'],
   credentials: true,
   optionsSuccessStatus: 200
 };
@@ -99,6 +101,8 @@ app.use('/api/settings', settingsRouter);
 app.use('/api/chat', chatbotRouter);
 app.use('/api/blogs', blogsRouter);
 app.use('/api/upload', uploadRouter);
+app.use('/api/editor-auth', editorAuthRouter);
+app.use('/api/editor-users', editorUsersRouter);
 
 // Serve built React frontend (production)
 // FRONTEND_DIST_PATH can be overridden via env var if deployment folder structure differs

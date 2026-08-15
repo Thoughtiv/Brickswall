@@ -24,7 +24,10 @@ import {
   Upload,
   Plus,
   BookOpen,
-  Image
+  Image,
+  KeyRound,
+  UserPlus,
+  Power
 } from 'lucide-react';
 import {
   getInquiries,
@@ -48,7 +51,11 @@ import {
   deleteBlog,
   getPackageMatrix,
   updatePackageMatrix,
-  uploadImage
+  uploadImage,
+  getEditorUsers,
+  addEditorUser,
+  updateEditorUser,
+  deleteEditorUser
 } from '../utils/api';
 
 const AdminDashboard = () => {
@@ -64,6 +71,9 @@ const AdminDashboard = () => {
   const [testimonials, setTestimonials] = useState([]);
   const [blogs, setBlogs] = useState([]);
   const [packageMatrix, setPackageMatrix] = useState([]);
+  const [editorUsers, setEditorUsers] = useState([]);
+  const [newEditorUser, setNewEditorUser] = useState({ username: '', fullName: '', password: '' });
+  const [editorUserStatus, setEditorUserStatus] = useState({ type: '', message: '' });
   const [settings, setSettings] = useState({
     phone_primary: '',
     phone_secondary: '',
@@ -204,11 +214,80 @@ const AdminDashboard = () => {
 
       const settingsData = await getSettings();
       setSettings(settingsData);
+
+      await loadEditorUsers(pwdToTest);
     } catch (err) {
       setLoginError(err.message || 'Invalid admin credentials');
       localStorage.removeItem('bw_admin_pwd');
     } finally {
       setIsLoading(false);
+    }
+  };
+
+  // Kept separate so a failure here never blocks login on an older database
+  const loadEditorUsers = async (pwdToUse = password) => {
+    try {
+      const data = await getEditorUsers(pwdToUse);
+      setEditorUsers(Array.isArray(data) ? data : []);
+    } catch (err) {
+      console.warn('Could not load editor users:', err.message);
+      setEditorUsers([]);
+    }
+  };
+
+  const handleAddEditorUser = async (e) => {
+    e.preventDefault();
+    setEditorUserStatus({ type: '', message: '' });
+    try {
+      await addEditorUser(newEditorUser, password);
+      setNewEditorUser({ username: '', fullName: '', password: '' });
+      setEditorUserStatus({ type: 'success', message: 'Editor user created successfully.' });
+      await loadEditorUsers();
+    } catch (err) {
+      setEditorUserStatus({ type: 'error', message: err.message });
+    }
+  };
+
+  const handleToggleEditorUser = async (user) => {
+    try {
+      await updateEditorUser(user.id, { isActive: !user.is_active }, password);
+      setEditorUserStatus({
+        type: 'success',
+        message: `${user.username} ${user.is_active ? 'deactivated' : 'reactivated'}.`
+      });
+      await loadEditorUsers();
+    } catch (err) {
+      setEditorUserStatus({ type: 'error', message: err.message });
+    }
+  };
+
+  const handleResetEditorPassword = async (user) => {
+    const newPassword = window.prompt(`Enter a new password for "${user.username}" (minimum 6 characters):`);
+    if (newPassword === null) return;
+    if (newPassword.length < 6) {
+      setEditorUserStatus({ type: 'error', message: 'Password must be at least 6 characters.' });
+      return;
+    }
+    try {
+      await updateEditorUser(user.id, { password: newPassword }, password);
+      setEditorUserStatus({
+        type: 'success',
+        message: `Password reset for ${user.username}. Their existing sessions were signed out.`
+      });
+      await loadEditorUsers();
+    } catch (err) {
+      setEditorUserStatus({ type: 'error', message: err.message });
+    }
+  };
+
+  const handleDeleteEditorUser = async (user) => {
+    if (!window.confirm(`Delete editor user "${user.username}"? They will lose access immediately.`)) return;
+    try {
+      await deleteEditorUser(user.id, password);
+      setEditorUserStatus({ type: 'success', message: `${user.username} deleted.` });
+      await loadEditorUsers();
+    } catch (err) {
+      setEditorUserStatus({ type: 'error', message: err.message });
     }
   };
 
@@ -1407,6 +1486,12 @@ const AdminDashboard = () => {
           >
             Site Settings
           </button>
+          <button
+            className={`tab-btn ${activeTab === 'editorUsers' ? 'active' : ''}`}
+            onClick={() => setActiveTab('editorUsers')}
+          >
+            Editor Users ({editorUsers.length})
+          </button>
         </div>
 
         {/* Tab Contents */}
@@ -2255,6 +2340,178 @@ const AdminDashboard = () => {
                   </button>
                 </div>
               </form>
+            </div>
+          )}
+
+          {activeTab === 'editorUsers' && (
+            <div className="animate-fade-in" style={{ padding: '8px', display: 'flex', flexDirection: 'column', gap: '20px' }}>
+              <div style={{ background: 'white', border: '1px solid #e2e8f0', borderRadius: '16px', padding: '24px' }}>
+                <div style={{ marginBottom: '6px' }}>
+                  <h3 style={{ fontSize: '20px', fontWeight: 800 }}>Quotation Editor Access</h3>
+                  <p style={{ fontSize: '13px', color: '#64748b' }}>
+                    Create logins for the staff who prepare client quotations at <strong>/editor</strong>.
+                    Passwords are stored hashed and cannot be viewed later &mdash; reset one instead.
+                  </p>
+                </div>
+              </div>
+
+              {editorUserStatus.message && (
+                <div style={{
+                  display: 'flex',
+                  alignItems: 'center',
+                  gap: '8px',
+                  padding: '12px 16px',
+                  borderRadius: '10px',
+                  fontSize: '13px',
+                  fontWeight: 600,
+                  background: editorUserStatus.type === 'error' ? '#fef2f2' : '#f0fdf4',
+                  border: `1px solid ${editorUserStatus.type === 'error' ? '#fecaca' : '#bbf7d0'}`,
+                  color: editorUserStatus.type === 'error' ? '#b91c1c' : '#15803d'
+                }}>
+                  {editorUserStatus.type === 'error' ? <AlertCircle size={16} /> : <Check size={16} />}
+                  {editorUserStatus.message}
+                </div>
+              )}
+
+              {/* Create user */}
+              <form
+                onSubmit={handleAddEditorUser}
+                style={{ background: 'white', border: '1px solid #e2e8f0', borderRadius: '16px', padding: '24px' }}
+              >
+                <h4 style={{ fontSize: '15px', fontWeight: 700, marginBottom: '16px', display: 'flex', alignItems: 'center', gap: '8px' }}>
+                  <UserPlus size={17} style={{ color: '#d9531e' }} /> Add Editor User
+                </h4>
+                <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(190px, 1fr))', gap: '14px', alignItems: 'end' }}>
+                  <div>
+                    <label style={{ fontSize: '12px', fontWeight: 700, color: '#475569', display: 'block', marginBottom: '6px' }}>Username</label>
+                    <input
+                      type="text"
+                      required
+                      value={newEditorUser.username}
+                      onChange={(e) => setNewEditorUser(prev => ({ ...prev, username: e.target.value }))}
+                      placeholder="sales.kumar"
+                      style={{ width: '100%', padding: '10px 14px', borderRadius: '8px', border: '1px solid #cbd5e1', fontSize: '13px' }}
+                    />
+                  </div>
+                  <div>
+                    <label style={{ fontSize: '12px', fontWeight: 700, color: '#475569', display: 'block', marginBottom: '6px' }}>Full Name</label>
+                    <input
+                      type="text"
+                      required
+                      value={newEditorUser.fullName}
+                      onChange={(e) => setNewEditorUser(prev => ({ ...prev, fullName: e.target.value }))}
+                      placeholder="Kumar Reddy"
+                      style={{ width: '100%', padding: '10px 14px', borderRadius: '8px', border: '1px solid #cbd5e1', fontSize: '13px' }}
+                    />
+                  </div>
+                  <div>
+                    <label style={{ fontSize: '12px', fontWeight: 700, color: '#475569', display: 'block', marginBottom: '6px' }}>Password</label>
+                    <input
+                      type="text"
+                      required
+                      minLength={6}
+                      value={newEditorUser.password}
+                      onChange={(e) => setNewEditorUser(prev => ({ ...prev, password: e.target.value }))}
+                      placeholder="Minimum 6 characters"
+                      style={{ width: '100%', padding: '10px 14px', borderRadius: '8px', border: '1px solid #cbd5e1', fontSize: '13px' }}
+                    />
+                  </div>
+                  <button
+                    type="submit"
+                    style={{ padding: '10px 20px', borderRadius: '8px', border: 'none', background: '#d9531e', color: 'white', fontWeight: 600, fontSize: '13px', cursor: 'pointer', display: 'inline-flex', alignItems: 'center', justifyContent: 'center', gap: '7px' }}
+                  >
+                    <Plus size={15} /> Create User
+                  </button>
+                </div>
+                <p style={{ fontSize: '11.5px', color: '#94a3b8', marginTop: '12px' }}>
+                  Usernames may use letters, numbers, dot, underscore or hyphen. Share the password with the user directly &mdash; it is not recoverable from here.
+                </p>
+              </form>
+
+              {/* User list */}
+              <div style={{ background: 'white', border: '1px solid #e2e8f0', borderRadius: '16px', padding: '24px' }}>
+                <h4 style={{ fontSize: '15px', fontWeight: 700, marginBottom: '16px', display: 'flex', alignItems: 'center', gap: '8px' }}>
+                  <Users size={17} style={{ color: '#d9531e' }} /> Existing Users ({editorUsers.length})
+                </h4>
+
+                {editorUsers.length === 0 ? (
+                  <p style={{ fontSize: '13px', color: '#94a3b8', padding: '20px 0', textAlign: 'center' }}>
+                    No editor users yet. Create one above to grant access to /editor.
+                  </p>
+                ) : (
+                  <div style={{ overflowX: 'auto' }}>
+                    <table style={{ width: '100%', borderCollapse: 'collapse', fontSize: '13px' }}>
+                      <thead>
+                        <tr style={{ textAlign: 'left', color: '#64748b', fontSize: '11px', textTransform: 'uppercase', letterSpacing: '0.04em' }}>
+                          <th style={{ padding: '10px 8px', borderBottom: '1px solid #e2e8f0' }}>User</th>
+                          <th style={{ padding: '10px 8px', borderBottom: '1px solid #e2e8f0' }}>Status</th>
+                          <th style={{ padding: '10px 8px', borderBottom: '1px solid #e2e8f0' }}>Last Login</th>
+                          <th style={{ padding: '10px 8px', borderBottom: '1px solid #e2e8f0', textAlign: 'right' }}>Actions</th>
+                        </tr>
+                      </thead>
+                      <tbody>
+                        {editorUsers.map(user => (
+                          <tr key={user.id}>
+                            <td style={{ padding: '12px 8px', borderBottom: '1px solid #f1f5f9' }}>
+                              <div style={{ fontWeight: 700, color: '#0f172a' }}>{user.full_name}</div>
+                              <div style={{ fontSize: '12px', color: '#64748b' }}>@{user.username}</div>
+                            </td>
+                            <td style={{ padding: '12px 8px', borderBottom: '1px solid #f1f5f9' }}>
+                              <span style={{
+                                display: 'inline-block',
+                                padding: '3px 10px',
+                                borderRadius: '20px',
+                                fontSize: '11px',
+                                fontWeight: 700,
+                                background: user.is_active ? '#f0fdf4' : '#f1f5f9',
+                                color: user.is_active ? '#15803d' : '#64748b'
+                              }}>
+                                {user.is_active ? 'Active' : 'Deactivated'}
+                              </span>
+                              {user.activeSessions > 0 && (
+                                <span style={{ fontSize: '11px', color: '#94a3b8', marginLeft: '8px' }}>
+                                  {user.activeSessions} signed in
+                                </span>
+                              )}
+                            </td>
+                            <td style={{ padding: '12px 8px', borderBottom: '1px solid #f1f5f9', color: '#64748b', fontSize: '12px' }}>
+                              {user.lastLoginAt ? new Date(user.lastLoginAt).toLocaleString('en-IN') : 'Never'}
+                            </td>
+                            <td style={{ padding: '12px 8px', borderBottom: '1px solid #f1f5f9', textAlign: 'right' }}>
+                              <div style={{ display: 'inline-flex', gap: '6px', flexWrap: 'wrap', justifyContent: 'flex-end' }}>
+                                <button
+                                  type="button"
+                                  onClick={() => handleResetEditorPassword(user)}
+                                  title="Reset password"
+                                  style={{ padding: '6px 11px', borderRadius: '7px', border: '1px solid #cbd5e1', background: 'white', color: '#475569', fontSize: '12px', fontWeight: 600, cursor: 'pointer', display: 'inline-flex', alignItems: 'center', gap: '5px' }}
+                                >
+                                  <KeyRound size={13} /> Reset
+                                </button>
+                                <button
+                                  type="button"
+                                  onClick={() => handleToggleEditorUser(user)}
+                                  title={user.is_active ? 'Deactivate user' : 'Reactivate user'}
+                                  style={{ padding: '6px 11px', borderRadius: '7px', border: '1px solid #cbd5e1', background: 'white', color: user.is_active ? '#b45309' : '#15803d', fontSize: '12px', fontWeight: 600, cursor: 'pointer', display: 'inline-flex', alignItems: 'center', gap: '5px' }}
+                                >
+                                  <Power size={13} /> {user.is_active ? 'Deactivate' : 'Activate'}
+                                </button>
+                                <button
+                                  type="button"
+                                  onClick={() => handleDeleteEditorUser(user)}
+                                  title="Delete user"
+                                  style={{ padding: '6px 11px', borderRadius: '7px', border: '1px solid #fecaca', background: '#fef2f2', color: '#b91c1c', fontSize: '12px', fontWeight: 600, cursor: 'pointer', display: 'inline-flex', alignItems: 'center', gap: '5px' }}
+                                >
+                                  <Trash2 size={13} /> Delete
+                                </button>
+                              </div>
+                            </td>
+                          </tr>
+                        ))}
+                      </tbody>
+                    </table>
+                  </div>
+                )}
+              </div>
             </div>
           )}
         </div>

@@ -95,7 +95,33 @@ export async function initDatabase() {
     `);
     console.log('Blogs table initialized.');
 
-    // 7. Seed pricing table if empty
+    // 7. Create editor users table (quotation editor logins created by admin)
+    await pool.query(`
+      CREATE TABLE IF NOT EXISTS editor_users (
+        id INT AUTO_INCREMENT PRIMARY KEY,
+        username VARCHAR(50) NOT NULL UNIQUE,
+        password_hash VARCHAR(255) NOT NULL,
+        full_name VARCHAR(150) NOT NULL,
+        is_active TINYINT(1) NOT NULL DEFAULT 1,
+        createdAt TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+        lastLoginAt DATETIME NULL
+      )
+    `);
+    console.log('Editor users table initialized.');
+
+    // 8. Create editor sessions table (opaque login tokens, revocable by admin)
+    await pool.query(`
+      CREATE TABLE IF NOT EXISTS editor_sessions (
+        token VARCHAR(128) PRIMARY KEY,
+        user_id INT NOT NULL,
+        expiresAt DATETIME NOT NULL,
+        createdAt TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+        INDEX idx_editor_sessions_user (user_id)
+      )
+    `);
+    console.log('Editor sessions table initialized.');
+
+    // 9. Seed pricing table if empty
     const [rowsPricing] = await pool.query('SELECT COUNT(*) as count FROM pricing');
     if (rowsPricing[0].count === 0) {
       console.log('Seeding default pricing details...');
@@ -109,7 +135,7 @@ export async function initDatabase() {
       }
     }
 
-    // 8. Seed projects table if empty
+    // 10. Seed projects table if empty
     const [rowsProjects] = await pool.query('SELECT COUNT(*) as count FROM projects');
     if (rowsProjects[0].count === 0) {
       console.log('Seeding default projects...');
@@ -128,7 +154,7 @@ export async function initDatabase() {
       }
     }
 
-    // 9. Seed testimonials table if empty
+    // 11. Seed testimonials table if empty
     const [rowsTestimonials] = await pool.query('SELECT COUNT(*) as count FROM testimonials');
     if (rowsTestimonials[0].count === 0) {
       console.log('Seeding default testimonials...');
@@ -142,7 +168,7 @@ export async function initDatabase() {
       }
     }
 
-    // 10. Seed blogs table if empty
+    // 12. Seed blogs table if empty
     const [rowsBlogs] = await pool.query('SELECT COUNT(*) as count FROM blogs');
     if (rowsBlogs[0].count === 0) {
       console.log('Seeding default blogs...');
@@ -186,7 +212,7 @@ export async function initDatabase() {
       }
     }
 
-    // 11. Seed settings table if empty
+    // 13. Seed settings table if empty
     const [rowsSettings] = await pool.query('SELECT COUNT(*) as count FROM settings');
     const defaultSettings = [
       ['phone_primary', '+91 9949249091'],
@@ -204,7 +230,7 @@ export async function initDatabase() {
       }
     }
 
-    // 12. Seed default package matrix in settings if not present
+    // 14. Seed default package matrix in settings if not present
     const [matrixCheck] = await pool.query('SELECT * FROM settings WHERE key_name = "package_matrix"');
     if (matrixCheck.length === 0) {
       console.log('Seeding default package comparison matrix...');

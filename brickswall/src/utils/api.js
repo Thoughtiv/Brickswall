@@ -429,6 +429,132 @@ export async function uploadImage(imageBase64, name = 'image') {
   return data.url;
 }
 
+/* ────────────── Quotation Editor: user login ────────────── */
+
+/**
+ * Log in to the quotation editor. Returns { token, expiresAt, user }.
+ */
+export async function editorLogin(username, password) {
+  const res = await fetch(`${API_BASE_URL}/editor-auth/login`, {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json'
+    },
+    body: JSON.stringify({ username, password })
+  });
+  if (!res.ok) {
+    const errData = await res.json().catch(() => ({}));
+    throw new Error(errData.error || 'Login failed');
+  }
+  return await res.json();
+}
+
+/**
+ * Validate a stored editor token. Returns { user }.
+ */
+export async function editorMe(token) {
+  const res = await fetch(`${API_BASE_URL}/editor-auth/me`, {
+    headers: {
+      'x-editor-token': token
+    }
+  });
+  if (!res.ok) {
+    const errData = await res.json().catch(() => ({}));
+    throw new Error(errData.error || 'Session is no longer valid');
+  }
+  return await res.json();
+}
+
+/**
+ * Log out of the quotation editor (revokes the token server-side).
+ */
+export async function editorLogout(token) {
+  try {
+    await fetch(`${API_BASE_URL}/editor-auth/logout`, {
+      method: 'POST',
+      headers: {
+        'x-editor-token': token
+      }
+    });
+  } catch (err) {
+    // Local sign-out should succeed even if the server is unreachable
+    console.warn('Could not revoke editor session on the server:', err.message);
+  }
+}
+
+/* ────────────── Quotation Editor: user management (Admin) ────────────── */
+
+/**
+ * Fetch all editor users (Admin)
+ */
+export async function getEditorUsers(adminPassword) {
+  const res = await fetch(`${API_BASE_URL}/editor-users`, {
+    headers: {
+      'x-admin-password': adminPassword
+    }
+  });
+  if (!res.ok) {
+    const errData = await res.json().catch(() => ({}));
+    throw new Error(errData.error || 'Failed to fetch editor users');
+  }
+  return await res.json();
+}
+
+/**
+ * Create an editor user (Admin)
+ */
+export async function addEditorUser(userData, adminPassword) {
+  const res = await fetch(`${API_BASE_URL}/editor-users`, {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+      'x-admin-password': adminPassword
+    },
+    body: JSON.stringify(userData)
+  });
+  if (!res.ok) {
+    const errData = await res.json().catch(() => ({}));
+    throw new Error(errData.error || 'Failed to create editor user');
+  }
+  return await res.json();
+}
+
+/**
+ * Update an editor user - rename, activate/deactivate, or reset password (Admin)
+ */
+export async function updateEditorUser(id, userData, adminPassword) {
+  const res = await fetch(`${API_BASE_URL}/editor-users/${id}`, {
+    method: 'PATCH',
+    headers: {
+      'Content-Type': 'application/json',
+      'x-admin-password': adminPassword
+    },
+    body: JSON.stringify(userData)
+  });
+  if (!res.ok) {
+    const errData = await res.json().catch(() => ({}));
+    throw new Error(errData.error || 'Failed to update editor user');
+  }
+  return await res.json();
+}
+
+/**
+ * Delete an editor user (Admin)
+ */
+export async function deleteEditorUser(id, adminPassword) {
+  const res = await fetch(`${API_BASE_URL}/editor-users/${id}`, {
+    method: 'DELETE',
+    headers: {
+      'x-admin-password': adminPassword
+    }
+  });
+  if (!res.ok) {
+    const errData = await res.json().catch(() => ({}));
+    throw new Error(errData.error || 'Failed to delete editor user');
+  }
+  return await res.json().catch(() => ({ success: true }));
+}
+
 /**
  * Send chat message history to chatbot API
  */
