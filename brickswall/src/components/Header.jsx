@@ -22,7 +22,7 @@ const Header = ({ currentPage, setCurrentPage, onOpenEstimate, settings }) => {
   const navLinks = [
     { id: 'home', label: 'Home' },
     { id: 'services', label: 'Services' },
-    { id: 'projects', label: 'Projects' },
+    // { id: 'projects', label: 'Projects' }, // Hidden for now
     { id: 'packages', label: 'Packages' },
     { id: 'about', label: 'About Us' },
     { id: 'blog', label: 'Blog' },

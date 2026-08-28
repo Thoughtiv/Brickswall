@@ -24,7 +24,7 @@ function App() {
     if (path === '/editor') return 'editor';
     if (path === '/packages') return 'packages';
     if (path === '/services') return 'services';
-    if (path === '/projects') return 'projects';
+    if (path === '/projects') return 'home'; // Hidden for now
     if (path === '/about') return 'about';
     if (path === '/blog') return 'blog';
     if (path === '/contact') return 'contact';
@@ -104,8 +104,8 @@ function App() {
         return <Home setCurrentPage={setCurrentPage} navigateToService={navigateToService} navigateToProject={navigateToProject} onOpenEstimate={handleOpenEstimate} settings={settings} />;
       case 'services':
         return <Services onOpenEstimate={handleOpenEstimate} initialTab={serviceTab} />;
-      case 'projects':
-        return <Projects onOpenEstimate={handleOpenEstimate} initialFilter={projectFilter} initialProject={initialProject} />;
+      // case 'projects':
+      //   return <Projects onOpenEstimate={handleOpenEstimate} initialFilter={projectFilter} initialProject={initialProject} />;
       case 'packages':
         return <Packages onOpenEstimate={handleOpenEstimate} />;
       case 'about':

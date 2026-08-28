@@ -332,8 +332,8 @@ const Home = ({ setCurrentPage, navigateToService, navigateToProject, onOpenEsti
                 <span>Get Free Consultation</span>
                 <ArrowRight size={18} />
               </button>
-              <button onClick={() => setCurrentPage('projects')} className="ref-btn-outline">
-                <span>Explore Our Projects</span>
+              <button onClick={() => setCurrentPage('packages')} className="ref-btn-outline">
+                <span>Explore Packages</span>
                 <ArrowRight size={18} />
               </button>
             </div>
@@ -1148,7 +1148,7 @@ const Home = ({ setCurrentPage, navigateToService, navigateToProject, onOpenEsti
         </div>
       </section>
 
-      {/* Featured Projects */}
+      {/* Featured Projects - Hidden for now
       <section className="section-padding">
         <div className="container">
           <div className="section-title-wrapper">
@@ -1184,6 +1184,7 @@ const Home = ({ setCurrentPage, navigateToService, navigateToProject, onOpenEsti
           </div>
         </div>
       </section>
+      */}
 
       {/* Customer Testimonials */}
       <section className="section-padding bg-subtle">
