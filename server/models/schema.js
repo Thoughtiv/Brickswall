@@ -11,9 +11,29 @@ export async function initDatabase() {
         pricePerSqFt VARCHAR(50) NOT NULL,
         badge VARCHAR(100),
         \`desc\` TEXT,
+        materials TEXT,
+        warranty VARCHAR(255),
+        services TEXT,
         updatedAt TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
       )
     `);
+
+    // Ensure columns exist for upgraded schemas
+    try {
+      const [cols] = await pool.query('SHOW COLUMNS FROM pricing');
+      const colNames = cols.map(c => c.Field);
+      if (!colNames.includes('materials')) {
+        await pool.query('ALTER TABLE pricing ADD COLUMN materials TEXT');
+      }
+      if (!colNames.includes('warranty')) {
+        await pool.query('ALTER TABLE pricing ADD COLUMN warranty VARCHAR(255)');
+      }
+      if (!colNames.includes('services')) {
+        await pool.query('ALTER TABLE pricing ADD COLUMN services TEXT');
+      }
+    } catch (colErr) {
+      console.warn('Pricing column check warning:', colErr.message);
+    }
     console.log('Pricing table initialized.');
 
     // 2. Create inquiries table
@@ -126,12 +146,80 @@ export async function initDatabase() {
     if (rowsPricing[0].count === 0) {
       console.log('Seeding default pricing details...');
       const defaultPricing = [
-        ['basic', 'Basic Package', 1750, '₹1,750 / sq.ft', 'Economical Solution', 'An affordable solution designed for quality residential construction with dependable materials and essential finishes.'],
-        ['premium', 'Premium Package', 2150, '₹2,150 / sq.ft', 'Most Popular', 'Ideal for homeowners seeking enhanced finishes, premium materials, custom elevation designs, and additional customization.'],
-        ['luxury', 'Luxury Package', 2750, '₹2,750 / sq.ft', 'Ultra High-End', 'Designed for premium residences featuring superior materials, elegant interiors, modern architecture, and luxury finishes.']
+        [
+          'basic',
+          'Basic Package',
+          1750,
+          '₹1,750 / sq.ft',
+          'Economical Solution',
+          'An affordable solution designed for quality residential construction with dependable materials and essential finishes.',
+          JSON.stringify([
+            'Cement: Ultratech / ACC 53 Grade',
+            'Steel: Simhadri / Vizag TMT Fe500',
+            'Bricks: High quality red bricks',
+            'Flooring: Vitrified tiles (up to ₹60/sq.ft)',
+            'Doors: Flush doors with wood frame',
+            'Paint: Asian Paints Tractor Emulsion'
+          ]),
+          '5 Years Structural Warranty',
+          JSON.stringify([
+            'Structural & Architectural Layout',
+            'Standard Electrical & Plumbing',
+            'Site Supervision',
+            'Basic Sanitary Ware (Cera / Parryware)'
+          ])
+        ],
+        [
+          'premium',
+          'Premium Package',
+          2150,
+          '₹2,150 / sq.ft',
+          'Most Popular',
+          'Ideal for homeowners seeking enhanced finishes, premium materials, custom elevation designs, and additional customization.',
+          JSON.stringify([
+            'Cement: Ultratech Super / Coromandel',
+            'Steel: Tata Tiscon / JSW Neosteel Fe550',
+            'Bricks: First class kiln red clay bricks',
+            'Flooring: Premium Vitrified (up to ₹100/sq.ft)',
+            'Doors: Teak wood main door & frames',
+            'Paint: Asian Paints Royal Shine Emulsion'
+          ]),
+          '10 Years Structural Warranty',
+          JSON.stringify([
+            '3D Elevation & Floor Plan Design',
+            'Concealed Modular Electricals (Havells)',
+            'Dedicated Project Manager',
+            'Premium Sanitary Ware (Kohler / Jaquar)',
+            'Underground Sump & Overhead Tank'
+          ])
+        ],
+        [
+          'luxury',
+          'Luxury Package',
+          2750,
+          '₹2,750 / sq.ft',
+          'Ultra High-End',
+          'Designed for premium residences featuring superior materials, elegant interiors, modern architecture, and luxury finishes.',
+          JSON.stringify([
+            'Cement: Ultratech Premium / High-grade',
+            'Steel: Tata Tiscon Super Ductile Fe550D',
+            'Bricks: AAC blocks or high-density wire-cut bricks',
+            'Flooring: Italian Marble or Granites (up to ₹250/sq.ft)',
+            'Doors: Teak wood main door with digital smart lock',
+            'Paint: Royal Aspira Anti-bacterial Finish'
+          ]),
+          '15 Years Structural Warranty',
+          JSON.stringify([
+            'Full 3D Architectural VR Walkthroughs',
+            'Automation Ready Smart Wiring',
+            'Dedicated Senior Civil Engineer',
+            'Luxury Sanitary Ware (Grohe / Hansgrohe)',
+            'Landscaping & Rooftop Solar Prep'
+          ])
+        ]
       ];
       for (const p of defaultPricing) {
-        await pool.query('INSERT INTO pricing (id, name, priceNum, pricePerSqFt, badge, \`desc\`) VALUES (?, ?, ?, ?, ?, ?)', p);
+        await pool.query('INSERT INTO pricing (id, name, priceNum, pricePerSqFt, badge, `desc`, materials, warranty, services) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)', p);
       }
     }
 

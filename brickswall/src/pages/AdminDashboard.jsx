@@ -1752,7 +1752,7 @@ const AdminDashboard = () => {
                         <input
                           type="number"
                           className="tier-input"
-                          value={editablePricing.basic.priceNum}
+                          value={editablePricing.basic?.priceNum || 0}
                           onChange={(e) => handlePriceFieldChange('basic', 'priceNum', e.target.value)}
                         />
                       </div>
@@ -1763,7 +1763,7 @@ const AdminDashboard = () => {
                       <input
                         type="text"
                         className="tier-input"
-                        value={editablePricing.basic.badge}
+                        value={editablePricing.basic?.badge || ''}
                         onChange={(e) => handlePriceFieldChange('basic', 'badge', e.target.value)}
                       />
                     </div>
@@ -1773,9 +1773,50 @@ const AdminDashboard = () => {
                       <textarea
                         rows="3"
                         className="tier-input"
-                        value={editablePricing.basic.desc}
+                        value={editablePricing.basic?.desc || ''}
                         onChange={(e) => handlePriceFieldChange('basic', 'desc', e.target.value)}
-                        style={{ resize: 'none' }}
+                        style={{ resize: 'vertical' }}
+                      ></textarea>
+                    </div>
+
+                    <div className="tier-form-group" style={{ marginTop: '12px' }}>
+                      <label style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                        <span>Material Specs</span>
+                        <span style={{ fontSize: '10px', color: '#94a3b8', textTransform: 'none', fontWeight: 400 }}>(1 bullet per line)</span>
+                      </label>
+                      <textarea
+                        rows="6"
+                        className="tier-input"
+                        value={Array.isArray(editablePricing.basic?.materials) ? editablePricing.basic.materials.join('\n') : (editablePricing.basic?.materials || '')}
+                        onChange={(e) => handlePriceFieldChange('basic', 'materials', e.target.value.split('\n'))}
+                        placeholder={`Cement: Ultratech / ACC 53 Grade\nSteel: Simhadri / Vizag TMT Fe500\nBricks: High quality red bricks\nFlooring: Vitrified tiles (up to ₹60/sq.ft)\nDoors: Flush doors with wood frame\nPaint: Asian Paints Tractor Emulsion`}
+                        style={{ resize: 'vertical', fontFamily: 'inherit', fontSize: '12px', lineHeight: 1.5 }}
+                      ></textarea>
+                    </div>
+
+                    <div className="tier-form-group" style={{ marginTop: '12px' }}>
+                      <label>Structural Warranty</label>
+                      <input
+                        type="text"
+                        className="tier-input"
+                        value={editablePricing.basic?.warranty || ''}
+                        onChange={(e) => handlePriceFieldChange('basic', 'warranty', e.target.value)}
+                        placeholder="e.g. 5 Years Structural Warranty"
+                      />
+                    </div>
+
+                    <div className="tier-form-group" style={{ marginTop: '12px' }}>
+                      <label style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                        <span>Included Services &amp; Features</span>
+                        <span style={{ fontSize: '10px', color: '#94a3b8', textTransform: 'none', fontWeight: 400 }}>(1 bullet per line)</span>
+                      </label>
+                      <textarea
+                        rows="5"
+                        className="tier-input"
+                        value={Array.isArray(editablePricing.basic?.services) ? editablePricing.basic.services.join('\n') : (editablePricing.basic?.services || '')}
+                        onChange={(e) => handlePriceFieldChange('basic', 'services', e.target.value.split('\n'))}
+                        placeholder={`Structural & Architectural Layout\nStandard Electrical & Plumbing\nSite Supervision\nBasic Sanitary Ware (Cera / Parryware)`}
+                        style={{ resize: 'vertical', fontFamily: 'inherit', fontSize: '12px', lineHeight: 1.5 }}
                       ></textarea>
                     </div>
                   </div>
@@ -1793,7 +1834,7 @@ const AdminDashboard = () => {
                         <input
                           type="number"
                           className="tier-input"
-                          value={editablePricing.premium.priceNum}
+                          value={editablePricing.premium?.priceNum || 0}
                           onChange={(e) => handlePriceFieldChange('premium', 'priceNum', e.target.value)}
                         />
                       </div>
@@ -1804,7 +1845,7 @@ const AdminDashboard = () => {
                       <input
                         type="text"
                         className="tier-input"
-                        value={editablePricing.premium.badge}
+                        value={editablePricing.premium?.badge || ''}
                         onChange={(e) => handlePriceFieldChange('premium', 'badge', e.target.value)}
                       />
                     </div>
@@ -1814,9 +1855,50 @@ const AdminDashboard = () => {
                       <textarea
                         rows="3"
                         className="tier-input"
-                        value={editablePricing.premium.desc}
+                        value={editablePricing.premium?.desc || ''}
                         onChange={(e) => handlePriceFieldChange('premium', 'desc', e.target.value)}
-                        style={{ resize: 'none' }}
+                        style={{ resize: 'vertical' }}
+                      ></textarea>
+                    </div>
+
+                    <div className="tier-form-group" style={{ marginTop: '12px' }}>
+                      <label style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                        <span>Material Specs</span>
+                        <span style={{ fontSize: '10px', color: '#94a3b8', textTransform: 'none', fontWeight: 400 }}>(1 bullet per line)</span>
+                      </label>
+                      <textarea
+                        rows="6"
+                        className="tier-input"
+                        value={Array.isArray(editablePricing.premium?.materials) ? editablePricing.premium.materials.join('\n') : (editablePricing.premium?.materials || '')}
+                        onChange={(e) => handlePriceFieldChange('premium', 'materials', e.target.value.split('\n'))}
+                        placeholder={`Cement: Ultratech Super / Coromandel\nSteel: Tata Tiscon / JSW Neosteel Fe550\nBricks: First class kiln red clay bricks\nFlooring: Premium Vitrified (up to ₹100/sq.ft)\nDoors: Teak wood main door & frames\nPaint: Asian Paints Royal Shine Emulsion`}
+                        style={{ resize: 'vertical', fontFamily: 'inherit', fontSize: '12px', lineHeight: 1.5 }}
+                      ></textarea>
+                    </div>
+
+                    <div className="tier-form-group" style={{ marginTop: '12px' }}>
+                      <label>Structural Warranty</label>
+                      <input
+                        type="text"
+                        className="tier-input"
+                        value={editablePricing.premium?.warranty || ''}
+                        onChange={(e) => handlePriceFieldChange('premium', 'warranty', e.target.value)}
+                        placeholder="e.g. 10 Years Structural Warranty"
+                      />
+                    </div>
+
+                    <div className="tier-form-group" style={{ marginTop: '12px' }}>
+                      <label style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                        <span>Included Services &amp; Features</span>
+                        <span style={{ fontSize: '10px', color: '#94a3b8', textTransform: 'none', fontWeight: 400 }}>(1 bullet per line)</span>
+                      </label>
+                      <textarea
+                        rows="5"
+                        className="tier-input"
+                        value={Array.isArray(editablePricing.premium?.services) ? editablePricing.premium.services.join('\n') : (editablePricing.premium?.services || '')}
+                        onChange={(e) => handlePriceFieldChange('premium', 'services', e.target.value.split('\n'))}
+                        placeholder={`3D Elevation & Floor Plan Design\nConcealed Modular Electricals (Havells)\nDedicated Project Manager\nPremium Sanitary Ware (Kohler / Jaquar)\nUnderground Sump & Overhead Tank`}
+                        style={{ resize: 'vertical', fontFamily: 'inherit', fontSize: '12px', lineHeight: 1.5 }}
                       ></textarea>
                     </div>
                   </div>
@@ -1834,7 +1916,7 @@ const AdminDashboard = () => {
                         <input
                           type="number"
                           className="tier-input"
-                          value={editablePricing.luxury.priceNum}
+                          value={editablePricing.luxury?.priceNum || 0}
                           onChange={(e) => handlePriceFieldChange('luxury', 'priceNum', e.target.value)}
                         />
                       </div>
@@ -1845,7 +1927,7 @@ const AdminDashboard = () => {
                       <input
                         type="text"
                         className="tier-input"
-                        value={editablePricing.luxury.badge}
+                        value={editablePricing.luxury?.badge || ''}
                         onChange={(e) => handlePriceFieldChange('luxury', 'badge', e.target.value)}
                       />
                     </div>
@@ -1855,9 +1937,50 @@ const AdminDashboard = () => {
                       <textarea
                         rows="3"
                         className="tier-input"
-                        value={editablePricing.luxury.desc}
+                        value={editablePricing.luxury?.desc || ''}
                         onChange={(e) => handlePriceFieldChange('luxury', 'desc', e.target.value)}
-                        style={{ resize: 'none' }}
+                        style={{ resize: 'vertical' }}
+                      ></textarea>
+                    </div>
+
+                    <div className="tier-form-group" style={{ marginTop: '12px' }}>
+                      <label style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                        <span>Material Specs</span>
+                        <span style={{ fontSize: '10px', color: '#94a3b8', textTransform: 'none', fontWeight: 400 }}>(1 bullet per line)</span>
+                      </label>
+                      <textarea
+                        rows="6"
+                        className="tier-input"
+                        value={Array.isArray(editablePricing.luxury?.materials) ? editablePricing.luxury.materials.join('\n') : (editablePricing.luxury?.materials || '')}
+                        onChange={(e) => handlePriceFieldChange('luxury', 'materials', e.target.value.split('\n'))}
+                        placeholder={`Cement: Ultratech Premium / High-grade\nSteel: Tata Tiscon Super Ductile Fe550D\nBricks: AAC blocks or high-density wire-cut bricks\nFlooring: Italian Marble or Granites (up to ₹250/sq.ft)\nDoors: Teak wood main door with digital smart lock\nPaint: Royal Aspira Anti-bacterial Finish`}
+                        style={{ resize: 'vertical', fontFamily: 'inherit', fontSize: '12px', lineHeight: 1.5 }}
+                      ></textarea>
+                    </div>
+
+                    <div className="tier-form-group" style={{ marginTop: '12px' }}>
+                      <label>Structural Warranty</label>
+                      <input
+                        type="text"
+                        className="tier-input"
+                        value={editablePricing.luxury?.warranty || ''}
+                        onChange={(e) => handlePriceFieldChange('luxury', 'warranty', e.target.value)}
+                        placeholder="e.g. 15 Years Structural Warranty"
+                      />
+                    </div>
+
+                    <div className="tier-form-group" style={{ marginTop: '12px' }}>
+                      <label style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                        <span>Included Services &amp; Features</span>
+                        <span style={{ fontSize: '10px', color: '#94a3b8', textTransform: 'none', fontWeight: 400 }}>(1 bullet per line)</span>
+                      </label>
+                      <textarea
+                        rows="5"
+                        className="tier-input"
+                        value={Array.isArray(editablePricing.luxury?.services) ? editablePricing.luxury.services.join('\n') : (editablePricing.luxury?.services || '')}
+                        onChange={(e) => handlePriceFieldChange('luxury', 'services', e.target.value.split('\n'))}
+                        placeholder={`Full 3D Architectural VR Walkthroughs\nAutomation Ready Smart Wiring\nDedicated Senior Civil Engineer\nLuxury Sanitary Ware (Grohe / Hansgrohe)\nLandscaping & Rooftop Solar Prep`}
+                        style={{ resize: 'vertical', fontFamily: 'inherit', fontSize: '12px', lineHeight: 1.5 }}
                       ></textarea>
                     </div>
                   </div>

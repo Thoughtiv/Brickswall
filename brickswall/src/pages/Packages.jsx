@@ -112,12 +112,16 @@ const Packages = ({ onOpenEstimate }) => {
 
   const packages = basePackages.map(pkg => {
     if (pricingData && pricingData[pkg.id]) {
+      const live = pricingData[pkg.id];
       return {
         ...pkg,
-        pricePerSqFt: pricingData[pkg.id].pricePerSqFt,
-        priceNum: pricingData[pkg.id].priceNum,
-        badge: pricingData[pkg.id].badge || pkg.badge,
-        desc: pricingData[pkg.id].desc || pkg.desc
+        pricePerSqFt: live.pricePerSqFt || pkg.pricePerSqFt,
+        priceNum: live.priceNum || pkg.priceNum,
+        badge: live.badge !== undefined ? live.badge : pkg.badge,
+        desc: live.desc !== undefined ? live.desc : pkg.desc,
+        materials: Array.isArray(live.materials) && live.materials.length > 0 ? live.materials : pkg.materials,
+        warranty: live.warranty || pkg.warranty,
+        services: Array.isArray(live.services) && live.services.length > 0 ? live.services : pkg.services
       };
     }
     return pkg;

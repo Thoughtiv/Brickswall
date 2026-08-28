@@ -10,13 +10,37 @@ router.get('/', async (req, res) => {
     const [rows] = await pool.query('SELECT * FROM pricing');
     const pricingMap = {};
     rows.forEach(row => {
+      let materials = [];
+      let services = [];
+      if (row.materials) {
+        try {
+          materials = typeof row.materials === 'string' && row.materials.trim().startsWith('[')
+            ? JSON.parse(row.materials)
+            : row.materials.split('\n').map(s => s.trim()).filter(Boolean);
+        } catch (e) {
+          materials = row.materials.split('\n').map(s => s.trim()).filter(Boolean);
+        }
+      }
+      if (row.services) {
+        try {
+          services = typeof row.services === 'string' && row.services.trim().startsWith('[')
+            ? JSON.parse(row.services)
+            : row.services.split('\n').map(s => s.trim()).filter(Boolean);
+        } catch (e) {
+          services = row.services.split('\n').map(s => s.trim()).filter(Boolean);
+        }
+      }
+
       pricingMap[row.id] = {
         id: row.id,
         name: row.name,
         priceNum: row.priceNum,
         pricePerSqFt: row.pricePerSqFt,
         badge: row.badge,
-        desc: row.desc
+        desc: row.desc,
+        materials: materials,
+        warranty: row.warranty || '',
+        services: services
       };
     });
     res.json(pricingMap);
@@ -36,10 +60,26 @@ router.put('/', adminAuth, async (req, res) => {
 
   try {
     for (const [id, pkg] of Object.entries(packages)) {
-      const pricePerSqFt = `₹${pkg.priceNum.toLocaleString('en-IN')} / sq.ft`;
+      const priceNum = Number(pkg.priceNum) || 0;
+      const pricePerSqFt = `₹${priceNum.toLocaleString('en-IN')} / sq.ft`;
+      
+      let materialsStr = '';
+      if (Array.isArray(pkg.materials)) {
+        materialsStr = JSON.stringify(pkg.materials.map(s => String(s).trim()).filter(Boolean));
+      } else if (typeof pkg.materials === 'string') {
+        materialsStr = JSON.stringify(pkg.materials.split('\n').map(s => s.trim()).filter(Boolean));
+      }
+
+      let servicesStr = '';
+      if (Array.isArray(pkg.services)) {
+        servicesStr = JSON.stringify(pkg.services.map(s => String(s).trim()).filter(Boolean));
+      } else if (typeof pkg.services === 'string') {
+        servicesStr = JSON.stringify(pkg.services.split('\n').map(s => s.trim()).filter(Boolean));
+      }
+
       await pool.query(
-        'UPDATE pricing SET name = ?, priceNum = ?, pricePerSqFt = ?, badge = ?, \`desc\` = ? WHERE id = ?',
-        [pkg.name, pkg.priceNum, pricePerSqFt, pkg.badge, pkg.desc, id]
+        'UPDATE pricing SET name = ?, priceNum = ?, pricePerSqFt = ?, badge = ?, `desc` = ?, materials = ?, warranty = ?, services = ? WHERE id = ?',
+        [pkg.name || id, priceNum, pricePerSqFt, pkg.badge || '', pkg.desc || '', materialsStr, pkg.warranty || '', servicesStr, id]
       );
     }
     res.json({ success: true, message: 'Pricing configurations updated successfully' });
