@@ -38,8 +38,10 @@ router.get('/', async (req, res) => {
         pricePerSqFt: row.pricePerSqFt,
         badge: row.badge,
         desc: row.desc,
+        materialHeading: row.materialHeading || 'Material Specs',
         materials: materials,
         warranty: row.warranty || '',
+        servicesHeading: row.servicesHeading || 'Included Services & Warranty',
         services: services
       };
     });
@@ -77,9 +79,12 @@ router.put('/', adminAuth, async (req, res) => {
         servicesStr = JSON.stringify(pkg.services.split('\n').map(s => s.trim()).filter(Boolean));
       }
 
+      const materialHeading = pkg.materialHeading || 'Material Specs';
+      const servicesHeading = pkg.servicesHeading || 'Included Services & Warranty';
+
       await pool.query(
-        'UPDATE pricing SET name = ?, priceNum = ?, pricePerSqFt = ?, badge = ?, `desc` = ?, materials = ?, warranty = ?, services = ? WHERE id = ?',
-        [pkg.name || id, priceNum, pricePerSqFt, pkg.badge || '', pkg.desc || '', materialsStr, pkg.warranty || '', servicesStr, id]
+        'UPDATE pricing SET name = ?, priceNum = ?, pricePerSqFt = ?, badge = ?, `desc` = ?, materialHeading = ?, materials = ?, warranty = ?, servicesHeading = ?, services = ? WHERE id = ?',
+        [pkg.name || id, priceNum, pricePerSqFt, pkg.badge || '', pkg.desc || '', materialHeading, materialsStr, pkg.warranty || '', servicesHeading, servicesStr, id]
       );
     }
     res.json({ success: true, message: 'Pricing configurations updated successfully' });

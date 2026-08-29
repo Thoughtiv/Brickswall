@@ -10,9 +10,11 @@ export async function initDatabase() {
         priceNum INT NOT NULL,
         pricePerSqFt VARCHAR(50) NOT NULL,
         badge VARCHAR(100),
-        \`desc\` TEXT,
+        `desc` TEXT,
+        materialHeading VARCHAR(150),
         materials TEXT,
         warranty VARCHAR(255),
+        servicesHeading VARCHAR(150),
         services TEXT,
         updatedAt TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
       )
@@ -22,11 +24,17 @@ export async function initDatabase() {
     try {
       const [cols] = await pool.query('SHOW COLUMNS FROM pricing');
       const colNames = cols.map(c => c.Field);
+      if (!colNames.includes('materialHeading')) {
+        await pool.query('ALTER TABLE pricing ADD COLUMN materialHeading VARCHAR(150)');
+      }
       if (!colNames.includes('materials')) {
         await pool.query('ALTER TABLE pricing ADD COLUMN materials TEXT');
       }
       if (!colNames.includes('warranty')) {
         await pool.query('ALTER TABLE pricing ADD COLUMN warranty VARCHAR(255)');
+      }
+      if (!colNames.includes('servicesHeading')) {
+        await pool.query('ALTER TABLE pricing ADD COLUMN servicesHeading VARCHAR(150)');
       }
       if (!colNames.includes('services')) {
         await pool.query('ALTER TABLE pricing ADD COLUMN services TEXT');
@@ -153,6 +161,7 @@ export async function initDatabase() {
           '₹1,750 / sq.ft',
           'Economical Solution',
           'An affordable solution designed for quality residential construction with dependable materials and essential finishes.',
+          'Material Specs',
           JSON.stringify([
             'Cement: Ultratech / ACC 53 Grade',
             'Steel: Simhadri / Vizag TMT Fe500',
@@ -162,6 +171,7 @@ export async function initDatabase() {
             'Paint: Asian Paints Tractor Emulsion'
           ]),
           '5 Years Structural Warranty',
+          'Included Services & Warranty',
           JSON.stringify([
             'Structural & Architectural Layout',
             'Standard Electrical & Plumbing',
@@ -176,6 +186,7 @@ export async function initDatabase() {
           '₹2,150 / sq.ft',
           'Most Popular',
           'Ideal for homeowners seeking enhanced finishes, premium materials, custom elevation designs, and additional customization.',
+          'Material Specs',
           JSON.stringify([
             'Cement: Ultratech Super / Coromandel',
             'Steel: Tata Tiscon / JSW Neosteel Fe550',
@@ -185,6 +196,7 @@ export async function initDatabase() {
             'Paint: Asian Paints Royal Shine Emulsion'
           ]),
           '10 Years Structural Warranty',
+          'Included Services & Warranty',
           JSON.stringify([
             '3D Elevation & Floor Plan Design',
             'Concealed Modular Electricals (Havells)',
@@ -200,6 +212,7 @@ export async function initDatabase() {
           '₹2,750 / sq.ft',
           'Ultra High-End',
           'Designed for premium residences featuring superior materials, elegant interiors, modern architecture, and luxury finishes.',
+          'Material Specs',
           JSON.stringify([
             'Cement: Ultratech Premium / High-grade',
             'Steel: Tata Tiscon Super Ductile Fe550D',
@@ -209,6 +222,7 @@ export async function initDatabase() {
             'Paint: Royal Aspira Anti-bacterial Finish'
           ]),
           '15 Years Structural Warranty',
+          'Included Services & Warranty',
           JSON.stringify([
             'Full 3D Architectural VR Walkthroughs',
             'Automation Ready Smart Wiring',
@@ -219,7 +233,7 @@ export async function initDatabase() {
         ]
       ];
       for (const p of defaultPricing) {
-        await pool.query('INSERT INTO pricing (id, name, priceNum, pricePerSqFt, badge, `desc`, materials, warranty, services) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)', p);
+        await pool.query('INSERT INTO pricing (id, name, priceNum, pricePerSqFt, badge, `desc`, materialHeading, materials, warranty, servicesHeading, services) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)', p);
       }
     }
 

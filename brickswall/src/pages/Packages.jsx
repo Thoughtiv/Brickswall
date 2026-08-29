@@ -120,8 +120,10 @@ const Packages = ({ onOpenEstimate }) => {
         badge: live.badge !== undefined ? live.badge : pkg.badge,
         desc: live.desc !== undefined ? live.desc : pkg.desc,
         materials: Array.isArray(live.materials) && live.materials.length > 0 ? live.materials : pkg.materials,
+        materialHeading: live.materialHeading || 'Material Specs',
         warranty: live.warranty || pkg.warranty,
-        services: Array.isArray(live.services) && live.services.length > 0 ? live.services : pkg.services
+        services: Array.isArray(live.services) && live.services.length > 0 ? live.services : pkg.services,
+        servicesHeading: live.servicesHeading || 'Included Services & Warranty'
       };
     }
     return pkg;
@@ -171,7 +173,7 @@ const Packages = ({ onOpenEstimate }) => {
                   </button>
 
                   <div className="pkg-spec-group">
-                    <h4>Material Specs:</h4>
+                    <h4>{pkg.materialHeading || 'Material Specs'}:</h4>
                     <ul>
                       {pkg.materials.map((m, i) => (
                         <li key={i}><Check size={14} className="text-orange" /> {m}</li>
@@ -180,9 +182,9 @@ const Packages = ({ onOpenEstimate }) => {
                   </div>
 
                   <div className="pkg-spec-group spec-separator">
-                    <h4>Included Services &amp; Warranty:</h4>
+                    <h4>{pkg.servicesHeading || 'Included Services & Warranty'}:</h4>
                     <ul>
-                      <li><ShieldCheck size={14} className="text-orange" /> <strong>{pkg.warranty}</strong></li>
+                      {pkg.warranty && <li><ShieldCheck size={14} className="text-orange" /> <strong>{pkg.warranty}</strong></li>}
                       {pkg.services.map((s, i) => (
                         <li key={i}><Check size={14} className="text-orange" /> {s}</li>
                       ))}
