@@ -6,7 +6,7 @@ import {
 import QuotationPreview from '../components/QuotationPreview';
 import {
   getPricing, getPackageMatrix, getSettings,
-  editorLogin, editorLogout, editorMe
+  editorLogin, editorLogout, editorMe, saveEditorQuotation
 } from '../utils/api';
 import {
   createInitialForm, computeTotals, specsFromMatrix, emptyFloor, emptyLineItem,
@@ -224,13 +224,33 @@ const QuotationEditor = () => {
     return found;
   };
 
-  const handleGenerate = () => {
+  const handleGenerate = async () => {
     const found = validate();
     setErrors(found);
     if (found.length === 0) {
       setIsReady(true);
       setMobileView('preview');
       window.scrollTo({ top: 0, behavior: 'smooth' });
+
+      // Save quotation basic info under the logged-in editor account
+      const token = localStorage.getItem(TOKEN_KEY);
+      if (token) {
+        try {
+          await saveEditorQuotation(token, {
+            quoteNumber: form.quoteNumber,
+            clientName: form.clientName,
+            clientPhone: form.clientPhone,
+            clientEmail: form.clientEmail,
+            siteLocation: form.siteLocation,
+            packageName: form.packageName || form.packageId,
+            totalArea: totals.totalArea,
+            quotedRate: totals.rate,
+            grandTotal: totals.grandTotal
+          });
+        } catch (saveErr) {
+          console.warn('Could not record quotation log:', saveErr.message);
+        }
+      }
     }
   };
 

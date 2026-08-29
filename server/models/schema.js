@@ -149,6 +149,28 @@ export async function initDatabase() {
     `);
     console.log('Editor sessions table initialized.');
 
+    // 9. Create editor quotations table (records basic info when an editor generates a quotation)
+    await pool.query(`
+      CREATE TABLE IF NOT EXISTS editor_quotations (
+        id INT AUTO_INCREMENT PRIMARY KEY,
+        quote_number VARCHAR(100) NOT NULL,
+        editor_user_id INT,
+        editor_username VARCHAR(50),
+        editor_name VARCHAR(150),
+        client_name VARCHAR(255) NOT NULL,
+        client_phone VARCHAR(50),
+        client_email VARCHAR(255),
+        site_location VARCHAR(255),
+        package_name VARCHAR(100),
+        total_area DECIMAL(10,2) DEFAULT 0,
+        quoted_rate DECIMAL(10,2) DEFAULT 0,
+        grand_total DECIMAL(12,2) DEFAULT 0,
+        created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+        INDEX idx_eq_editor_user (editor_user_id)
+      )
+    `);
+    console.log('Editor quotations table initialized.');
+
     // 9. Seed pricing table if empty
     const [rowsPricing] = await pool.query('SELECT COUNT(*) as count FROM pricing');
     if (rowsPricing[0].count === 0) {

@@ -30,7 +30,9 @@ router.get('/', adminAuth, async (req, res) => {
     const [rows] = await pool.query(
       `SELECT u.id, u.username, u.full_name, u.is_active, u.createdAt, u.lastLoginAt,
               (SELECT COUNT(*) FROM editor_sessions s
-               WHERE s.user_id = u.id AND s.expiresAt > NOW()) AS activeSessions
+               WHERE s.user_id = u.id AND s.expiresAt > NOW()) AS activeSessions,
+              (SELECT COUNT(*) FROM editor_quotations q
+               WHERE q.editor_user_id = u.id) AS totalQuotations
        FROM editor_users u
        ORDER BY u.createdAt DESC`
     );

@@ -556,6 +556,62 @@ export async function deleteEditorUser(id, adminPassword) {
 }
 
 /**
+ * Save a generated quotation log (Editor Token required)
+ */
+export async function saveEditorQuotation(token, quotationData) {
+  const res = await fetch(`${API_BASE_URL}/editor-quotations`, {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+      'x-editor-token': token
+    },
+    body: JSON.stringify(quotationData)
+  });
+  if (!res.ok) {
+    const errData = await res.json().catch(() => ({}));
+    throw new Error(errData.error || 'Failed to save quotation log');
+  }
+  return await res.json();
+}
+
+/**
+ * Fetch generated quotations (Admin)
+ */
+export async function getEditorQuotations(adminPassword, editorUserId = null) {
+  const url = editorUserId
+    ? `${API_BASE_URL}/editor-quotations?editor_user_id=${editorUserId}`
+    : `${API_BASE_URL}/editor-quotations`;
+
+  const res = await fetch(url, {
+    headers: {
+      'x-admin-password': adminPassword
+    }
+  });
+  if (!res.ok) {
+    const errData = await res.json().catch(() => ({}));
+    throw new Error(errData.error || 'Failed to fetch editor quotations');
+  }
+  return await res.json();
+}
+
+/**
+ * Delete a quotation log entry (Admin)
+ */
+export async function deleteEditorQuotation(id, adminPassword) {
+  const res = await fetch(`${API_BASE_URL}/editor-quotations/${id}`, {
+    method: 'DELETE',
+    headers: {
+      'x-admin-password': adminPassword
+    }
+  });
+  if (!res.ok) {
+    const errData = await res.json().catch(() => ({}));
+    throw new Error(errData.error || 'Failed to delete quotation log');
+  }
+  return await res.json().catch(() => ({ success: true }));
+}
+
+/**
  * Send chat message history to chatbot API
  */
 export async function sendChatMessage(messages) {
@@ -572,4 +628,5 @@ export async function sendChatMessage(messages) {
   }
   return await res.json();
 }
+
 

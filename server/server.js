@@ -18,6 +18,7 @@ import blogsRouter from './routes/blogs.js';
 import uploadRouter from './routes/upload.js';
 import editorAuthRouter from './routes/editorAuth.js';
 import editorUsersRouter from './routes/editorUsers.js';
+import editorQuotationsRouter from './routes/editorQuotations.js';
 
 // Load .env from the same directory as server.js (works on any host)
 const __filename = fileURLToPath(import.meta.url);
@@ -103,6 +104,7 @@ app.use('/api/blogs', blogsRouter);
 app.use('/api/upload', uploadRouter);
 app.use('/api/editor-auth', editorAuthRouter);
 app.use('/api/editor-users', editorUsersRouter);
+app.use('/api/editor-quotations', editorQuotationsRouter);
 
 // Serve built React frontend (production)
 // FRONTEND_DIST_PATH can be overridden via env var if deployment folder structure differs
