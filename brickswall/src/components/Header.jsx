@@ -19,10 +19,12 @@ const Header = ({ currentPage, setCurrentPage, onOpenEstimate, settings }) => {
     return () => window.removeEventListener('scroll', handleScroll);
   }, []);
 
+  const showProjects = settings?.show_projects === 'true';
+
   const navLinks = [
     { id: 'home', label: 'Home' },
     { id: 'services', label: 'Services' },
-    // { id: 'projects', label: 'Projects' }, // Hidden for now
+    ...(showProjects ? [{ id: 'projects', label: 'Projects' }] : []),
     { id: 'packages', label: 'Packages' },
     { id: 'about', label: 'About Us' },
     { id: 'blog', label: 'Blog' },

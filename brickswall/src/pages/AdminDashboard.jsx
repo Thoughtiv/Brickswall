@@ -28,7 +28,9 @@ import {
   Image,
   KeyRound,
   UserPlus,
-  Power
+  Power,
+  Eye,
+  EyeOff
 } from 'lucide-react';
 import {
   getInquiries,
@@ -85,7 +87,8 @@ const AdminDashboard = () => {
     whatsapp: '',
     email: '',
     address: '',
-    office_hours: ''
+    office_hours: '',
+    show_projects: 'false'
   });
   const [isLoading, setIsLoading] = useState(false);
   const [saveStatus, setSaveStatus] = useState('');
@@ -2156,6 +2159,89 @@ const AdminDashboard = () => {
 
           {activeTab === 'projects' && (
             <div className="projects-manager-section animate-fade-in" style={{ padding: '8px' }}>
+              {/* Projects Visibility Control Banner */}
+              <div style={{
+                background: settings?.show_projects === 'true' ? '#f0fdf4' : '#fff7ed',
+                border: `1px solid ${settings?.show_projects === 'true' ? '#bbf7d0' : '#fed7aa'}`,
+                borderRadius: '14px',
+                padding: '16px 20px',
+                marginBottom: '20px',
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'space-between',
+                flexWrap: 'wrap',
+                gap: '16px'
+              }}>
+                <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
+                  <div style={{
+                    width: '38px',
+                    height: '38px',
+                    borderRadius: '10px',
+                    background: settings?.show_projects === 'true' ? '#16a34a' : '#ea580c',
+                    color: 'white',
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                    flexShrink: 0
+                  }}>
+                    {settings?.show_projects === 'true' ? <Eye size={20} /> : <EyeOff size={20} />}
+                  </div>
+                  <div>
+                    <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+                      <h4 style={{ margin: 0, fontSize: '14px', fontWeight: 800, color: '#0f172a' }}>Website Projects Section:</h4>
+                      <span style={{
+                        padding: '2px 10px',
+                        borderRadius: '20px',
+                        fontSize: '11px',
+                        fontWeight: 800,
+                        background: settings?.show_projects === 'true' ? '#dcfce7' : '#ffedd5',
+                        color: settings?.show_projects === 'true' ? '#15803d' : '#c2410c'
+                      }}>
+                        {settings?.show_projects === 'true' ? '🟢 VISIBLE ON WEBSITE' : '🟠 HIDDEN FROM WEBSITE'}
+                      </span>
+                    </div>
+                    <p style={{ margin: '2px 0 0 0', fontSize: '12px', color: '#64748b' }}>
+                      {settings?.show_projects === 'true'
+                        ? 'Projects gallery is currently active in the navigation menu, home page gallery, and footer.'
+                        : 'Projects page and home page gallery section are currently hidden from public site visitors.'}
+                    </p>
+                  </div>
+                </div>
+
+                <button
+                  type="button"
+                  onClick={async () => {
+                    const nextVal = settings?.show_projects === 'true' ? 'false' : 'true';
+                    const newSet = { ...settings, show_projects: nextVal };
+                    setSettings(newSet);
+                    try {
+                      await updateSettings(newSet, password);
+                    } catch (err) {
+                      console.error('Failed to save project toggle setting:', err);
+                    }
+                  }}
+                  style={{
+                    padding: '8px 16px',
+                    borderRadius: '8px',
+                    fontSize: '12px',
+                    fontWeight: 700,
+                    cursor: 'pointer',
+                    border: 'none',
+                    background: settings?.show_projects === 'true' ? '#ea580c' : '#16a34a',
+                    color: 'white',
+                    display: 'inline-flex',
+                    alignItems: 'center',
+                    gap: '6px'
+                  }}
+                >
+                  {settings?.show_projects === 'true' ? (
+                    <> <EyeOff size={14} /> Hide Projects from Website </>
+                  ) : (
+                    <> <Eye size={14} /> Enable &amp; Show Projects on Website </>
+                  )}
+                </button>
+              </div>
+
               <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '20px', flexWrap: 'wrap', gap: '12px' }}>
                 <div>
                   <h3 style={{ fontSize: '20px', fontWeight: 800, color: '#0f172a' }}>Portfolio Projects</h3>
@@ -2447,6 +2533,54 @@ const AdminDashboard = () => {
                       style={{ width: '100%', padding: '10px 14px', borderRadius: '8px', border: '1px solid #cbd5e1', fontSize: '13px' }}
                     />
                   </div>
+
+                  <div style={{
+                    padding: '16px',
+                    borderRadius: '12px',
+                    background: settings?.show_projects === 'true' ? '#f0fdf4' : '#f8fafc',
+                    border: `1px solid ${settings?.show_projects === 'true' ? '#bbf7d0' : '#e2e8f0'}`,
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'space-between',
+                    gap: '16px',
+                    marginTop: '8px'
+                  }}>
+                    <div>
+                      <label style={{ fontSize: '13px', fontWeight: 800, color: '#0f172a', display: 'block' }}>
+                        Projects Section Visibility
+                      </label>
+                      <p style={{ margin: '2px 0 0 0', fontSize: '12px', color: '#64748b' }}>
+                        Show or hide the Featured Projects gallery and menu navigation links across the website.
+                      </p>
+                    </div>
+                    <button
+                      type="button"
+                      onClick={() => {
+                        const newVal = settings?.show_projects === 'true' ? 'false' : 'true';
+                        setSettings(prev => ({ ...prev, show_projects: newVal }));
+                      }}
+                      style={{
+                        padding: '8px 14px',
+                        borderRadius: '20px',
+                        fontSize: '12px',
+                        fontWeight: 700,
+                        cursor: 'pointer',
+                        border: '1px solid',
+                        borderColor: settings?.show_projects === 'true' ? '#86efac' : '#cbd5e1',
+                        background: settings?.show_projects === 'true' ? '#dcfce7' : 'white',
+                        color: settings?.show_projects === 'true' ? '#15803d' : '#64748b',
+                        display: 'inline-flex',
+                        alignItems: 'center',
+                        gap: '6px'
+                      }}
+                    >
+                      {settings?.show_projects === 'true' ? (
+                        <> <Eye size={14} /> Visible (Click to Hide) </>
+                      ) : (
+                        <> <EyeOff size={14} /> Hidden (Click to Show) </>
+                      )}
+                    </button>
+                  </div>
                 </div>
 
                 <div className="save-pricing-bar" style={{ marginTop: '24px' }}>
@@ -2579,159 +2713,161 @@ const AdminDashboard = () => {
                       </thead>
                       <tbody>
                         {editorUsers.map(user => (
-                          <tr key={user.id}>
-                            <td style={{ padding: '12px 8px', borderBottom: '1px solid #f1f5f9' }}>
-                              <div style={{ fontWeight: 700, color: '#0f172a' }}>{user.full_name}</div>
-                              <div style={{ fontSize: '12px', color: '#64748b' }}>@{user.username}</div>
-                            </td>
-                            <td style={{ padding: '12px 8px', borderBottom: '1px solid #f1f5f9' }}>
-                              <span style={{
-                                display: 'inline-block',
-                                padding: '3px 10px',
-                                borderRadius: '20px',
-                                fontSize: '11px',
-                                fontWeight: 700,
-                                background: user.is_active ? '#f0fdf4' : '#f1f5f9',
-                                color: user.is_active ? '#15803d' : '#64748b'
-                              }}>
-                                {user.is_active ? 'Active' : 'Deactivated'}
-                              </span>
-                              {user.activeSessions > 0 && (
-                                <span style={{ fontSize: '11px', color: '#94a3b8', marginLeft: '8px' }}>
-                                  {user.activeSessions} signed in
+                          <React.Fragment key={user.id}>
+                            <tr>
+                              <td style={{ padding: '12px 8px', borderBottom: '1px solid #f1f5f9' }}>
+                                <div style={{ fontWeight: 700, color: '#0f172a' }}>{user.full_name}</div>
+                                <div style={{ fontSize: '12px', color: '#64748b' }}>@{user.username}</div>
+                              </td>
+                              <td style={{ padding: '12px 8px', borderBottom: '1px solid #f1f5f9' }}>
+                                <span style={{
+                                  display: 'inline-block',
+                                  padding: '3px 10px',
+                                  borderRadius: '20px',
+                                  fontSize: '11px',
+                                  fontWeight: 700,
+                                  background: user.is_active ? '#f0fdf4' : '#f1f5f9',
+                                  color: user.is_active ? '#15803d' : '#64748b'
+                                }}>
+                                  {user.is_active ? 'Active' : 'Deactivated'}
                                 </span>
-                              )}
-                            </td>
-                            <td style={{ padding: '12px 8px', borderBottom: '1px solid #f1f5f9', color: '#64748b', fontSize: '12px' }}>
-                              {user.lastLoginAt ? new Date(user.lastLoginAt).toLocaleString('en-IN') : 'Never'}
-                            </td>
-                            <td style={{ padding: '12px 8px', borderBottom: '1px solid #f1f5f9', textAlign: 'right' }}>
-                              <div style={{ display: 'inline-flex', gap: '6px', flexWrap: 'wrap', justifyContent: 'flex-end' }}>
-                                <button
-                                  type="button"
-                                  onClick={() => setExpandedEditorId(expandedEditorId === user.id ? null : user.id)}
-                                  title="View quotations generated by this editor"
-                                  style={{
-                                    padding: '6px 11px',
-                                    borderRadius: '7px',
-                                    border: '1px solid #dbeafe',
-                                    background: expandedEditorId === user.id ? '#dbeafe' : '#eff6ff',
-                                    color: '#1d4ed8',
-                                    fontSize: '12px',
-                                    fontWeight: 600,
-                                    cursor: 'pointer',
-                                    display: 'inline-flex',
-                                    alignItems: 'center',
-                                    gap: '5px'
-                                  }}
-                                >
-                                  <FileText size={13} />
-                                  {user.totalQuotations || 0} Quotations
-                                  {expandedEditorId === user.id ? <ChevronUp size={13} /> : <ChevronDown size={13} />}
-                                </button>
-                                <button
-                                  type="button"
-                                  onClick={() => handleResetEditorPassword(user)}
-                                  title="Reset password"
-                                  style={{ padding: '6px 11px', borderRadius: '7px', border: '1px solid #cbd5e1', background: 'white', color: '#475569', fontSize: '12px', fontWeight: 600, cursor: 'pointer', display: 'inline-flex', alignItems: 'center', gap: '5px' }}
-                                >
-                                  <KeyRound size={13} /> Reset
-                                </button>
-                                <button
-                                  type="button"
-                                  onClick={() => handleToggleEditorUser(user)}
-                                  title={user.is_active ? 'Deactivate user' : 'Reactivate user'}
-                                  style={{ padding: '6px 11px', borderRadius: '7px', border: '1px solid #cbd5e1', background: 'white', color: user.is_active ? '#b45309' : '#15803d', fontSize: '12px', fontWeight: 600, cursor: 'pointer', display: 'inline-flex', alignItems: 'center', gap: '5px' }}
-                                >
-                                  <Power size={13} /> {user.is_active ? 'Deactivate' : 'Activate'}
-                                </button>
-                                <button
-                                  type="button"
-                                  onClick={() => handleDeleteEditorUser(user)}
-                                  title="Delete user"
-                                  style={{ padding: '6px 11px', borderRadius: '7px', border: '1px solid #fecaca', background: '#fef2f2', color: '#b91c1c', fontSize: '12px', fontWeight: 600, cursor: 'pointer', display: 'inline-flex', alignItems: 'center', gap: '5px' }}
-                                >
-                                  <Trash2 size={13} /> Delete
-                                </button>
-                              </div>
-                            </td>
-                          </tr>
-                          { expandedEditorId === user.id && (
-                            <tr key={`quotes-${user.id}`}>
-                              <td colSpan={4} style={{ padding: '0 8px 16px 8px', background: '#f8fafc', borderBottom: '1px solid #e2e8f0' }}>
-                                <div style={{ padding: '16px', background: 'white', borderRadius: '12px', border: '1px solid #cbd5e1', marginTop: '8px' }}>
-                                  <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '12px' }}>
-                                    <h5 style={{ fontSize: '14px', fontWeight: 800, color: '#0f172a', display: 'flex', alignItems: 'center', gap: '6px', margin: 0 }}>
-                                      <FileText size={15} style={{ color: '#d9531e' }} />
-                                      Quotations Generated by {user.full_name} ({editorQuotations.filter(q => q.editor_user_id === user.id).length})
-                                    </h5>
-                                  </div>
-
-                                  {editorQuotations.filter(q => q.editor_user_id === user.id).length === 0 ? (
-                                    <p style={{ fontSize: '12px', color: '#94a3b8', margin: 0, fontStyle: 'italic' }}>
-                                      No quotations generated yet by {user.full_name}.
-                                    </p>
-                                  ) : (
-                                    <div style={{ overflowX: 'auto' }}>
-                                      <table style={{ width: '100%', borderCollapse: 'collapse', fontSize: '12px' }}>
-                                        <thead>
-                                          <tr style={{ background: '#f1f5f9', textAlign: 'left', color: '#475569', fontSize: '11px', textTransform: 'uppercase' }}>
-                                            <th style={{ padding: '8px 10px' }}>Quote #</th>
-                                            <th style={{ padding: '8px 10px' }}>Client</th>
-                                            <th style={{ padding: '8px 10px' }}>Site Location</th>
-                                            <th style={{ padding: '8px 10px' }}>Package &amp; Rate</th>
-                                            <th style={{ padding: '8px 10px' }}>Built-up Area</th>
-                                            <th style={{ padding: '8px 10px' }}>Grand Total</th>
-                                            <th style={{ padding: '8px 10px' }}>Date</th>
-                                            <th style={{ padding: '8px 10px', textAlign: 'right' }}>Action</th>
-                                          </tr>
-                                        </thead>
-                                        <tbody>
-                                          {editorQuotations
-                                            .filter(q => q.editor_user_id === user.id)
-                                            .map(q => (
-                                              <tr key={q.id} style={{ borderBottom: '1px solid #f1f5f9' }}>
-                                                <td style={{ padding: '8px 10px', fontWeight: 700, color: '#0f172a' }}>{q.quote_number}</td>
-                                                <td style={{ padding: '8px 10px' }}>
-                                                  <div style={{ fontWeight: 600, color: '#0f172a' }}>{q.client_name}</div>
-                                                  {(q.client_phone || q.client_email) && (
-                                                    <div style={{ fontSize: '11px', color: '#64748b' }}>
-                                                      {[q.client_phone, q.client_email].filter(Boolean).join(' | ')}
-                                                    </div>
-                                                  )}
-                                                </td>
-                                                <td style={{ padding: '8px 10px', color: '#475569' }}>{q.site_location || '—'}</td>
-                                                <td style={{ padding: '8px 10px' }}>
-                                                  <span style={{ fontWeight: 600, color: '#d9531e' }}>{q.package_name}</span>
-                                                  {q.quoted_rate > 0 && <span style={{ fontSize: '11px', color: '#64748b', display: 'block' }}>₹{Number(q.quoted_rate).toLocaleString('en-IN')}/sq.ft</span>}
-                                                </td>
-                                                <td style={{ padding: '8px 10px', color: '#475569' }}>{Number(q.total_area).toLocaleString('en-IN')} sq.ft</td>
-                                                <td style={{ padding: '8px 10px', fontWeight: 700, color: '#16a34a' }}>
-                                                  ₹{Number(q.grand_total).toLocaleString('en-IN')}
-                                                </td>
-                                                <td style={{ padding: '8px 10px', color: '#64748b', fontSize: '11px' }}>
-                                                  {q.created_at ? new Date(q.created_at).toLocaleString('en-IN') : '—'}
-                                                </td>
-                                                <td style={{ padding: '8px 10px', textAlign: 'right' }}>
-                                                  <button
-                                                    type="button"
-                                                    onClick={() => handleDeleteQuotationLog(q.id)}
-                                                    title="Delete this quotation record"
-                                                    style={{ padding: '4px 8px', borderRadius: '5px', border: '1px solid #fecaca', background: '#fef2f2', color: '#b91c1c', fontSize: '11px', fontWeight: 600, cursor: 'pointer' }}
-                                                  >
-                                                    <Trash2 size={12} />
-                                                  </button>
-                                                </td>
-                                              </tr>
-                                            ))}
-                                        </tbody>
-                                      </table>
-                                    </div>
-                                  )}
+                                {user.activeSessions > 0 && (
+                                  <span style={{ fontSize: '11px', color: '#94a3b8', marginLeft: '8px' }}>
+                                    {user.activeSessions} signed in
+                                  </span>
+                                )}
+                              </td>
+                              <td style={{ padding: '12px 8px', borderBottom: '1px solid #f1f5f9', color: '#64748b', fontSize: '12px' }}>
+                                {user.lastLoginAt ? new Date(user.lastLoginAt).toLocaleString('en-IN') : 'Never'}
+                              </td>
+                              <td style={{ padding: '12px 8px', borderBottom: '1px solid #f1f5f9', textAlign: 'right' }}>
+                                <div style={{ display: 'inline-flex', gap: '6px', flexWrap: 'wrap', justifyContent: 'flex-end' }}>
+                                  <button
+                                    type="button"
+                                    onClick={() => setExpandedEditorId(expandedEditorId === user.id ? null : user.id)}
+                                    title="View quotations generated by this editor"
+                                    style={{
+                                      padding: '6px 11px',
+                                      borderRadius: '7px',
+                                      border: '1px solid #dbeafe',
+                                      background: expandedEditorId === user.id ? '#dbeafe' : '#eff6ff',
+                                      color: '#1d4ed8',
+                                      fontSize: '12px',
+                                      fontWeight: 600,
+                                      cursor: 'pointer',
+                                      display: 'inline-flex',
+                                      alignItems: 'center',
+                                      gap: '5px'
+                                    }}
+                                  >
+                                    <FileText size={13} />
+                                    {user.totalQuotations || 0} Quotations
+                                    {expandedEditorId === user.id ? <ChevronUp size={13} /> : <ChevronDown size={13} />}
+                                  </button>
+                                  <button
+                                    type="button"
+                                    onClick={() => handleResetEditorPassword(user)}
+                                    title="Reset password"
+                                    style={{ padding: '6px 11px', borderRadius: '7px', border: '1px solid #cbd5e1', background: 'white', color: '#475569', fontSize: '12px', fontWeight: 600, cursor: 'pointer', display: 'inline-flex', alignItems: 'center', gap: '5px' }}
+                                  >
+                                    <KeyRound size={13} /> Reset
+                                  </button>
+                                  <button
+                                    type="button"
+                                    onClick={() => handleToggleEditorUser(user)}
+                                    title={user.is_active ? 'Deactivate user' : 'Reactivate user'}
+                                    style={{ padding: '6px 11px', borderRadius: '7px', border: '1px solid #cbd5e1', background: 'white', color: user.is_active ? '#b45309' : '#15803d', fontSize: '12px', fontWeight: 600, cursor: 'pointer', display: 'inline-flex', alignItems: 'center', gap: '5px' }}
+                                  >
+                                    <Power size={13} /> {user.is_active ? 'Deactivate' : 'Activate'}
+                                  </button>
+                                  <button
+                                    type="button"
+                                    onClick={() => handleDeleteEditorUser(user)}
+                                    title="Delete user"
+                                    style={{ padding: '6px 11px', borderRadius: '7px', border: '1px solid #fecaca', background: '#fef2f2', color: '#b91c1c', fontSize: '12px', fontWeight: 600, cursor: 'pointer', display: 'inline-flex', alignItems: 'center', gap: '5px' }}
+                                  >
+                                    <Trash2 size={13} /> Delete
+                                  </button>
                                 </div>
                               </td>
                             </tr>
-                          )}
+                            {expandedEditorId === user.id && (
+                              <tr key={`quotes-${user.id}`}>
+                                <td colSpan={4} style={{ padding: '0 8px 16px 8px', background: '#f8fafc', borderBottom: '1px solid #e2e8f0' }}>
+                                  <div style={{ padding: '16px', background: 'white', borderRadius: '12px', border: '1px solid #cbd5e1', marginTop: '8px' }}>
+                                    <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '12px' }}>
+                                      <h5 style={{ fontSize: '14px', fontWeight: 800, color: '#0f172a', display: 'flex', alignItems: 'center', gap: '6px', margin: 0 }}>
+                                        <FileText size={15} style={{ color: '#d9531e' }} />
+                                        Quotations Generated by {user.full_name} ({editorQuotations.filter(q => q.editor_user_id === user.id).length})
+                                      </h5>
+                                    </div>
+
+                                    {editorQuotations.filter(q => q.editor_user_id === user.id).length === 0 ? (
+                                      <p style={{ fontSize: '12px', color: '#94a3b8', margin: 0, fontStyle: 'italic' }}>
+                                        No quotations generated yet by {user.full_name}.
+                                      </p>
+                                    ) : (
+                                      <div style={{ overflowX: 'auto' }}>
+                                        <table style={{ width: '100%', borderCollapse: 'collapse', fontSize: '12px' }}>
+                                          <thead>
+                                            <tr style={{ background: '#f1f5f9', textAlign: 'left', color: '#475569', fontSize: '11px', textTransform: 'uppercase' }}>
+                                              <th style={{ padding: '8px 10px' }}>Quote #</th>
+                                              <th style={{ padding: '8px 10px' }}>Client</th>
+                                              <th style={{ padding: '8px 10px' }}>Site Location</th>
+                                              <th style={{ padding: '8px 10px' }}>Package &amp; Rate</th>
+                                              <th style={{ padding: '8px 10px' }}>Built-up Area</th>
+                                              <th style={{ padding: '8px 10px' }}>Grand Total</th>
+                                              <th style={{ padding: '8px 10px' }}>Date</th>
+                                              <th style={{ padding: '8px 10px', textAlign: 'right' }}>Action</th>
+                                            </tr>
+                                          </thead>
+                                          <tbody>
+                                            {editorQuotations
+                                              .filter(q => q.editor_user_id === user.id)
+                                              .map(q => (
+                                                <tr key={q.id} style={{ borderBottom: '1px solid #f1f5f9' }}>
+                                                  <td style={{ padding: '8px 10px', fontWeight: 700, color: '#0f172a' }}>{q.quote_number}</td>
+                                                  <td style={{ padding: '8px 10px' }}>
+                                                    <div style={{ fontWeight: 600, color: '#0f172a' }}>{q.client_name}</div>
+                                                    {(q.client_phone || q.client_email) && (
+                                                      <div style={{ fontSize: '11px', color: '#64748b' }}>
+                                                        {[q.client_phone, q.client_email].filter(Boolean).join(' | ')}
+                                                      </div>
+                                                    )}
+                                                  </td>
+                                                  <td style={{ padding: '8px 10px', color: '#475569' }}>{q.site_location || '—'}</td>
+                                                  <td style={{ padding: '8px 10px' }}>
+                                                    <span style={{ fontWeight: 600, color: '#d9531e' }}>{q.package_name}</span>
+                                                    {q.quoted_rate > 0 && <span style={{ fontSize: '11px', color: '#64748b', display: 'block' }}>₹{Number(q.quoted_rate).toLocaleString('en-IN')}/sq.ft</span>}
+                                                  </td>
+                                                  <td style={{ padding: '8px 10px', color: '#475569' }}>{Number(q.total_area).toLocaleString('en-IN')} sq.ft</td>
+                                                  <td style={{ padding: '8px 10px', fontWeight: 700, color: '#16a34a' }}>
+                                                    ₹{Number(q.grand_total).toLocaleString('en-IN')}
+                                                  </td>
+                                                  <td style={{ padding: '8px 10px', color: '#64748b', fontSize: '11px' }}>
+                                                    {q.created_at ? new Date(q.created_at).toLocaleString('en-IN') : '—'}
+                                                  </td>
+                                                  <td style={{ padding: '8px 10px', textAlign: 'right' }}>
+                                                    <button
+                                                      type="button"
+                                                      onClick={() => handleDeleteQuotationLog(q.id)}
+                                                      title="Delete this quotation record"
+                                                      style={{ padding: '4px 8px', borderRadius: '5px', border: '1px solid #fecaca', background: '#fef2f2', color: '#b91c1c', fontSize: '11px', fontWeight: 600, cursor: 'pointer' }}
+                                                    >
+                                                      <Trash2 size={12} />
+                                                    </button>
+                                                  </td>
+                                                </tr>
+                                              ))}
+                                          </tbody>
+                                        </table>
+                                      </div>
+                                    )}
+                                  </div>
+                                </td>
+                              </tr>
+                            )}
+                          </React.Fragment>
                         ))}
                       </tbody>
                     </table>

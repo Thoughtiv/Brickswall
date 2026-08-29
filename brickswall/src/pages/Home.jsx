@@ -1148,43 +1148,44 @@ const Home = ({ setCurrentPage, navigateToService, navigateToProject, onOpenEsti
         </div>
       </section>
 
-      {/* Featured Projects - Hidden for now
-      <section className="section-padding">
-        <div className="container">
-          <div className="section-title-wrapper">
-            <span className="section-subtitle">Featured Projects</span>
-            <h2 className="section-heading">Completed Projects Across Hyderabad</h2>
-            <p className="section-desc">
-              Take a look at some of our recently delivered residential villas, homes, and commercial spaces.
-            </p>
-          </div>
+      {/* Featured Projects */}
+      {settings?.show_projects === 'true' && (
+        <section className="section-padding">
+          <div className="container">
+            <div className="section-title-wrapper">
+              <span className="section-subtitle">Featured Projects</span>
+              <h2 className="section-heading">Completed Projects Across Hyderabad</h2>
+              <p className="section-desc">
+                Take a look at some of our recently delivered residential villas, homes, and commercial spaces.
+              </p>
+            </div>
 
-          <div className="grid grid-3 gap-6">
-            {featuredProjects.map((project, idx) => (
-              <div key={idx} className="project-card cursor-pointer" onClick={() => navigateToProject(project.category || 'all', project)}>
-                <div className="project-img-box">
-                  <img src={project.image} alt={project.title} />
-                  <span className="project-type-badge">{project.type}</span>
-                </div>
-                <div className="project-body">
-                  <h3>{project.title}</h3>
-                  <div className="project-meta">
-                    <span><MapPin size={14} className="text-orange" /> {project.location}</span>
-                    <span><Maximize2 size={14} className="text-orange" /> {project.size}</span>
+            <div className="grid grid-3 gap-6">
+              {featuredProjects.map((project, idx) => (
+                <div key={idx} className="project-card cursor-pointer" onClick={() => navigateToProject(project.category || 'all', project)}>
+                  <div className="project-img-box">
+                    <img src={project.image} alt={project.title} />
+                    <span className="project-type-badge">{project.type || project.categoryLabel}</span>
+                  </div>
+                  <div className="project-body">
+                    <h3>{project.title}</h3>
+                    <div className="project-meta">
+                      <span><MapPin size={14} className="text-orange" /> {project.location}</span>
+                      <span><Maximize2 size={14} className="text-orange" /> {project.size}</span>
+                    </div>
                   </div>
                 </div>
-              </div>
-            ))}
-          </div>
+              ))}
+            </div>
 
-          <div className="text-center mt-8">
-            <button onClick={() => setCurrentPage('projects')} className="btn btn-outline btn-lg">
-              Explore Full Project Portfolio
-            </button>
+            <div className="text-center mt-8">
+              <button onClick={() => setCurrentPage('projects')} className="btn btn-outline btn-lg">
+                Explore Full Project Portfolio
+              </button>
+            </div>
           </div>
-        </div>
-      </section>
-      */}
+        </section>
+      )}
 
       {/* Customer Testimonials */}
       <section className="section-padding bg-subtle">

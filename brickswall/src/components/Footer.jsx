@@ -126,12 +126,14 @@ const Footer = ({ setCurrentPage, onOpenEstimate, settings }) => {
                     <span>Our Services</span>
                   </button>
                 </li>
-                {/* <li>
-                  <button onClick={() => handleNavigate('projects')}>
-                    <ChevronRight size={14} className="bw-arrow-icon" />
-                    <span>Featured Projects</span>
-                  </button>
-                </li> */}
+                {settings?.show_projects === 'true' && (
+                  <li>
+                    <button onClick={() => handleNavigate('projects')}>
+                      <ChevronRight size={14} className="bw-arrow-icon" />
+                      <span>Featured Projects</span>
+                    </button>
+                  </li>
+                )}
                 <li>
                   <button onClick={() => handleNavigate('packages')}>
                     <ChevronRight size={14} className="bw-arrow-icon" />
