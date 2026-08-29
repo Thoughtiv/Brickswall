@@ -10,7 +10,7 @@ export async function initDatabase() {
         priceNum INT NOT NULL,
         pricePerSqFt VARCHAR(50) NOT NULL,
         badge VARCHAR(100),
-        `desc` TEXT,
+        "desc" TEXT,
         materialHeading VARCHAR(150),
         materials TEXT,
         warranty VARCHAR(255),
