@@ -429,44 +429,6 @@ const AdminDashboard = () => {
     }));
   };
 
-  // Material Specs item array handlers
-  const handleMaterialItemChange = (tier, index, val) => {
-    setEditablePricing(prev => {
-      const list = [...(prev[tier]?.materials || [])];
-      list[index] = val;
-      return {
-        ...prev,
-        [tier]: {
-          ...prev[tier],
-          materials: list
-        }
-      };
-    });
-  };
-
-  const handleAddMaterialItem = (tier) => {
-    setEditablePricing(prev => ({
-      ...prev,
-      [tier]: {
-        ...prev[tier],
-        materials: [...(prev[tier]?.materials || []), '']
-      }
-    }));
-  };
-
-  const handleRemoveMaterialItem = (tier, index) => {
-    setEditablePricing(prev => {
-      const list = (prev[tier]?.materials || []).filter((_, i) => i !== index);
-      return {
-        ...prev,
-        [tier]: {
-          ...prev[tier],
-          materials: list
-        }
-      };
-    });
-  };
-
   // Included Services item array handlers
   const handleServiceItemChange = (tier, index, val) => {
     setEditablePricing(prev => {
@@ -1880,54 +1842,6 @@ const AdminDashboard = () => {
                             onChange={(e) => handlePriceFieldChange(tier, 'desc', e.target.value)}
                             style={{ resize: 'vertical' }}
                           ></textarea>
-                        </div>
-
-                        {/* Material Specs Heading */}
-                        <div className="tier-form-group" style={{ marginTop: '16px', paddingTop: '12px', borderTop: '1px dashed #cbd5e1' }}>
-                          <label style={{ fontWeight: 800, color: '#1e293b' }}>Material Specs Section Title</label>
-                          <input
-                            type="text"
-                            className="tier-input"
-                            value={editablePricing[tier]?.materialHeading || 'Material Specs'}
-                            onChange={(e) => handlePriceFieldChange(tier, 'materialHeading', e.target.value)}
-                            placeholder="e.g. Material Specs"
-                          />
-                        </div>
-
-                        {/* Material Specs List Items */}
-                        <div className="tier-form-group">
-                          <label style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '6px' }}>
-                            <span>Material Specs Points ({editablePricing[tier]?.materials?.length || 0})</span>
-                          </label>
-                          <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
-                            {(editablePricing[tier]?.materials || []).map((item, idx) => (
-                              <div key={idx} style={{ display: 'flex', gap: '6px', alignItems: 'center' }}>
-                                <input
-                                  type="text"
-                                  className="tier-input"
-                                  value={item}
-                                  onChange={(e) => handleMaterialItemChange(tier, idx, e.target.value)}
-                                  placeholder={`e.g. Cement: Ultratech / ACC 53 Grade`}
-                                  style={{ flex: 1, fontSize: '12px' }}
-                                />
-                                <button
-                                  type="button"
-                                  onClick={() => handleRemoveMaterialItem(tier, idx)}
-                                  style={{ background: '#fee2e2', color: '#ef4444', border: '1px solid #fca5a5', padding: '6px 8px', borderRadius: '6px', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}
-                                  title="Remove Spec"
-                                >
-                                  <Trash2 size={14} />
-                                </button>
-                              </div>
-                            ))}
-                          </div>
-                          <button
-                            type="button"
-                            onClick={() => handleAddMaterialItem(tier)}
-                            style={{ marginTop: '10px', background: '#e0f2fe', color: '#0284c7', border: '1px dashed #38bdf8', padding: '8px 12px', borderRadius: '6px', fontSize: '12px', fontWeight: 700, cursor: 'pointer', display: 'inline-flex', alignItems: 'center', gap: '4px', width: '100%', justifyContent: 'center' }}
-                          >
-                            <Plus size={14} /> Add Material Spec Point
-                          </button>
                         </div>
 
                         {/* Structural Warranty */}

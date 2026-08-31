@@ -10,17 +10,7 @@ router.get('/', async (req, res) => {
     const [rows] = await pool.query('SELECT * FROM pricing');
     const pricingMap = {};
     rows.forEach(row => {
-      let materials = [];
       let services = [];
-      if (row.materials) {
-        try {
-          materials = typeof row.materials === 'string' && row.materials.trim().startsWith('[')
-            ? JSON.parse(row.materials)
-            : row.materials.split('\n').map(s => s.trim()).filter(Boolean);
-        } catch (e) {
-          materials = row.materials.split('\n').map(s => s.trim()).filter(Boolean);
-        }
-      }
       if (row.services) {
         try {
           services = typeof row.services === 'string' && row.services.trim().startsWith('[')
@@ -38,8 +28,6 @@ router.get('/', async (req, res) => {
         pricePerSqFt: row.pricePerSqFt,
         badge: row.badge,
         desc: row.desc,
-        materialHeading: row.materialHeading || 'Material Specs',
-        materials: materials,
         warranty: row.warranty || '',
         servicesHeading: row.servicesHeading || 'Included Services & Warranty',
         services: services
@@ -62,42 +50,71 @@ router.put('/', adminAuth, async (req, res) => {
 
   try {
     for (const [id, pkg] of Object.entries(packages)) {
-      const priceNum = Number(pkg.priceNum) || 0;
-      const pricePerSqFt = `₹${priceNum.toLocaleString('en-IN')} / sq.ft`;
-      
-      let materialsStr = '';
-      if (Array.isArray(pkg.materials)) {
-        materialsStr = JSON.stringify(pkg.materials.map(s => String(s).trim()).filter(Boolean));
-      } else if (typeof pkg.materials === 'string') {
-        materialsStr = JSON.stringify(pkg.materials.split('\n').map(s => s.trim()).filter(Boolean));
+      // Only columns actually present in the payload are written. The admin panel
+      // falls back to a stub package object when it cannot read live pricing, and
+      // blindly coercing every missing field to '' wiped saved copy in production.
+      const updates = {};
+
+      if (pkg.name !== undefined) updates.name = pkg.name || id;
+      if (pkg.badge !== undefined) updates.badge = pkg.badge || '';
+      if (pkg.desc !== undefined) updates['`desc`'] = pkg.desc || '';
+      if (pkg.warranty !== undefined) updates.warranty = pkg.warranty || '';
+      if (pkg.servicesHeading !== undefined) {
+        updates.servicesHeading = pkg.servicesHeading || 'Included Services & Warranty';
       }
 
-      let servicesStr = '';
-      if (Array.isArray(pkg.services)) {
-        servicesStr = JSON.stringify(pkg.services.map(s => String(s).trim()).filter(Boolean));
-      } else if (typeof pkg.services === 'string') {
-        servicesStr = JSON.stringify(pkg.services.split('\n').map(s => s.trim()).filter(Boolean));
+      if (pkg.priceNum !== undefined) {
+        const priceNum = Number(pkg.priceNum) || 0;
+        updates.priceNum = priceNum;
+        updates.pricePerSqFt = `₹${priceNum.toLocaleString('en-IN')} / sq.ft`;
       }
 
-      const materialHeading = pkg.materialHeading || 'Material Specs';
-      const servicesHeading = pkg.servicesHeading || 'Included Services & Warranty';
+      if (pkg.services !== undefined) {
+        const list = Array.isArray(pkg.services)
+          ? pkg.services
+          : String(pkg.services).split('\n');
+        updates.services = JSON.stringify(list.map(s => String(s).trim()).filter(Boolean));
+      }
 
-      await pool.query(
-        'UPDATE pricing SET name = ?, priceNum = ?, pricePerSqFt = ?, badge = ?, `desc` = ?, materialHeading = ?, materials = ?, warranty = ?, servicesHeading = ?, services = ? WHERE id = ?',
-        [pkg.name || id, priceNum, pricePerSqFt, pkg.badge || '', pkg.desc || '', materialHeading, materialsStr, pkg.warranty || '', servicesHeading, servicesStr, id]
+      const columns = Object.keys(updates);
+      if (columns.length === 0) continue;
+
+      const [result] = await pool.query(
+        `UPDATE pricing SET ${columns.map(c => `${c} = ?`).join(', ')} WHERE id = ?`,
+        [...columns.map(c => updates[c]), id]
       );
+
+      // A plain UPDATE reports success while changing nothing when the tier row is
+      // missing, so insert it instead of silently dropping the admin's edit.
+      if (result.affectedRows === 0) {
+        const priceNum = Number(pkg.priceNum) || 0;
+        await pool.query(
+          'INSERT INTO pricing (id, name, priceNum, pricePerSqFt, badge, `desc`, warranty, servicesHeading, services) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)',
+          [
+            id,
+            pkg.name || id,
+            priceNum,
+            `₹${priceNum.toLocaleString('en-IN')} / sq.ft`,
+            pkg.badge || '',
+            pkg.desc || '',
+            pkg.warranty || '',
+            pkg.servicesHeading || 'Included Services & Warranty',
+            updates.services || '[]'
+          ]
+        );
+      }
     }
     res.json({ success: true, message: 'Pricing configurations updated successfully' });
   } catch (err) {
     console.error('Error updating pricing:', err);
-    res.status(500).json({ error: 'Failed to update pricing database' });
+    res.status(500).json({ error: `Failed to update pricing database: ${err.message}` });
   }
 });
 
 // GET Package Comparison Matrix (Public)
 router.get('/matrix', async (req, res) => {
   try {
-    const [rows] = await pool.query('SELECT value FROM settings WHERE key_name = "package_matrix"');
+    const [rows] = await pool.query('SELECT value FROM settings WHERE key_name = ?', ['package_matrix']);
     if (rows.length > 0 && rows[0].value) {
       return res.json(JSON.parse(rows[0].value));
     }
@@ -117,8 +134,8 @@ router.put('/matrix', adminAuth, async (req, res) => {
   try {
     const matrixJson = JSON.stringify(matrix);
     await pool.query(
-      'INSERT INTO settings (key_name, value) VALUES ("package_matrix", ?) ON DUPLICATE KEY UPDATE value = ?',
-      [matrixJson, matrixJson]
+      'INSERT INTO settings (key_name, value) VALUES (?, ?) ON DUPLICATE KEY UPDATE value = ?',
+      ['package_matrix', matrixJson, matrixJson]
     );
     res.json({ success: true, message: 'Package comparison matrix updated successfully', matrix });
   } catch (err) {

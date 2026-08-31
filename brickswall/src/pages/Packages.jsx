@@ -42,14 +42,6 @@ const Packages = ({ onOpenEstimate }) => {
       badge: 'Economical Solution',
       isPopular: false,
       desc: 'An affordable solution designed for quality residential construction with dependable materials and essential finishes.',
-      materials: [
-        'Cement: Ultratech / ACC 53 Grade',
-        'Steel: Simhadri / Vizag TMT Fe500',
-        'Bricks: High quality red bricks',
-        'Flooring: Vitrified tiles (up to ₹60/sq.ft)',
-        'Doors: Flush doors with wood frame',
-        'Paint: Asian Paints Tractor Emulsion'
-      ],
       warranty: '5 Years Structural Warranty',
       services: [
         'Structural & Architectural Layout',
@@ -66,14 +58,6 @@ const Packages = ({ onOpenEstimate }) => {
       badge: 'Most Popular',
       isPopular: true,
       desc: 'Ideal for homeowners seeking enhanced finishes, premium materials, custom elevation designs, and additional customization.',
-      materials: [
-        'Cement: Ultratech Super / Coromandel',
-        'Steel: Tata Tiscon / JSW Neosteel Fe550',
-        'Bricks: First class kiln red clay bricks',
-        'Flooring: Premium Vitrified (up to ₹100/sq.ft)',
-        'Doors: Teak wood main door & frames',
-        'Paint: Asian Paints Royal Shine Emulsion'
-      ],
       warranty: '10 Years Structural Warranty',
       services: [
         '3D Elevation & Floor Plan Design',
@@ -91,14 +75,6 @@ const Packages = ({ onOpenEstimate }) => {
       badge: 'Ultra High-End',
       isPopular: false,
       desc: 'Designed for premium residences featuring superior materials, elegant interiors, modern architecture, and luxury finishes.',
-      materials: [
-        'Cement: Ultratech Premium / High-grade',
-        'Steel: Tata Tiscon Super Ductile Fe550D',
-        'Bricks: AAC blocks or high-density wire-cut bricks',
-        'Flooring: Italian Marble or Granites (up to ₹250/sq.ft)',
-        'Doors: Teak wood main door with digital smart lock',
-        'Paint: Royal Aspira Anti-bacterial Finish'
-      ],
       warranty: '15 Years Structural Warranty',
       services: [
         'Full 3D Architectural VR Walkthroughs',
@@ -119,8 +95,6 @@ const Packages = ({ onOpenEstimate }) => {
         priceNum: live.priceNum || pkg.priceNum,
         badge: live.badge !== undefined ? live.badge : pkg.badge,
         desc: live.desc !== undefined ? live.desc : pkg.desc,
-        materials: Array.isArray(live.materials) && live.materials.length > 0 ? live.materials : pkg.materials,
-        materialHeading: live.materialHeading || 'Material Specs',
         warranty: live.warranty || pkg.warranty,
         services: Array.isArray(live.services) && live.services.length > 0 ? live.services : pkg.services,
         servicesHeading: live.servicesHeading || 'Included Services & Warranty'
@@ -173,15 +147,6 @@ const Packages = ({ onOpenEstimate }) => {
                   </button>
 
                   <div className="pkg-spec-group">
-                    <h4>{pkg.materialHeading || 'Material Specs'}:</h4>
-                    <ul>
-                      {pkg.materials.map((m, i) => (
-                        <li key={i}><Check size={14} className="text-orange" /> {m}</li>
-                      ))}
-                    </ul>
-                  </div>
-
-                  <div className="pkg-spec-group spec-separator">
                     <h4>{pkg.servicesHeading || 'Included Services & Warranty'}:</h4>
                     <ul>
                       {pkg.warranty && <li><ShieldCheck size={14} className="text-orange" /> <strong>{pkg.warranty}</strong></li>}

@@ -1,8 +1,22 @@
 import { pool } from '../config/db.js';
 
-export async function initDatabase() {
+/**
+ * Runs one initialization step in isolation.
+ *
+ * Each step is independent, so a statement that fails on one host (an unsupported
+ * quoting mode, a pre-existing table, a permissions gap) can no longer abort the
+ * whole routine and silently skip every migration that follows it.
+ */
+async function step(label, fn) {
   try {
-    // 1. Create pricing table
+    await fn();
+  } catch (err) {
+    console.error(`Database init step failed [${label}]:`, err.message);
+  }
+}
+
+export async function initDatabase() {
+  await step('Create pricing table', async () => {
     await pool.query(`
       CREATE TABLE IF NOT EXISTS pricing (
         id VARCHAR(50) PRIMARY KEY,
@@ -10,9 +24,7 @@ export async function initDatabase() {
         priceNum INT NOT NULL,
         pricePerSqFt VARCHAR(50) NOT NULL,
         badge VARCHAR(100),
-        "desc" TEXT,
-        materialHeading VARCHAR(150),
-        materials TEXT,
+        \`desc\` TEXT,
         warranty VARCHAR(255),
         servicesHeading VARCHAR(150),
         services TEXT,
@@ -24,12 +36,6 @@ export async function initDatabase() {
     try {
       const [cols] = await pool.query('SHOW COLUMNS FROM pricing');
       const colNames = cols.map(c => c.Field);
-      if (!colNames.includes('materialHeading')) {
-        await pool.query('ALTER TABLE pricing ADD COLUMN materialHeading VARCHAR(150)');
-      }
-      if (!colNames.includes('materials')) {
-        await pool.query('ALTER TABLE pricing ADD COLUMN materials TEXT');
-      }
       if (!colNames.includes('warranty')) {
         await pool.query('ALTER TABLE pricing ADD COLUMN warranty VARCHAR(255)');
       }
@@ -43,8 +49,9 @@ export async function initDatabase() {
       console.warn('Pricing column check warning:', colErr.message);
     }
     console.log('Pricing table initialized.');
+  });
 
-    // 2. Create inquiries table
+  await step('Create inquiries table', async () => {
     await pool.query(`
       CREATE TABLE IF NOT EXISTS inquiries (
         id INT AUTO_INCREMENT PRIMARY KEY,
@@ -64,8 +71,9 @@ export async function initDatabase() {
       )
     `);
     console.log('Inquiries table initialized.');
+  });
 
-    // 3. Create projects table
+  await step('Create projects table', async () => {
     await pool.query(`
       CREATE TABLE IF NOT EXISTS projects (
         id INT AUTO_INCREMENT PRIMARY KEY,
@@ -81,8 +89,9 @@ export async function initDatabase() {
       )
     `);
     console.log('Projects table initialized.');
+  });
 
-    // 4. Create testimonials table
+  await step('Create testimonials table', async () => {
     await pool.query(`
       CREATE TABLE IF NOT EXISTS testimonials (
         id INT AUTO_INCREMENT PRIMARY KEY,
@@ -96,8 +105,9 @@ export async function initDatabase() {
       )
     `);
     console.log('Testimonials table initialized.');
+  });
 
-    // 5. Create settings table
+  await step('Create settings table', async () => {
     await pool.query(`
       CREATE TABLE IF NOT EXISTS settings (
         key_name VARCHAR(100) PRIMARY KEY,
@@ -105,8 +115,9 @@ export async function initDatabase() {
       )
     `);
     console.log('Settings table initialized.');
+  });
 
-    // 6. Create blogs table
+  await step('Create blogs table', async () => {
     await pool.query(`
       CREATE TABLE IF NOT EXISTS blogs (
         id INT AUTO_INCREMENT PRIMARY KEY,
@@ -122,8 +133,9 @@ export async function initDatabase() {
       )
     `);
     console.log('Blogs table initialized.');
+  });
 
-    // 7. Create editor users table (quotation editor logins created by admin)
+  await step('Create editor users table (quotation editor logins created by admin)', async () => {
     await pool.query(`
       CREATE TABLE IF NOT EXISTS editor_users (
         id INT AUTO_INCREMENT PRIMARY KEY,
@@ -136,8 +148,9 @@ export async function initDatabase() {
       )
     `);
     console.log('Editor users table initialized.');
+  });
 
-    // 8. Create editor sessions table (opaque login tokens, revocable by admin)
+  await step('Create editor sessions table (opaque login tokens, revocable by admin)', async () => {
     await pool.query(`
       CREATE TABLE IF NOT EXISTS editor_sessions (
         token VARCHAR(128) PRIMARY KEY,
@@ -148,8 +161,9 @@ export async function initDatabase() {
       )
     `);
     console.log('Editor sessions table initialized.');
+  });
 
-    // 9. Create editor quotations table (records basic info when an editor generates a quotation)
+  await step('Create editor quotations table (records basic info when an editor generates a quotation)', async () => {
     await pool.query(`
       CREATE TABLE IF NOT EXISTS editor_quotations (
         id INT AUTO_INCREMENT PRIMARY KEY,
@@ -170,8 +184,9 @@ export async function initDatabase() {
       )
     `);
     console.log('Editor quotations table initialized.');
+  });
 
-    // 9. Seed pricing table if empty
+  await step('Seed pricing table if empty', async () => {
     const [rowsPricing] = await pool.query('SELECT COUNT(*) as count FROM pricing');
     if (rowsPricing[0].count === 0) {
       console.log('Seeding default pricing details...');
@@ -183,15 +198,6 @@ export async function initDatabase() {
           '₹1,750 / sq.ft',
           'Economical Solution',
           'An affordable solution designed for quality residential construction with dependable materials and essential finishes.',
-          'Material Specs',
-          JSON.stringify([
-            'Cement: Ultratech / ACC 53 Grade',
-            'Steel: Simhadri / Vizag TMT Fe500',
-            'Bricks: High quality red bricks',
-            'Flooring: Vitrified tiles (up to ₹60/sq.ft)',
-            'Doors: Flush doors with wood frame',
-            'Paint: Asian Paints Tractor Emulsion'
-          ]),
           '5 Years Structural Warranty',
           'Included Services & Warranty',
           JSON.stringify([
@@ -208,15 +214,6 @@ export async function initDatabase() {
           '₹2,150 / sq.ft',
           'Most Popular',
           'Ideal for homeowners seeking enhanced finishes, premium materials, custom elevation designs, and additional customization.',
-          'Material Specs',
-          JSON.stringify([
-            'Cement: Ultratech Super / Coromandel',
-            'Steel: Tata Tiscon / JSW Neosteel Fe550',
-            'Bricks: First class kiln red clay bricks',
-            'Flooring: Premium Vitrified (up to ₹100/sq.ft)',
-            'Doors: Teak wood main door & frames',
-            'Paint: Asian Paints Royal Shine Emulsion'
-          ]),
           '10 Years Structural Warranty',
           'Included Services & Warranty',
           JSON.stringify([
@@ -234,15 +231,6 @@ export async function initDatabase() {
           '₹2,750 / sq.ft',
           'Ultra High-End',
           'Designed for premium residences featuring superior materials, elegant interiors, modern architecture, and luxury finishes.',
-          'Material Specs',
-          JSON.stringify([
-            'Cement: Ultratech Premium / High-grade',
-            'Steel: Tata Tiscon Super Ductile Fe550D',
-            'Bricks: AAC blocks or high-density wire-cut bricks',
-            'Flooring: Italian Marble or Granites (up to ₹250/sq.ft)',
-            'Doors: Teak wood main door with digital smart lock',
-            'Paint: Royal Aspira Anti-bacterial Finish'
-          ]),
           '15 Years Structural Warranty',
           'Included Services & Warranty',
           JSON.stringify([
@@ -255,11 +243,12 @@ export async function initDatabase() {
         ]
       ];
       for (const p of defaultPricing) {
-        await pool.query('INSERT INTO pricing (id, name, priceNum, pricePerSqFt, badge, `desc`, materialHeading, materials, warranty, servicesHeading, services) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)', p);
+        await pool.query('INSERT INTO pricing (id, name, priceNum, pricePerSqFt, badge, `desc`, warranty, servicesHeading, services) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)', p);
       }
     }
+  });
 
-    // 10. Seed projects table if empty
+  await step('Seed projects table if empty', async () => {
     const [rowsProjects] = await pool.query('SELECT COUNT(*) as count FROM projects');
     if (rowsProjects[0].count === 0) {
       console.log('Seeding default projects...');
@@ -277,8 +266,9 @@ export async function initDatabase() {
         await pool.query('INSERT INTO projects (title, category, categoryLabel, location, size, duration, image, description) VALUES (?, ?, ?, ?, ?, ?, ?, ?)', p);
       }
     }
+  });
 
-    // 11. Seed testimonials table if empty
+  await step('Seed testimonials table if empty', async () => {
     const [rowsTestimonials] = await pool.query('SELECT COUNT(*) as count FROM testimonials');
     if (rowsTestimonials[0].count === 0) {
       console.log('Seeding default testimonials...');
@@ -291,8 +281,9 @@ export async function initDatabase() {
         await pool.query('INSERT INTO testimonials (name, location, role, quote, avatar, rating) VALUES (?, ?, ?, ?, ?, ?)', t);
       }
     }
+  });
 
-    // 12. Seed blogs table if empty
+  await step('Seed blogs table if empty', async () => {
     const [rowsBlogs] = await pool.query('SELECT COUNT(*) as count FROM blogs');
     if (rowsBlogs[0].count === 0) {
       console.log('Seeding default blogs...');
@@ -335,8 +326,9 @@ export async function initDatabase() {
         );
       }
     }
+  });
 
-    // 13. Seed settings table if empty
+  await step('Seed settings table if empty', async () => {
     const [rowsSettings] = await pool.query('SELECT COUNT(*) as count FROM settings');
     const defaultSettings = [
       ['phone_primary', '+91 9949249091'],
@@ -354,9 +346,10 @@ export async function initDatabase() {
         await pool.query('INSERT INTO settings (key_name, value) VALUES (?, ?)', s);
       }
     }
+  });
 
-    // 14. Seed default package matrix in settings if not present
-    const [matrixCheck] = await pool.query('SELECT * FROM settings WHERE key_name = "package_matrix"');
+  await step('Seed default package matrix in settings if not present', async () => {
+    const [matrixCheck] = await pool.query('SELECT * FROM settings WHERE key_name = ?', ['package_matrix']);
     if (matrixCheck.length === 0) {
       console.log('Seeding default package comparison matrix...');
       const defaultMatrix = [
@@ -371,11 +364,9 @@ export async function initDatabase() {
         { id: '9', feature: 'Sanitary Fittings', basic: 'Cera / Parryware', premium: 'Kohler / Jaquar', luxury: 'Grohe / Hansgrohe Premium' },
         { id: '10', feature: 'Customization Level', basic: 'Standard Options', premium: 'High Customization', luxury: 'Complete Bespoke Architecture' }
       ];
-      await pool.query('INSERT INTO settings (key_name, value) VALUES ("package_matrix", ?)', [JSON.stringify(defaultMatrix)]);
+      await pool.query('INSERT INTO settings (key_name, value) VALUES (?, ?)', ['package_matrix', JSON.stringify(defaultMatrix)]);
     }
+  });
 
-    console.log('Database initialization completed.');
-  } catch (err) {
-    console.error('Error during database table initialization:', err);
-  }
+  console.log('Database initialization completed.');
 }
