@@ -429,42 +429,85 @@ const AdminDashboard = () => {
     }));
   };
 
-  // Included Services item array handlers
-  const handleServiceItemChange = (tier, index, val) => {
-    setEditablePricing(prev => {
-      const list = [...(prev[tier]?.services || [])];
-      list[index] = val;
-      return {
-        ...prev,
-        [tier]: {
-          ...prev[tier],
-          services: list
-        }
-      };
-    });
+  // Helper to get or normalize tier sections array
+  const getTierSections = (tier) => {
+    const rawServices = editablePricing[tier]?.services;
+    if (Array.isArray(rawServices) && rawServices.length > 0) {
+      if (typeof rawServices[0] === 'object' && rawServices[0] !== null && rawServices[0].heading !== undefined) {
+        return rawServices;
+      }
+      // Legacy string list conversion
+      return [{
+        heading: editablePricing[tier]?.servicesHeading || 'Included Deliverables & Guarantee',
+        points: [...(editablePricing[tier]?.warranty ? [editablePricing[tier].warranty] : []), ...rawServices.map(s => typeof s === 'string' ? s : String(s))]
+      }];
+    }
+    return [{
+      heading: editablePricing[tier]?.servicesHeading || 'Included Deliverables & Guarantee',
+      points: editablePricing[tier]?.warranty ? [editablePricing[tier].warranty] : ['']
+    }];
   };
 
-  const handleAddServiceItem = (tier) => {
+  const updateTierSections = (tier, newSections) => {
     setEditablePricing(prev => ({
       ...prev,
       [tier]: {
         ...prev[tier],
-        services: [...(prev[tier]?.services || []), '']
+        services: newSections
       }
     }));
   };
 
-  const handleRemoveServiceItem = (tier, index) => {
-    setEditablePricing(prev => {
-      const list = (prev[tier]?.services || []).filter((_, i) => i !== index);
-      return {
-        ...prev,
-        [tier]: {
-          ...prev[tier],
-          services: list
-        }
-      };
+  const handleAddSection = (tier) => {
+    const current = getTierSections(tier);
+    updateTierSections(tier, [...current, { heading: 'New Section Heading', points: [''] }]);
+  };
+
+  const handleRemoveSection = (tier, secIdx) => {
+    const current = getTierSections(tier);
+    const updated = current.filter((_, idx) => idx !== secIdx);
+    updateTierSections(tier, updated.length > 0 ? updated : [{ heading: '', points: [''] }]);
+  };
+
+  const handleSectionHeadingChange = (tier, secIdx, val) => {
+    const current = getTierSections(tier);
+    const updated = current.map((sec, idx) => idx === secIdx ? { ...sec, heading: val } : sec);
+    updateTierSections(tier, updated);
+  };
+
+  const handleAddSectionPoint = (tier, secIdx) => {
+    const current = getTierSections(tier);
+    const updated = current.map((sec, idx) => {
+      if (idx === secIdx) {
+        return { ...sec, points: [...(sec.points || []), ''] };
+      }
+      return sec;
     });
+    updateTierSections(tier, updated);
+  };
+
+  const handleRemoveSectionPoint = (tier, secIdx, ptIdx) => {
+    const current = getTierSections(tier);
+    const updated = current.map((sec, idx) => {
+      if (idx === secIdx) {
+        return { ...sec, points: (sec.points || []).filter((_, pIdx) => pIdx !== ptIdx) };
+      }
+      return sec;
+    });
+    updateTierSections(tier, updated);
+  };
+
+  const handleSectionPointChange = (tier, secIdx, ptIdx, val) => {
+    const current = getTierSections(tier);
+    const updated = current.map((sec, idx) => {
+      if (idx === secIdx) {
+        const newPoints = [...(sec.points || [])];
+        newPoints[ptIdx] = val;
+        return { ...sec, points: newPoints };
+      }
+      return sec;
+    });
+    updateTierSections(tier, updated);
   };
 
   const handleSavePricing = async (e) => {
@@ -1844,67 +1887,135 @@ const AdminDashboard = () => {
                           ></textarea>
                         </div>
 
-                        {/* Custom Deliverables & Warranty Section */}
+                        {/* Dynamic Heading & Points Builder */}
                         <div style={{ marginTop: '16px', paddingTop: '16px', borderTop: '1px dashed #cbd5e1' }}>
-                          <div className="tier-form-group" style={{ marginBottom: '12px' }}>
-                            <label style={{ fontWeight: 800, color: '#0f172a', fontSize: '13px', display: 'block', marginBottom: '4px' }}>
-                              Custom Section Heading Field
+                          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '12px' }}>
+                            <label style={{ fontWeight: 800, color: '#0f172a', fontSize: '13px' }}>
+                              Custom Package Headings &amp; Bullet Points
                             </label>
-                            <input
-                              type="text"
-                              className="tier-input"
-                              value={editablePricing[tier]?.servicesHeading || ''}
-                              onChange={(e) => handlePriceFieldChange(tier, 'servicesHeading', e.target.value)}
-                              placeholder="e.g. Included Deliverables & Guarantee (or custom heading)"
-                            />
+                            <button
+                              type="button"
+                              onClick={() => handleAddSection(tier)}
+                              style={{
+                                background: '#eff6ff',
+                                color: '#2563eb',
+                                border: '1px solid #bfdbfe',
+                                padding: '5px 10px',
+                                borderRadius: '6px',
+                                fontSize: '11px',
+                                fontWeight: 700,
+                                cursor: 'pointer',
+                                display: 'inline-flex',
+                                alignItems: 'center',
+                                gap: '4px'
+                              }}
+                            >
+                              <Plus size={13} /> Add Heading Field
+                            </button>
                           </div>
 
-                          <div className="tier-form-group" style={{ marginBottom: '12px' }}>
-                            <label style={{ fontWeight: 700, color: '#334155', fontSize: '12px', display: 'block', marginBottom: '4px' }}>
-                              Featured Guarantee / Highlight Point (Optional)
-                            </label>
-                            <input
-                              type="text"
-                              className="tier-input"
-                              value={editablePricing[tier]?.warranty || ''}
-                              onChange={(e) => handlePriceFieldChange(tier, 'warranty', e.target.value)}
-                              placeholder="e.g. 10-Year Structural Guarantee"
-                            />
-                          </div>
-
-                          <div className="tier-form-group">
-                            <label style={{ fontWeight: 700, color: '#334155', fontSize: '12px', display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '6px' }}>
-                              <span>Points &amp; Deliverables Under Heading ({editablePricing[tier]?.services?.length || 0})</span>
-                            </label>
-                            <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
-                              {(editablePricing[tier]?.services || []).map((item, idx) => (
-                                <div key={idx} style={{ display: 'flex', gap: '6px', alignItems: 'center' }}>
-                                  <input
-                                    type="text"
-                                    className="tier-input"
-                                    value={item}
-                                    onChange={(e) => handleServiceItemChange(tier, idx, e.target.value)}
-                                    placeholder="Type point to mention under heading..."
-                                    style={{ flex: 1, fontSize: '12px' }}
-                                  />
+                          <div style={{ display: 'flex', flexDirection: 'column', gap: '14px' }}>
+                            {getTierSections(tier).map((sec, secIdx) => (
+                              <div
+                                key={secIdx}
+                                style={{
+                                  background: '#f8fafc',
+                                  border: '1px solid #e2e8f0',
+                                  borderRadius: '10px',
+                                  padding: '12px'
+                                }}
+                              >
+                                {/* Section Heading Row */}
+                                <div style={{ display: 'flex', gap: '8px', alignItems: 'center', marginBottom: '10px' }}>
+                                  <div style={{ flex: 1 }}>
+                                    <span style={{ fontSize: '10px', fontWeight: 800, color: '#64748b', textTransform: 'uppercase', letterSpacing: '0.5px', display: 'block', marginBottom: '3px' }}>
+                                      Heading Field {secIdx + 1}
+                                    </span>
+                                    <input
+                                      type="text"
+                                      className="tier-input"
+                                      value={sec.heading || ''}
+                                      onChange={(e) => handleSectionHeadingChange(tier, secIdx, e.target.value)}
+                                      placeholder="e.g. Structural Warranty, Architectural Scope, Plumbing, etc."
+                                      style={{ fontWeight: 700, color: '#0f172a' }}
+                                    />
+                                  </div>
                                   <button
                                     type="button"
-                                    onClick={() => handleRemoveServiceItem(tier, idx)}
-                                    style={{ background: '#fee2e2', color: '#ef4444', border: '1px solid #fca5a5', padding: '6px 8px', borderRadius: '6px', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}
-                                    title="Remove Point"
+                                    onClick={() => handleRemoveSection(tier, secIdx)}
+                                    style={{
+                                      background: '#fee2e2',
+                                      color: '#ef4444',
+                                      border: '1px solid #fca5a5',
+                                      padding: '7px 9px',
+                                      borderRadius: '6px',
+                                      cursor: 'pointer',
+                                      marginTop: '16px'
+                                    }}
+                                    title="Delete Section"
                                   >
                                     <Trash2 size={14} />
                                   </button>
                                 </div>
-                              ))}
-                            </div>
-                            <button
-                              type="button"
-                              onClick={() => handleAddServiceItem(tier)}
-                              style={{ marginTop: '10px', background: '#f0fdf4', color: '#16a34a', border: '1px dashed #4ade80', padding: '8px 12px', borderRadius: '6px', fontSize: '12px', fontWeight: 700, cursor: 'pointer', display: 'inline-flex', alignItems: 'center', gap: '4px', width: '100%', justifyContent: 'center' }}
-                            >
-                              <Plus size={14} /> Add Point Under Heading
-                            </button>
+
+                                {/* Section Points */}
+                                <div style={{ paddingLeft: '8px', borderLeft: '2px solid #cbd5e1', display: 'flex', flexDirection: 'column', gap: '6px' }}>
+                                  <span style={{ fontSize: '11px', fontWeight: 700, color: '#475569', marginBottom: '2px' }}>
+                                    Points under "{sec.heading || `Heading ${secIdx + 1}`}" ({sec.points?.length || 0})
+                                  </span>
+
+                                  {(sec.points || []).map((pt, ptIdx) => (
+                                    <div key={ptIdx} style={{ display: 'flex', gap: '6px', alignItems: 'center' }}>
+                                      <input
+                                        type="text"
+                                        className="tier-input"
+                                        value={pt}
+                                        onChange={(e) => handleSectionPointChange(tier, secIdx, ptIdx, e.target.value)}
+                                        placeholder="Type point to mention under this heading..."
+                                        style={{ flex: 1, fontSize: '12px' }}
+                                      />
+                                      <button
+                                        type="button"
+                                        onClick={() => handleRemoveSectionPoint(tier, secIdx, ptIdx)}
+                                        style={{
+                                          background: '#f1f5f9',
+                                          color: '#64748b',
+                                          border: '1px solid #cbd5e1',
+                                          padding: '5px 7px',
+                                          borderRadius: '5px',
+                                          cursor: 'pointer'
+                                        }}
+                                        title="Remove Point"
+                                      >
+                                        <X size={13} />
+                                      </button>
+                                    </div>
+                                  ))}
+
+                                  <button
+                                    type="button"
+                                    onClick={() => handleAddSectionPoint(tier, secIdx)}
+                                    style={{
+                                      marginTop: '4px',
+                                      background: '#ffffff',
+                                      color: '#16a34a',
+                                      border: '1px dashed #86efac',
+                                      padding: '6px 10px',
+                                      borderRadius: '6px',
+                                      fontSize: '11px',
+                                      fontWeight: 700,
+                                      cursor: 'pointer',
+                                      display: 'inline-flex',
+                                      alignItems: 'center',
+                                      gap: '4px',
+                                      alignSelf: 'flex-start'
+                                    }}
+                                  >
+                                    <Plus size={13} /> Add Point under this Heading
+                                  </button>
+                                </div>
+                              </div>
+                            ))}
                           </div>
                         </div>
                       </div>

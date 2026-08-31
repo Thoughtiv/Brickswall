@@ -124,17 +124,48 @@ const Packages = ({ onOpenEstimate }) => {
                     Choose {pkg.name}
                   </button>
 
-                  {(pkg.warranty || pkg.services.length > 0) && (
-                    <div className="pkg-spec-group">
-                      <h4>{pkg.servicesHeading || 'Included Deliverables & Guarantee'}:</h4>
-                      <ul>
-                        {pkg.warranty && <li><ShieldCheck size={14} className="text-orange" /> <strong>{pkg.warranty}</strong></li>}
-                        {pkg.services.map((s, i) => (
-                          <li key={i}><Check size={14} className="text-orange" /> {s}</li>
+                  {(() => {
+                    let sectionsList = [];
+                    if (Array.isArray(pkg.services) && pkg.services.length > 0) {
+                      if (typeof pkg.services[0] === 'object' && pkg.services[0] !== null && pkg.services[0].heading !== undefined) {
+                        sectionsList = pkg.services;
+                      } else {
+                        sectionsList = [{
+                          heading: pkg.servicesHeading || 'Included Deliverables & Guarantee',
+                          points: [...(pkg.warranty ? [pkg.warranty] : []), ...pkg.services.filter(s => typeof s === 'string')]
+                        }];
+                      }
+                    } else if (pkg.warranty || pkg.servicesHeading) {
+                      sectionsList = [{
+                        heading: pkg.servicesHeading || 'Included Deliverables & Guarantee',
+                        points: pkg.warranty ? [pkg.warranty] : []
+                      }];
+                    }
+
+                    if (sectionsList.length === 0) return null;
+
+                    return (
+                      <div className="pkg-sections-wrapper mt-4 pt-3 border-t border-dashed border-slate-200">
+                        {sectionsList.map((sec, secIdx) => (
+                          <div key={secIdx} className="pkg-spec-group mb-3">
+                            {sec.heading && (
+                              <h4 className="font-bold text-slate-800 text-xs uppercase tracking-wider mb-1.5 flex items-center gap-1.5">
+                                <span>{sec.heading}</span>
+                              </h4>
+                            )}
+                            <ul className="space-y-1">
+                              {(sec.points || []).map((pt, ptIdx) => (
+                                <li key={ptIdx} className="flex items-start gap-2 text-xs text-slate-600 leading-snug">
+                                  <Check size={14} className="text-orange shrink-0 mt-0.5" />
+                                  <span>{pt}</span>
+                                </li>
+                              ))}
+                            </ul>
+                          </div>
                         ))}
-                      </ul>
-                    </div>
-                  )}
+                      </div>
+                    );
+                  })()}
                 </div>
               );
             })}
