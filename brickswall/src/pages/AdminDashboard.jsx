@@ -627,14 +627,14 @@ const AdminDashboard = () => {
       }
     });
 
-    let popularPkg = 'Premium Package';
+    let popularPkg = 'Enhanced Package';
     let maxCount = packagesCount.premium;
     if (packagesCount.luxury > maxCount) {
-      popularPkg = 'Luxury Package';
+      popularPkg = 'Signature Package';
       maxCount = packagesCount.luxury;
     }
     if (packagesCount.basic > maxCount) {
-      popularPkg = 'Basic Package';
+      popularPkg = 'Standard Package';
     }
 
     return {
@@ -1799,7 +1799,7 @@ const AdminDashboard = () => {
 
                 <div className="pricing-tiers-flex">
                   {['basic', 'premium', 'luxury'].map((tier) => {
-                    const tierTitle = tier === 'basic' ? 'Basic Package' : tier === 'premium' ? 'Premium Package' : 'Luxury Package';
+                    const tierTitle = tier === 'basic' ? 'Standard Package' : tier === 'premium' ? 'Enhanced Package' : 'Signature Package';
                     const borderClass = tier === 'basic' ? 'basic-border' : tier === 'premium' ? 'premium-border' : 'luxury-border';
                     const titleColor = tier === 'basic' ? '#64748b' : tier === 'premium' ? '#d9531e' : '#a855f7';
 
@@ -1829,7 +1829,7 @@ const AdminDashboard = () => {
                             className="tier-input"
                             value={editablePricing[tier]?.badge || ''}
                             onChange={(e) => handlePriceFieldChange(tier, 'badge', e.target.value)}
-                            placeholder="e.g. Economical Solution / Most Popular"
+                            placeholder="e.g. Economical & Durable / Most Popular Choice"
                           />
                         </div>
 
@@ -1852,7 +1852,7 @@ const AdminDashboard = () => {
                             className="tier-input"
                             value={editablePricing[tier]?.warranty || ''}
                             onChange={(e) => handlePriceFieldChange(tier, 'warranty', e.target.value)}
-                            placeholder="e.g. 10 Years Structural Warranty"
+                            placeholder="e.g. 10-Year Structural Guarantee"
                           />
                         </div>
 
@@ -1862,9 +1862,9 @@ const AdminDashboard = () => {
                           <input
                             type="text"
                             className="tier-input"
-                            value={editablePricing[tier]?.servicesHeading || 'Included Services & Warranty'}
+                            value={editablePricing[tier]?.servicesHeading || 'Included Deliverables & Guarantee'}
                             onChange={(e) => handlePriceFieldChange(tier, 'servicesHeading', e.target.value)}
-                            placeholder="e.g. Included Services & Warranty"
+                            placeholder="e.g. Included Deliverables & Guarantee"
                           />
                         </div>
 
@@ -1955,7 +1955,7 @@ const AdminDashboard = () => {
 
                 <div className="preview-pricing-grid">
                   <div className="preview-box-item">
-                    <span style={{ fontSize: '10px', color: '#94a3b8', textTransform: 'uppercase', fontWeight: 700 }}>Basic Est.</span>
+                    <span style={{ fontSize: '10px', color: '#94a3b8', textTransform: 'uppercase', fontWeight: 700 }}>Standard Est.</span>
                     <div style={{ fontSize: '18px', fontWeight: 800, color: '#f1f5f9', marginTop: '4px' }}>
                       ₹{((previewPlotSize * 2 * editablePricing.basic.priceNum) * 0.95).toLocaleString('en-IN', { maximumFractionDigits: 0 })}
                     </div>
@@ -1963,7 +1963,7 @@ const AdminDashboard = () => {
                   </div>
 
                   <div className="preview-box-item popular">
-                    <span style={{ fontSize: '10px', color: '#ff7e47', textTransform: 'uppercase', fontWeight: 700 }}>Premium Est.</span>
+                    <span style={{ fontSize: '10px', color: '#ff7e47', textTransform: 'uppercase', fontWeight: 700 }}>Enhanced Est.</span>
                     <div style={{ fontSize: '18px', fontWeight: 800, color: '#ff7e47', marginTop: '4px' }}>
                       ₹{((previewPlotSize * 2 * editablePricing.premium.priceNum) * 0.95).toLocaleString('en-IN', { maximumFractionDigits: 0 })}
                     </div>
@@ -1971,7 +1971,7 @@ const AdminDashboard = () => {
                   </div>
 
                   <div className="preview-box-item">
-                    <span style={{ fontSize: '10px', color: '#94a3b8', textTransform: 'uppercase', fontWeight: 700 }}>Luxury Est.</span>
+                    <span style={{ fontSize: '10px', color: '#94a3b8', textTransform: 'uppercase', fontWeight: 700 }}>Signature Est.</span>
                     <div style={{ fontSize: '18px', fontWeight: 800, color: '#f1f5f9', marginTop: '4px' }}>
                       ₹{((previewPlotSize * 2 * editablePricing.luxury.priceNum) * 0.95).toLocaleString('en-IN', { maximumFractionDigits: 0 })}
                     </div>
@@ -2001,9 +2001,9 @@ const AdminDashboard = () => {
                     <thead>
                       <tr style={{ background: '#f8fafc', textTransform: 'uppercase', fontSize: '11px', color: '#475569', borderBottom: '2px solid #e2e8f0' }}>
                         <th style={{ padding: '12px', textAlign: 'left', minWidth: '200px' }}>Features &amp; Specifications</th>
-                        <th style={{ padding: '12px', textAlign: 'left', minWidth: '160px' }}>Basic Package</th>
-                        <th style={{ padding: '12px', textAlign: 'left', minWidth: '160px' }}>Premium Package</th>
-                        <th style={{ padding: '12px', textAlign: 'left', minWidth: '160px' }}>Luxury Package</th>
+                        <th style={{ padding: '12px', textAlign: 'left', minWidth: '160px' }}>Standard Package</th>
+                        <th style={{ padding: '12px', textAlign: 'left', minWidth: '160px' }}>Enhanced Package</th>
+                        <th style={{ padding: '12px', textAlign: 'left', minWidth: '160px' }}>Signature Package</th>
                         <th style={{ padding: '12px', width: '60px', textAlign: 'center' }}>Action</th>
                       </tr>
                     </thead>

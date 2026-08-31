@@ -115,7 +115,7 @@ const EstimateModal = ({ isOpen, onClose }) => {
         {/* Top Header Row with Pill Badge & Close Button */}
         <div className="modal-top-bar">
           <span className="instant-calc-pill">
-            <Calculator size={14} /> INSTANT COST CALCULATOR
+            <Calculator size={14} /> BRICKS WALL COST PLANNER
           </span>
           <button className="modal-close-round" onClick={resetAndClose} aria-label="Close modal">
             <X size={18} />
@@ -125,8 +125,8 @@ const EstimateModal = ({ isOpen, onClose }) => {
         {!isSubmitted ? (
           <div>
             <div className="modal-header-text">
-              <h2>Free Construction Estimate</h2>
-              <p>Get an instant estimate tailored for your land plot in Hyderabad.</p>
+              <h2>Project Cost &amp; Scope Planner</h2>
+              <p>Estimate your built-up area and structural package for your plot in Hyderabad.</p>
             </div>
 
             {/* Stepper indicator matching reference layout */}
@@ -135,11 +135,11 @@ const EstimateModal = ({ isOpen, onClose }) => {
               <div className="stepper-nodes">
                 <div className={`step-node ${step >= 1 ? 'active' : ''}`}>
                   <div className="step-num">1</div>
-                  <div className="step-name">Details</div>
+                  <div className="step-name">Scope &amp; Area</div>
                 </div>
                 <div className={`step-node ${step >= 2 ? 'active' : ''}`}>
                   <div className="step-num">2</div>
-                  <div className="step-name">Package &amp; Estimate</div>
+                  <div className="step-name">Package &amp; Cost</div>
                 </div>
                 <div className={`step-node ${step >= 3 ? 'active' : ''}`}>
                   <div className="step-num">3</div>
@@ -152,7 +152,7 @@ const EstimateModal = ({ isOpen, onClose }) => {
 
             {step === 1 && (
               <div className="step-content">
-                <label className="section-label-bold">Select Construction Type</label>
+                <label className="section-label-bold">Select Construction Scope</label>
                 <div className="type-grid">
                   {typesList.map((item) => (
                     <div
@@ -238,9 +238,9 @@ const EstimateModal = ({ isOpen, onClose }) => {
                 <label className="section-label-bold block mb-3">Choose Construction Package</label>
                 <div className="package-options flex flex-col gap-3 mb-6">
                   {[
-                    { id: 'basic', title: 'Basic Package', rate: pricingData?.basic?.pricePerSqFt || '₹1,750 / sq.ft', tag: 'Economical & Reliable Structure' },
-                    { id: 'premium', title: 'Premium Package', rate: pricingData?.premium?.pricePerSqFt || '₹2,150 / sq.ft', tag: 'Most Popular - Teak & Premium Finish' },
-                    { id: 'luxury', title: 'Luxury Package', rate: pricingData?.luxury?.pricePerSqFt || '₹2,750 / sq.ft', tag: 'High-end Designer Fittings & Marble' },
+                    { id: 'basic', title: 'Standard Package', rate: pricingData?.basic?.pricePerSqFt || '₹1,750 / sq.ft', tag: 'Economical & Durable Residential Structure' },
+                    { id: 'premium', title: 'Enhanced Package', rate: pricingData?.premium?.pricePerSqFt || '₹2,150 / sq.ft', tag: 'Most Popular - Superior Materials & Teak Joinery' },
+                    { id: 'luxury', title: 'Signature Package', rate: pricingData?.luxury?.pricePerSqFt || '₹2,750 / sq.ft', tag: 'High-End Bespoke Architecture & Luxury Marble' },
                   ].map((pkg) => (
                     <div
                       key={pkg.id}
@@ -270,7 +270,7 @@ const EstimateModal = ({ isOpen, onClose }) => {
                     Back
                   </button>
                   <button type="button" onClick={() => setStep(3)} className="btn-modal-submit">
-                    Book Free Consultation <ArrowRight size={18} />
+                    Proceed to Site Consultation <ArrowRight size={18} />
                   </button>
                 </div>
               </div>

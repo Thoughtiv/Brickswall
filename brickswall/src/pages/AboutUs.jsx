@@ -22,7 +22,7 @@ const AboutUs = ({ onOpenEstimate }) => {
     },
     {
       title: 'Quality',
-      desc: 'Certified 53 grade cement, TMT steel, and 30-point structural quality checks at every slab pouring.',
+      desc: '5-stage civil engineering quality audits at every stage of construction, from soil bearing tests to slab reinforcement sign-offs.',
       icon: <Award className="w-6 h-6 text-orange" />
     },
     {
@@ -37,7 +37,7 @@ const AboutUs = ({ onOpenEstimate }) => {
     },
     {
       title: 'Customer Commitment',
-      desc: 'Your satisfaction drives us. We deliver on agreed timelines and back our work with 10-year warranties.',
+      desc: 'Your satisfaction drives us. We deliver on agreed timelines and back our work with a written 10-year structural guarantee.',
       icon: <HeartHandshake className="w-6 h-6 text-orange" />
     },
     {

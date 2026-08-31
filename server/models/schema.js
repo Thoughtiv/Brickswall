@@ -193,35 +193,35 @@ export async function initDatabase() {
       const defaultPricing = [
         [
           'basic',
-          'Basic Package',
+          'Standard Package',
           1750,
           '₹1,750 / sq.ft',
-          'Economical Solution',
+          'Economical & Durable',
           'An affordable solution designed for quality residential construction with dependable materials and essential finishes.',
-          '',
-          'Included Services & Warranty',
+          '10 Years Structural Guarantee',
+          'Included Deliverables & Guarantee',
           '[]'
         ],
         [
           'premium',
-          'Premium Package',
+          'Enhanced Package',
           2150,
           '₹2,150 / sq.ft',
-          'Most Popular',
+          'Most Popular Choice',
           'Ideal for homeowners seeking enhanced finishes, premium materials, custom elevation designs, and additional customization.',
-          '',
-          'Included Services & Warranty',
+          '10 Years Structural Guarantee',
+          'Included Deliverables & Guarantee',
           '[]'
         ],
         [
           'luxury',
-          'Luxury Package',
+          'Signature Package',
           2750,
           '₹2,750 / sq.ft',
-          'Ultra High-End',
+          'High-End Bespoke',
           'Designed for premium residences featuring superior materials, elegant interiors, modern architecture, and luxury finishes.',
-          '',
-          'Included Services & Warranty',
+          '10 Years Structural Guarantee',
+          'Included Deliverables & Guarantee',
           '[]'
         ]
       ];
@@ -256,9 +256,9 @@ export async function initDatabase() {
     if (rowsTestimonials[0].count === 0) {
       console.log('Seeding default testimonials...');
       const defaultTestimonials = [
-        ['Ramesh Reddy', 'Jubilee Hills, Hyderabad', 'Villa Owner', 'Bricks Wall delivered our 5,000 sq.ft villa in Jubilee Hills on time with unbelievable material quality. Their transparent daily progress reports gave us peace of mind.', 'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?auto=format&fit=crop&w=200&q=80', 5],
-        ['Srinivas Rao', 'Gachibowli, Hyderabad', 'Commercial Developer', 'We hired Bricks Wall for our commercial complex in Gachibowli. Their engineering team is top-notch, keeping every item within transparent budget bounds.', 'https://images.unsplash.com/photo-1500648767791-00dcc994a43e?auto=format&fit=crop&w=200&q=80', 5],
-        ['Dr. Priya Sharma', 'Kondapur, Hyderabad', 'Homeowner', 'From site visit to final handover, the 6-step construction process was smooth. No hidden charges! Highly recommended construction company in Hyderabad.', 'https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?auto=format&fit=crop&w=200&q=80', 5]
+        ['Ramesh Reddy', 'Jubilee Hills, Hyderabad', 'Villa Owner', 'Bricks Wall delivered our 5,000 sq.ft villa in Jubilee Hills on time with unbelievable material quality. Their transparent engineering progress updates gave us peace of mind.', 'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?auto=format&fit=crop&w=200&q=80', 5],
+        ['Srinivas Rao', 'Gachibowli, Hyderabad', 'Commercial Developer', 'We hired Bricks Wall for our commercial complex in Gachibowli. Their civil engineering team is top-notch, keeping every item within transparent budget bounds.', 'https://images.unsplash.com/photo-1500648767791-00dcc994a43e?auto=format&fit=crop&w=200&q=80', 5],
+        ['Dr. Priya Sharma', 'Kondapur, Hyderabad', 'Homeowner', 'From site evaluation to final handover, the 6-phase engineering process was smooth. No hidden charges! Highly recommended construction firm in Hyderabad.', 'https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?auto=format&fit=crop&w=200&q=80', 5]
       ];
       for (const t of defaultTestimonials) {
         await pool.query('INSERT INTO testimonials (name, location, role, quote, avatar, rating) VALUES (?, ?, ?, ?, ?, ?)', t);
@@ -278,7 +278,7 @@ export async function initDatabase() {
           '6 min read',
           'https://images.unsplash.com/photo-1541888946425-d0fbb186a5b7?auto=format&fit=crop&w=800&q=80',
           'Planning to build your dream home in Hyderabad? Learn about soil testing, GHMC approvals, Grade 53 cement choices, and turnkey contractor selection.',
-          'Building a independent house or villa in Hyderabad requires meticulous planning across architectural layout, Municipal (GHMC/HMDA) sanction permits, structural safety, and high-quality material sourcing.\n\n### 1. Soil Testing & Foundation Design\nBefore digging column footings, perform a professional soil bearing capacity (SBC) test. Hyderabad soil conditions vary from hard granite rock in Jubilee Hills to black cotton clay soil in Kondapur. Foundation design must be customized accordingly to avoid structural cracks.\n\n### 2. Choosing Cement & Steel Grades\nUse Grade 53 OPC cement for structural slabs and columns, and PPC cement for masonry plastering. For steel reinforcement, specify primary TMT bars like Tata Tiscon or Vizag Steel Fe550 grade for superior tensile strength.\n\n### 3. Turnkey Package Advantage\nPartnering with a turnkey construction firm like Bricks Wall locks in a fixed rate per sq.ft, protecting you against rising steel and sand costs while providing a single point of accountability.',
+          'Building an independent house or villa in Hyderabad requires meticulous planning across architectural layout, Municipal (GHMC/HMDA) sanction permits, structural safety, and high-quality material sourcing.\n\n### 1. Soil Testing & Foundation Design\nBefore digging column footings, perform a professional soil bearing capacity (SBC) test. Hyderabad soil conditions vary from hard granite rock in Jubilee Hills to black cotton clay soil in Kondapur. Foundation design must be customized accordingly to avoid structural cracks.\n\n### 2. Choosing Cement & Steel Grades\nUse Grade 53 OPC cement for structural slabs and columns, and PPC cement for masonry plastering. For steel reinforcement, specify primary TMT bars like Tata Tiscon or Vizag Steel Fe550 grade for superior tensile strength.\n\n### 3. Turnkey Package Advantage\nPartnering with a turnkey construction firm like Bricks Wall locks in a fixed rate per sq.ft, protecting you against rising steel and sand costs while providing a single point of accountability.',
           'Bricks Wall Engineering Team'
         ],
         [
@@ -292,13 +292,13 @@ export async function initDatabase() {
           'Garvit Reddy, Lead Estimator'
         ],
         [
-          'Why Structural Warranty Matters: 10 vs 15 Year Protections',
+          'Understanding 10-Year Structural Guarantee Protections',
           'Quality Assurance',
           'July 14, 2026',
           '4 min read',
           'https://images.unsplash.com/photo-1581094794329-c8112a89af12?auto=format&fit=crop&w=800&q=80',
-          'Discover what structural warranties cover in modern RCC framed buildings, from foundation settling to slab waterproofing.',
-          'A reliable structural warranty is the true benchmark of building quality. Structural components including RCC columns, footings, plinth beams, roof slabs, and load-bearing walls form the backbone of your home.\n\n### What Does a 10 to 15-Year Warranty Cover?\n- Protection against concrete slab honeycombing or spalling\n- Resistance against foundation settlement and shear cracks\n- Multi-layer slab waterproofing against moisture ingress\n\nBricks Wall provides up to 15 Years Written Structural Warranty across all our Premium and Luxury packages.',
+          'Discover what structural guarantees cover in modern RCC framed buildings, from foundation settling to slab waterproofing.',
+          'A reliable structural guarantee is the true benchmark of building quality. Structural components including RCC columns, footings, plinth beams, roof slabs, and load-bearing walls form the backbone of your home.\n\n### What Does a 10-Year Structural Guarantee Cover?\n- Protection against concrete slab honeycombing or spalling\n- Resistance against foundation settlement and shear cracks\n- Multi-layer slab waterproofing against moisture ingress\n\nBricks Wall provides a written 10-Year Structural Guarantee across all our construction packages.',
           'Bricks Wall QA Division'
         ]
       ];
@@ -337,15 +337,15 @@ export async function initDatabase() {
       console.log('Seeding default package comparison matrix...');
       const defaultMatrix = [
         { id: '1', feature: 'Price per Built-up Sq.Ft', basic: '₹1,850 / sq.ft', premium: '₹2,150 / sq.ft', luxury: '₹2,750 / sq.ft' },
-        { id: '2', feature: 'Structural Warranty', basic: '5 Years', premium: '10 Years', luxury: '15 Years' },
-        { id: '3', feature: 'Cement Grade', basic: '53 Grade ACC / Ultratech', premium: 'Ultratech Super / Coromandel', luxury: 'Ultratech Premium High-Grade' },
-        { id: '4', feature: 'Steel Quality', basic: 'Simhadri / Vizag TMT Fe500', premium: 'Tata Tiscon / JSW Fe550', luxury: 'Tata Tiscon Super Ductile Fe550D' },
-        { id: '5', feature: 'Flooring Tiles Rate', basic: 'Up to ₹60 / sq.ft', premium: 'Up to ₹100 / sq.ft', luxury: 'Italian Marble / Granite (₹250+)' },
-        { id: '6', feature: 'Main Door', basic: 'Flush Door with Wood Frame', premium: 'Teak Wood Door & Frame', luxury: 'Teak Wood with Smart Digital Lock' },
-        { id: '7', feature: '3D Architectural Elevation', basic: 'Basic 2D Floor Plan', premium: '3D Elevation', luxury: 'Full VR 3D Walkthrough' },
-        { id: '8', feature: 'Site Supervision', basic: 'Periodic Engineer Visits', premium: 'Dedicated Site Manager', luxury: 'Senior Resident Civil Engineer' },
-        { id: '9', feature: 'Sanitary Fittings', basic: 'Cera / Parryware', premium: 'Kohler / Jaquar', luxury: 'Grohe / Hansgrohe Premium' },
-        { id: '10', feature: 'Customization Level', basic: 'Standard Options', premium: 'High Customization', luxury: 'Complete Bespoke Architecture' }
+        { id: '2', feature: 'Structural Guarantee', basic: '10 Years Written', premium: '10 Years Written', luxury: '10 Years Written' },
+        { id: '3', feature: 'Architectural & Design Support', basic: '2D Floor Plans & Elevation', premium: '3D Elevation & Structural Drawings', luxury: '3D VR Walkthrough & Full Architectural Blueprint' },
+        { id: '4', feature: 'Soil & Structural Engineering', basic: 'SBC Soil Test & Standard Footings', premium: 'SBC Soil Test & Reinforced Columns', luxury: 'Bespoke Soil Engineering & Custom RCC Framing' },
+        { id: '5', feature: 'Cement & Steel Standards', basic: '53 Grade Cement & Fe500 TMT Steel', premium: 'Ultratech Super & Tata/JSW Fe550', luxury: 'High-Grade Structural Cement & Fe550D TMT' },
+        { id: '6', feature: 'Flooring & Tiling Scope', basic: 'Vitrified Tiles (Up to ₹60/sq.ft)', premium: 'Premium Vitrified (Up to ₹100/sq.ft)', luxury: 'Italian Marble / Granite (₹250+/sq.ft)' },
+        { id: '7', feature: 'Doors & Windows Joinery', basic: 'Flush Doors with Hardwood Frame', premium: 'Teak Wood Main Door & Frame', luxury: 'Teak Wood Main Door with Smart Digital Lock' },
+        { id: '8', feature: 'Plumbing & Sanitary Scope', basic: 'Branded Fittings (Cera/Parryware)', premium: 'Premium Fittings (Kohler/Jaquar)', luxury: 'Luxury Concealed Fittings (Grohe/Hansgrohe)' },
+        { id: '9', feature: 'Site Supervision & Audits', basic: 'Periodic Civil Engineer Visits', premium: 'Dedicated Project Site Supervisor', luxury: 'Senior Resident Civil Engineer' },
+        { id: '10', feature: 'Waterproofing & Solar Readiness', basic: 'Terrace Waterproofing', premium: 'Multi-Layer Terrace Waterproofing', luxury: 'Terrace Waterproofing & Rooftop Solar Setup' }
       ];
       await pool.query('INSERT INTO settings (key_name, value) VALUES (?, ?)', ['package_matrix', JSON.stringify(defaultMatrix)]);
     }

@@ -304,12 +304,14 @@ const Home = ({ setCurrentPage, navigateToService, navigateToProject, onOpenEsti
           <div className="ref-hero-gradient-overlay"></div>
         </div>
 
-        <div className="container ref-hero-container">
+        <div className="container relative z-10 grid grid-cols-1 lg:grid-cols-12 gap-8 items-center min-h-[600px] py-12">
+          
           {/* Left Column Content */}
-          <div className="ref-hero-left">
+          <div className="lg:col-span-7 ref-hero-left">
+            
             <div className="ref-hero-pill">
               <Star size={14} className="text-orange fill-orange" />
-              <span>Hyderabad's #1 Construction Company</span>
+              <span>Engineering-Led Construction in Hyderabad</span>
             </div>
 
             <h1 className="ref-hero-title">
@@ -342,7 +344,7 @@ const Home = ({ setCurrentPage, navigateToService, navigateToProject, onOpenEsti
             {/* CTA Action Buttons */}
             <div className="ref-cta-row">
               <button onClick={onOpenEstimate} className="ref-btn-primary">
-                <span>Get Free Consultation</span>
+                <span>Get Cost Estimate</span>
                 <ArrowRight size={18} />
               </button>
               <button onClick={() => setCurrentPage('packages')} className="ref-btn-outline">
@@ -354,8 +356,8 @@ const Home = ({ setCurrentPage, navigateToService, navigateToProject, onOpenEsti
 
           {/* Right Column Form Card */}
           <div className="ref-hero-card">
-            <h3 className="ref-card-title">Talk to Our Construction Expert</h3>
-            <p className="ref-card-sub">Get instant cost estimate &amp; architectural guidance</p>
+            <h3 className="ref-card-title">Schedule Site Assessment</h3>
+            <p className="ref-card-sub">Get expert civil engineer site evaluation &amp; transparent cost planner</p>
 
             {!heroSubmitted ? (
               <form onSubmit={handleHeroSubmit} className="ref-card-form">
@@ -401,15 +403,15 @@ const Home = ({ setCurrentPage, navigateToService, navigateToProject, onOpenEsti
                 </div>
 
                 <button type="submit" className="ref-submit-btn">
-                  Book Free Consultation
+                  Request Site Assessment
                 </button>
               </form>
             ) : (
               <div className="ref-card-success">
                 <CheckCircle2 size={48} className="text-orange mx-auto mb-2" />
-                <h4>Callback Requested!</h4>
+                <h4>Assessment Requested!</h4>
                 <p className="text-xs text-muted mt-1">
-                  Thank you {heroForm.name}. Our senior engineer will call you shortly on {heroForm.phone}.
+                  Thank you {heroForm.name}. Our senior civil engineer will call you shortly on {heroForm.phone}.
                 </p>
               </div>
             )}

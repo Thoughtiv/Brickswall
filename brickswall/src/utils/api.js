@@ -4,26 +4,26 @@ const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || 'http://localhost:5000
 export const DEFAULT_PRICING = {
   basic: {
     id: 'basic',
-    name: 'Basic Package',
+    name: 'Standard Package',
     pricePerSqFt: '₹1,750 / sq.ft',
     priceNum: 1750,
-    badge: 'Economical Solution',
+    badge: 'Economical & Durable',
     desc: 'An affordable solution designed for quality residential construction with dependable materials and essential finishes.'
   },
   premium: {
     id: 'premium',
-    name: 'Premium Package',
+    name: 'Enhanced Package',
     pricePerSqFt: '₹2,150 / sq.ft',
     priceNum: 2150,
-    badge: 'Most Popular',
+    badge: 'Most Popular Choice',
     desc: 'Ideal for homeowners seeking enhanced finishes, premium materials, custom elevation designs, and additional customization.'
   },
   luxury: {
     id: 'luxury',
-    name: 'Luxury Package',
+    name: 'Signature Package',
     pricePerSqFt: '₹2,750 / sq.ft',
     priceNum: 2750,
-    badge: 'Ultra High-End',
+    badge: 'High-End Bespoke',
     desc: 'Designed for premium residences featuring superior materials, elegant interiors, modern architecture, and luxury finishes.'
   }
 };

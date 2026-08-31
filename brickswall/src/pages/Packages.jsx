@@ -4,15 +4,15 @@ import { getPricing, getPackageMatrix } from '../utils/api';
 
 const defaultMatrix = [
   { id: '1', feature: 'Price per Built-up Sq.Ft', basic: '₹1,850 / sq.ft', premium: '₹2,150 / sq.ft', luxury: '₹2,750 / sq.ft' },
-  { id: '2', feature: 'Structural Warranty', basic: '5 Years', premium: '10 Years', luxury: '15 Years' },
-  { id: '3', feature: 'Cement Grade', basic: '53 Grade ACC / Ultratech', premium: 'Ultratech Super / Coromandel', luxury: 'Ultratech Premium High-Grade' },
-  { id: '4', feature: 'Steel Quality', basic: 'Simhadri / Vizag TMT Fe500', premium: 'Tata Tiscon / JSW Fe550', luxury: 'Tata Tiscon Super Ductile Fe550D' },
-  { id: '5', feature: 'Flooring Tiles Rate', basic: 'Up to ₹60 / sq.ft', premium: 'Up to ₹100 / sq.ft', luxury: 'Italian Marble / Granite (₹250+)' },
-  { id: '6', feature: 'Main Door', basic: 'Flush Door with Wood Frame', premium: 'Teak Wood Door & Frame', luxury: 'Teak Wood with Smart Digital Lock' },
-  { id: '7', feature: '3D Architectural Elevation', basic: 'Basic 2D Floor Plan', premium: '3D Elevation', luxury: 'Full VR 3D Walkthrough' },
-  { id: '8', feature: 'Site Supervision', basic: 'Periodic Engineer Visits', premium: 'Dedicated Site Manager', luxury: 'Senior Resident Civil Engineer' },
-  { id: '9', feature: 'Sanitary Fittings', basic: 'Cera / Parryware', premium: 'Kohler / Jaquar', luxury: 'Grohe / Hansgrohe Premium' },
-  { id: '10', feature: 'Customization Level', basic: 'Standard Options', premium: 'High Customization', luxury: 'Complete Bespoke Architecture' }
+  { id: '2', feature: 'Structural Guarantee', basic: '10 Years Written', premium: '10 Years Written', luxury: '10 Years Written' },
+  { id: '3', feature: 'Architectural & Design Support', basic: '2D Floor Plans & Elevation', premium: '3D Elevation & Structural Drawings', luxury: '3D VR Walkthrough & Full Architectural Blueprint' },
+  { id: '4', feature: 'Soil & Structural Engineering', basic: 'SBC Soil Test & Standard Footings', premium: 'SBC Soil Test & Reinforced Columns', luxury: 'Bespoke Soil Engineering & Custom RCC Framing' },
+  { id: '5', feature: 'Cement & Steel Standards', basic: '53 Grade Cement & Fe500 TMT Steel', premium: 'Ultratech Super & Tata/JSW Fe550', luxury: 'High-Grade Structural Cement & Fe550D TMT' },
+  { id: '6', feature: 'Flooring & Tiling Scope', basic: 'Vitrified Tiles (Up to ₹60/sq.ft)', premium: 'Premium Vitrified (Up to ₹100/sq.ft)', luxury: 'Italian Marble / Granite (₹250+/sq.ft)' },
+  { id: '7', feature: 'Doors & Windows Joinery', basic: 'Flush Doors with Hardwood Frame', premium: 'Teak Wood Main Door & Frame', luxury: 'Teak Wood Main Door with Smart Digital Lock' },
+  { id: '8', feature: 'Plumbing & Sanitary Scope', basic: 'Branded Fittings (Cera/Parryware)', premium: 'Premium Fittings (Kohler/Jaquar)', luxury: 'Luxury Concealed Fittings (Grohe/Hansgrohe)' },
+  { id: '9', feature: 'Site Supervision & Audits', basic: 'Periodic Civil Engineer Visits', premium: 'Dedicated Project Site Supervisor', luxury: 'Senior Resident Civil Engineer' },
+  { id: '10', feature: 'Waterproofing & Solar Readiness', basic: 'Terrace Waterproofing', premium: 'Multi-Layer Terrace Waterproofing', luxury: 'Terrace Waterproofing & Rooftop Solar Setup' }
 ];
 
 const Packages = ({ onOpenEstimate }) => {
@@ -36,28 +36,28 @@ const Packages = ({ onOpenEstimate }) => {
   const basePackages = [
     {
       id: 'basic',
-      name: 'Basic Package',
+      name: 'Standard Package',
       pricePerSqFt: '₹1,750 / sq.ft',
       priceNum: 1750,
-      badge: 'Economical Solution',
+      badge: 'Economical & Durable',
       isPopular: false,
       desc: 'An affordable solution designed for quality residential construction with dependable materials and essential finishes.'
     },
     {
       id: 'premium',
-      name: 'Premium Package',
+      name: 'Enhanced Package',
       pricePerSqFt: '₹2,150 / sq.ft',
       priceNum: 2150,
-      badge: 'Most Popular',
+      badge: 'Most Popular Choice',
       isPopular: true,
       desc: 'Ideal for homeowners seeking enhanced finishes, premium materials, custom elevation designs, and additional customization.'
     },
     {
       id: 'luxury',
-      name: 'Luxury Package',
+      name: 'Signature Package',
       pricePerSqFt: '₹2,750 / sq.ft',
       priceNum: 2750,
-      badge: 'Ultra High-End',
+      badge: 'High-End Bespoke',
       isPopular: false,
       desc: 'Designed for premium residences featuring superior materials, elegant interiors, modern architecture, and luxury finishes.'
     }
@@ -74,7 +74,7 @@ const Packages = ({ onOpenEstimate }) => {
         desc: live.desc !== undefined ? live.desc : pkg.desc,
         warranty: live.warranty || '',
         services: Array.isArray(live.services) ? live.services : [],
-        servicesHeading: live.servicesHeading || 'Included Services & Warranty'
+        servicesHeading: live.servicesHeading || 'Included Deliverables & Guarantee'
       };
     }
     return { ...pkg, warranty: '', services: [] };
@@ -125,7 +125,7 @@ const Packages = ({ onOpenEstimate }) => {
 
                   {(pkg.warranty || pkg.services.length > 0) && (
                     <div className="pkg-spec-group">
-                      <h4>{pkg.servicesHeading || 'Included Services & Warranty'}:</h4>
+                      <h4>{pkg.servicesHeading || 'Included Deliverables & Guarantee'}:</h4>
                       <ul>
                         {pkg.warranty && <li><ShieldCheck size={14} className="text-orange" /> <strong>{pkg.warranty}</strong></li>}
                         {pkg.services.map((s, i) => (
@@ -157,9 +157,9 @@ const Packages = ({ onOpenEstimate }) => {
               <thead>
                 <tr>
                   <th>Features &amp; Specifications</th>
-                  <th>Basic Package</th>
-                  <th>Premium Package</th>
-                  <th>Luxury Package</th>
+                  <th>Standard Package</th>
+                  <th>Enhanced Package</th>
+                  <th>Signature Package</th>
                 </tr>
               </thead>
               <tbody>

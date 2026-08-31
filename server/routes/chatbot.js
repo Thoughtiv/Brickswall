@@ -23,7 +23,7 @@ router.post('/', async (req, res) => {
       pricingContext = rows.map(r => `- ${r.name}: ${r.pricePerSqFt} (${r.desc})`).join('\n');
     } catch (dbErr) {
       console.warn('Chatbot failed to query pricing database, using defaults:', dbErr.message);
-      pricingContext = '- Basic Package: ₹1,750 / sq.ft (Economical Solution)\n- Premium Package: ₹2,150 / sq.ft (Most Popular)\n- Luxury Package: ₹2,750 / sq.ft (Ultra High-End)';
+      pricingContext = '- Standard Package: ₹1,750 / sq.ft (Economical & Durable)\n- Enhanced Package: ₹2,150 / sq.ft (Most Popular Choice)\n- Signature Package: ₹2,750 / sq.ft (High-End Bespoke)';
     }
 
     // 2. Fetch settings from database
@@ -87,7 +87,7 @@ ${projectsContext}
 ${testimonialsContext ? `**Client Testimonials:**\n${testimonialsContext}` : ''}
 
 **CRITICAL FORMATTING RULES:**
-1. Do NOT use markdown bold/italics markers anywhere in your response. Never output '**' or '*'. For example, write "Basic Package" instead of "**Basic Package**".
+1. Do NOT use markdown bold/italics markers anywhere in your response. Never output '**' or '*'. For example, write "Standard Package" instead of "**Standard Package**".
 2. Do NOT use Markdown style headings (like #, ##, etc.). Use simple newlines and capitalizations for structure.
 3. Keep answers concise, polite, and professional. Keep response under 3 sentences where possible.
 4. Do NOT answer general knowledge, coding, or unrelated queries. If asked, politely say: 'I apologize, but I am only programmed to assist with questions regarding Bricks Wall construction services, pricing, and projects in Hyderabad. How can I help you with your construction query?'
@@ -105,7 +105,7 @@ ${testimonialsContext ? `**Client Testimonials:**\n${testimonialsContext}` : ''}
             pricingRows.map((r, i) => `${i + 1}. ${r.name} at ${r.pricePerSqFt} (${r.desc})`).join('\n') + 
             `\nYou can use our Instant Cost Calculator on the page for a customized estimate!`;
         } else {
-          reply = `We offer three construction packages: \n1. Basic Package at ₹1,750/sq.ft\n2. Premium Package at ₹2,150/sq.ft\n3. Luxury Package at ₹2,750/sq.ft.\nYou can use our Instant Cost Calculator on the page for a customized estimate!`;
+          reply = `We offer three construction packages: \n1. Standard Package at ₹1,750/sq.ft\n2. Enhanced Package at ₹2,150/sq.ft\n3. Signature Package at ₹2,750/sq.ft.\nYou can use our Instant Cost Calculator on the page for a customized estimate!`;
         }
       } else if (lower.includes('experience') || lower.includes('years') || lower.includes('old') || lower.includes('history')) {
         reply = `Bricks Wall has over 15 years of civil engineering and construction experience, having successfully delivered ${projectsCount > 0 ? projectsCount : '50'}+ projects in Hyderabad.`;
@@ -116,7 +116,7 @@ ${testimonialsContext ? `**Client Testimonials:**\n${testimonialsContext}` : ''}
       } else if (lower.includes('service') || lower.includes('build') || lower.includes('construct') || lower.includes('villa') || lower.includes('renovat')) {
         reply = "We build independent houses, premium luxury villas, schools, commercial spaces, and handle renovations or turnkey interior designs.";
       } else if (lower.includes('warranty') || lower.includes('guarantee') || lower.includes('material')) {
-        reply = "We offer a 10-year structural warranty and use only premium certified brand materials like Ultratech cement and Tata Tiscon steel.";
+        reply = "We offer a 10-year structural guarantee and use only premium certified brand materials like Ultratech cement and Tata Tiscon steel.";
       } else {
         reply = "Hello! I am the Bricks Wall AI Assistant. Let me know if you have any questions about our construction packages, completed projects, or services!";
       }
