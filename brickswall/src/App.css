@@ -547,6 +547,39 @@
   gap: 0.35rem;
 }
 
+/* Home page construction packages teaser */
+.home-package-card {
+  cursor: pointer;
+}
+
+.home-package-link {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  margin-top: auto;
+  padding-top: 1.5rem;
+  font-size: 0.875rem;
+  font-weight: 700;
+  color: var(--primary-orange);
+  transition: gap 0.25s ease;
+}
+
+.home-package-card:hover .home-package-link {
+  gap: 0.7rem;
+}
+
+.home-packages-cta {
+  display: flex;
+  justify-content: center;
+  margin-top: 2.5rem;
+}
+
+.home-packages-cta .btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
 /* Grids & Cards */
 .grid {
   display: grid;

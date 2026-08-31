@@ -30,7 +30,7 @@ import {
   Armchair,
   Store
 } from 'lucide-react';
-import { submitInquiry, getProjects, getTestimonials } from '../utils/api';
+import { submitInquiry, getProjects, getTestimonials, getPricing } from '../utils/api';
 
 const Home = ({ setCurrentPage, navigateToService, navigateToProject, onOpenEstimate, settings }) => {
   const [activeFaq, setActiveFaq] = useState(0);
@@ -138,8 +138,14 @@ const Home = ({ setCurrentPage, navigateToService, navigateToProject, onOpenEsti
     { step: '06', title: 'Final Inspection & Handover', desc: 'Comprehensive quality checks before delivering your completed project.' }
   ];
 
+  const goToPackages = () => {
+    setCurrentPage('packages');
+    setTimeout(() => window.scrollTo({ top: 0, behavior: 'smooth' }), 50);
+  };
+
   const [featuredProjects, setFeaturedProjects] = useState([]);
   const [testimonials, setTestimonials] = useState([]);
+  const [packageTiers, setPackageTiers] = useState([]);
 
   useEffect(() => {
     const fetchHomeData = async () => {
@@ -167,6 +173,13 @@ const Home = ({ setCurrentPage, navigateToService, navigateToProject, onOpenEsti
       } catch (err) {
         setTestimonials(DEFAULT_TESTIMONIALS);
       }
+
+      const livePricing = await getPricing();
+      setPackageTiers(
+        ['basic', 'premium', 'luxury']
+          .map(id => livePricing?.[id])
+          .filter(Boolean)
+      );
     };
     fetchHomeData();
   }, []);
@@ -1144,6 +1157,49 @@ const Home = ({ setCurrentPage, navigateToService, navigateToProject, onOpenEsti
                 On-time delivery backed by post-handover warranty support.
               </p>
             </div>
+          </div>
+        </div>
+      </section>
+
+      {/* Construction Packages */}
+      <section className="section-padding bg-subtle">
+        <div className="container">
+          <div className="section-title-wrapper">
+            <span className="section-subtitle">Transparent Pricing</span>
+            <h2 className="section-heading">Check Our Construction Packages</h2>
+            <p className="section-desc">
+              Fixed turn-key rates per sq.ft with no hidden costs. Compare what each
+              package covers and pick the one that suits your plot and budget.
+            </p>
+          </div>
+
+          {packageTiers.length > 0 && (
+            <div className="grid grid-3 gap-6">
+              {packageTiers.map((tier) => (
+                <div
+                  key={tier.id}
+                  onClick={goToPackages}
+                  className={`package-card home-package-card ${tier.id === 'premium' ? 'popular-card' : ''}`}
+                >
+                  {tier.id === 'premium' && <div className="popular-ribbon">MOST POPULAR</div>}
+                  {tier.badge && <span className="package-tag">{tier.badge}</span>}
+                  <h2>{tier.name}</h2>
+                  <div className="package-price">
+                    <span className="price-val">{tier.pricePerSqFt}</span>
+                  </div>
+                  {tier.desc && <p className="package-desc">{tier.desc}</p>}
+                  <span className="home-package-link">
+                    View Package Details <ArrowRight size={16} />
+                  </span>
+                </div>
+              ))}
+            </div>
+          )}
+
+          <div className="home-packages-cta">
+            <button onClick={goToPackages} className="btn btn-primary btn-lg">
+              Check All Packages &amp; Pricing <ArrowRight size={18} />
+            </button>
           </div>
         </div>
       </section>
