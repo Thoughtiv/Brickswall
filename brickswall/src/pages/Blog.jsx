@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { BookOpen, Clock, Tag, ArrowRight, X, Search, CheckCircle2, User } from 'lucide-react';
-import { getBlogs } from '../utils/api';
+import { getBlogs, resolveAssetUrl } from '../utils/api';
 
 const defaultArticles = [
   {
@@ -117,7 +117,7 @@ const Blog = ({ onOpenEstimate }) => {
             {filteredArticles.map((art) => (
               <div key={art.id} className="blog-card group">
                 <div className="blog-img-box">
-                  <img src={art.image} alt={art.title} />
+                  <img src={resolveAssetUrl(art.image)} alt={art.title} />
                   <span className="badge badge-orange category-badge">{art.category}</span>
                 </div>
                 <div className="blog-body">
@@ -162,7 +162,7 @@ const Blog = ({ onOpenEstimate }) => {
               </div>
 
               <img 
-                src={selectedArticle.image} 
+                src={resolveAssetUrl(selectedArticle.image)} 
                 alt={selectedArticle.title}
                 className="w-full h-48 object-cover rounded-lg my-3"
               />

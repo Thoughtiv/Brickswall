@@ -60,7 +60,8 @@ import {
   updateEditorUser,
   deleteEditorUser,
   getEditorQuotations,
-  deleteEditorQuotation
+  deleteEditorQuotation,
+  resolveAssetUrl
 } from '../utils/api';
 
 const AdminDashboard = () => {
@@ -2302,7 +2303,7 @@ const AdminDashboard = () => {
                 {projects.map(project => (
                   <div key={project.id} className="detail-item-box" style={{ padding: '16px', display: 'flex', flexDirection: 'column', gap: '12px', border: '1px solid #e2e8f0', background: 'white', borderRadius: '12px', minHeight: '380px' }}>
                     <img
-                      src={project.image}
+                      src={resolveAssetUrl(project.image)}
                       alt={project.title}
                       style={{ width: '100%', height: '160px', objectFit: 'cover', borderRadius: '8px', background: '#f1f5f9' }}
                     />
@@ -2374,7 +2375,7 @@ const AdminDashboard = () => {
                   <div key={testimonial.id} className="detail-item-box" style={{ padding: '16px', display: 'flex', flexDirection: 'column', gap: '12px', border: '1px solid #e2e8f0', background: 'white', borderRadius: '12px', minHeight: '220px' }}>
                     <div style={{ display: 'flex', gap: '12px', alignItems: 'center' }}>
                       <img
-                        src={testimonial.avatar}
+                        src={resolveAssetUrl(testimonial.avatar)}
                         alt={testimonial.name}
                         style={{ width: '48px', height: '48px', borderRadius: '50%', objectFit: 'cover', background: '#f1f5f9' }}
                       />
@@ -2447,7 +2448,7 @@ const AdminDashboard = () => {
                   <div key={blog.id} className="detail-item-box" style={{ padding: '16px', display: 'flex', flexDirection: 'column', gap: '12px', border: '1px solid #e2e8f0', background: 'white', borderRadius: '12px' }}>
                     <div style={{ position: 'relative', width: '100%', height: '140px', borderRadius: '8px', overflow: 'hidden', background: '#f1f5f9' }}>
                       <img
-                        src={blog.image}
+                        src={resolveAssetUrl(blog.image)}
                         alt={blog.title}
                         style={{ width: '100%', height: '100%', objectFit: 'cover' }}
                       />
@@ -3224,7 +3225,7 @@ const AdminDashboard = () => {
                 </div>
                 {projectModal.projectData.image && (
                   <div style={{ marginTop: '8px', display: 'flex', alignItems: 'center', gap: '10px' }}>
-                    <img src={projectModal.projectData.image} alt="Preview" style={{ width: '48px', height: '48px', objectFit: 'cover', borderRadius: '6px', border: '1px solid #cbd5e1' }} />
+                    <img src={resolveAssetUrl(projectModal.projectData.image)} alt="Preview" style={{ width: '48px', height: '48px', objectFit: 'cover', borderRadius: '6px', border: '1px solid #cbd5e1' }} />
                     <span style={{ fontSize: '11px', color: '#64748b' }}>Image Preview</span>
                   </div>
                 )}
@@ -3390,7 +3391,7 @@ const AdminDashboard = () => {
                 </div>
                 {testimonialModal.testimonialData.avatar && (
                   <div style={{ marginTop: '8px', display: 'flex', alignItems: 'center', gap: '10px' }}>
-                    <img src={testimonialModal.testimonialData.avatar} alt="Preview" style={{ width: '40px', height: '40px', objectFit: 'cover', borderRadius: '50%', border: '1px solid #cbd5e1' }} />
+                    <img src={resolveAssetUrl(testimonialModal.testimonialData.avatar)} alt="Preview" style={{ width: '40px', height: '40px', objectFit: 'cover', borderRadius: '50%', border: '1px solid #cbd5e1' }} />
                     <span style={{ fontSize: '11px', color: '#64748b' }}>Avatar Preview</span>
                   </div>
                 )}
@@ -3554,7 +3555,7 @@ const AdminDashboard = () => {
                 </div>
                 {blogModal.blogData.image && (
                   <div style={{ marginTop: '8px', display: 'flex', alignItems: 'center', gap: '10px' }}>
-                    <img src={blogModal.blogData.image} alt="Preview" style={{ width: '60px', height: '40px', objectFit: 'cover', borderRadius: '6px', border: '1px solid #cbd5e1' }} />
+                    <img src={resolveAssetUrl(blogModal.blogData.image)} alt="Preview" style={{ width: '60px', height: '40px', objectFit: 'cover', borderRadius: '6px', border: '1px solid #cbd5e1' }} />
                     <span style={{ fontSize: '11px', color: '#64748b' }}>Image Preview</span>
                   </div>
                 )}

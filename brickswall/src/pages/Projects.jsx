@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { MapPin, Maximize2, CheckCircle2, ArrowRight, Layers, Eye } from 'lucide-react';
-import { getProjects } from '../utils/api';
+import { getProjects, resolveAssetUrl } from '../utils/api';
 
 const Projects = ({ onOpenEstimate, initialFilter = 'all', initialProject = null }) => {
   const [filter, setFilter] = useState(initialFilter);
@@ -158,7 +158,7 @@ const Projects = ({ onOpenEstimate, initialFilter = 'all', initialProject = null
             {filteredProjects.map((project) => (
               <div key={project.id} className="project-card group">
                 <div className="project-img-box">
-                  <img src={project.image} alt={project.title} />
+                  <img src={resolveAssetUrl(project.image)} alt={project.title} />
                   <span className="project-type-badge">{project.categoryLabel}</span>
                   <button
                     onClick={() => setSelectedProjectModal(project)}
@@ -190,7 +190,7 @@ const Projects = ({ onOpenEstimate, initialFilter = 'all', initialProject = null
 
             <div className="project-modal-img-box">
               <img
-                src={selectedProjectModal.image}
+                src={resolveAssetUrl(selectedProjectModal.image)}
                 alt={selectedProjectModal.title}
               />
             </div>

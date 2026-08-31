@@ -30,7 +30,7 @@ import {
   Armchair,
   Store
 } from 'lucide-react';
-import { submitInquiry, getProjects, getTestimonials, getPricing, DEFAULT_PRICING } from '../utils/api';
+import { submitInquiry, getProjects, getTestimonials, getPricing, DEFAULT_PRICING, resolveAssetUrl } from '../utils/api';
 
 const Home = ({ setCurrentPage, navigateToService, navigateToProject, onOpenEstimate, settings }) => {
   const [activeFaq, setActiveFaq] = useState(0);
@@ -1222,7 +1222,7 @@ const Home = ({ setCurrentPage, navigateToService, navigateToProject, onOpenEsti
               {featuredProjects.map((project, idx) => (
                 <div key={idx} className="project-card cursor-pointer" onClick={() => navigateToProject(project.category || 'all', project)}>
                   <div className="project-img-box">
-                    <img src={project.image} alt={project.title} />
+                    <img src={resolveAssetUrl(project.image)} alt={project.title} />
                     <span className="project-type-badge">{project.type || project.categoryLabel}</span>
                   </div>
                   <div className="project-body">
@@ -1264,7 +1264,7 @@ const Home = ({ setCurrentPage, navigateToService, navigateToProject, onOpenEsti
                 </div>
                 <p className="testimonial-quote">"{item.quote}"</p>
                 <div className="testimonial-user">
-                  <img src={item.avatar} alt={item.name} className="user-avatar" />
+                  <img src={resolveAssetUrl(item.avatar)} alt={item.name} className="user-avatar" />
                   <div>
                     <strong>{item.name}</strong>
                     <p className="text-xs text-muted">{item.role} &bull; {item.location}</p>
