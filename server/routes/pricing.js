@@ -4,6 +4,26 @@ import { adminAuth } from '../middleware/auth.js';
 
 const router = express.Router();
 
+// An earlier version of the update route stringified section objects, leaving
+// rows that hold the literal "[object Object]". Drop those remnants on read so
+// they never reach the admin panel or the packages page.
+const isCorruptedEntry = (entry) => typeof entry === 'string' && entry.trim() === '[object Object]';
+
+const sanitizeServices = (services) => {
+  if (!Array.isArray(services)) return [];
+  return services
+    .filter(entry => !isCorruptedEntry(entry))
+    .map(entry => {
+      if (entry && typeof entry === 'object' && !Array.isArray(entry)) {
+        return {
+          ...entry,
+          points: (Array.isArray(entry.points) ? entry.points : []).filter(point => !isCorruptedEntry(point))
+        };
+      }
+      return entry;
+    });
+};
+
 // Get Pricing (Public)
 router.get('/', async (req, res) => {
   try {
@@ -30,7 +50,7 @@ router.get('/', async (req, res) => {
         desc: row.desc,
         warranty: row.warranty || '',
         servicesHeading: row.servicesHeading || 'Included Services & Warranty',
-        services: services
+        services: sanitizeServices(services)
       };
     });
     res.json(pricingMap);
@@ -73,7 +93,28 @@ router.put('/', adminAuth, async (req, res) => {
         const list = Array.isArray(pkg.services)
           ? pkg.services
           : String(pkg.services).split('\n');
-        updates.services = JSON.stringify(list.map(s => String(s).trim()).filter(Boolean));
+
+        // The admin panel sends either the legacy flat list of strings or the
+        // newer { heading, points } sections. Coercing every entry with String()
+        // turned each section into the literal "[object Object]", so the two
+        // shapes are normalised separately.
+        const sections = list.map(entry => {
+          if (entry && typeof entry === 'object' && !Array.isArray(entry)) {
+            return {
+              heading: String(entry.heading ?? '').trim(),
+              points: (Array.isArray(entry.points) ? entry.points : [])
+                .map(point => String(point ?? '').trim())
+                .filter(Boolean)
+            };
+          }
+          return String(entry ?? '').trim();
+        }).filter(entry => (
+          typeof entry === 'string'
+            ? Boolean(entry)
+            : Boolean(entry.heading) || entry.points.length > 0
+        ));
+
+        updates.services = JSON.stringify(sections);
       }
 
       const columns = Object.keys(updates);
