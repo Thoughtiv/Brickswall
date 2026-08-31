@@ -1844,64 +1844,68 @@ const AdminDashboard = () => {
                           ></textarea>
                         </div>
 
-                        {/* Structural Warranty */}
-                        <div className="tier-form-group" style={{ marginTop: '14px', paddingTop: '12px', borderTop: '1px dashed #cbd5e1' }}>
-                          <label style={{ fontWeight: 700 }}>Structural Warranty Point</label>
-                          <input
-                            type="text"
-                            className="tier-input"
-                            value={editablePricing[tier]?.warranty || ''}
-                            onChange={(e) => handlePriceFieldChange(tier, 'warranty', e.target.value)}
-                            placeholder="e.g. 10-Year Structural Guarantee"
-                          />
-                        </div>
-
-                        {/* Services Heading */}
-                        <div className="tier-form-group" style={{ marginTop: '16px', paddingTop: '12px', borderTop: '1px dashed #cbd5e1' }}>
-                          <label style={{ fontWeight: 800, color: '#1e293b' }}>Included Services Section Title</label>
-                          <input
-                            type="text"
-                            className="tier-input"
-                            value={editablePricing[tier]?.servicesHeading || 'Included Deliverables & Guarantee'}
-                            onChange={(e) => handlePriceFieldChange(tier, 'servicesHeading', e.target.value)}
-                            placeholder="e.g. Included Deliverables & Guarantee"
-                          />
-                        </div>
-
-                        {/* Services List Items */}
-                        <div className="tier-form-group">
-                          <label style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '6px' }}>
-                            <span>Included Services Points ({editablePricing[tier]?.services?.length || 0})</span>
-                          </label>
-                          <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
-                            {(editablePricing[tier]?.services || []).map((item, idx) => (
-                              <div key={idx} style={{ display: 'flex', gap: '6px', alignItems: 'center' }}>
-                                <input
-                                  type="text"
-                                  className="tier-input"
-                                  value={item}
-                                  onChange={(e) => handleServiceItemChange(tier, idx, e.target.value)}
-                                  placeholder={`e.g. 3D Elevation & Floor Plan Design`}
-                                  style={{ flex: 1, fontSize: '12px' }}
-                                />
-                                <button
-                                  type="button"
-                                  onClick={() => handleRemoveServiceItem(tier, idx)}
-                                  style={{ background: '#fee2e2', color: '#ef4444', border: '1px solid #fca5a5', padding: '6px 8px', borderRadius: '6px', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}
-                                  title="Remove Service"
-                                >
-                                  <Trash2 size={14} />
-                                </button>
-                              </div>
-                            ))}
+                        {/* Custom Deliverables & Warranty Section */}
+                        <div style={{ marginTop: '16px', paddingTop: '16px', borderTop: '1px dashed #cbd5e1' }}>
+                          <div className="tier-form-group" style={{ marginBottom: '12px' }}>
+                            <label style={{ fontWeight: 800, color: '#0f172a', fontSize: '13px', display: 'block', marginBottom: '4px' }}>
+                              Custom Section Heading Field
+                            </label>
+                            <input
+                              type="text"
+                              className="tier-input"
+                              value={editablePricing[tier]?.servicesHeading || ''}
+                              onChange={(e) => handlePriceFieldChange(tier, 'servicesHeading', e.target.value)}
+                              placeholder="e.g. Included Deliverables & Guarantee (or custom heading)"
+                            />
                           </div>
-                          <button
-                            type="button"
-                            onClick={() => handleAddServiceItem(tier)}
-                            style={{ marginTop: '10px', background: '#f0fdf4', color: '#16a34a', border: '1px dashed #4ade80', padding: '8px 12px', borderRadius: '6px', fontSize: '12px', fontWeight: 700, cursor: 'pointer', display: 'inline-flex', alignItems: 'center', gap: '4px', width: '100%', justifyContent: 'center' }}
-                          >
-                            <Plus size={14} /> Add Included Service Point
-                          </button>
+
+                          <div className="tier-form-group" style={{ marginBottom: '12px' }}>
+                            <label style={{ fontWeight: 700, color: '#334155', fontSize: '12px', display: 'block', marginBottom: '4px' }}>
+                              Featured Guarantee / Highlight Point (Optional)
+                            </label>
+                            <input
+                              type="text"
+                              className="tier-input"
+                              value={editablePricing[tier]?.warranty || ''}
+                              onChange={(e) => handlePriceFieldChange(tier, 'warranty', e.target.value)}
+                              placeholder="e.g. 10-Year Structural Guarantee"
+                            />
+                          </div>
+
+                          <div className="tier-form-group">
+                            <label style={{ fontWeight: 700, color: '#334155', fontSize: '12px', display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '6px' }}>
+                              <span>Points &amp; Deliverables Under Heading ({editablePricing[tier]?.services?.length || 0})</span>
+                            </label>
+                            <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
+                              {(editablePricing[tier]?.services || []).map((item, idx) => (
+                                <div key={idx} style={{ display: 'flex', gap: '6px', alignItems: 'center' }}>
+                                  <input
+                                    type="text"
+                                    className="tier-input"
+                                    value={item}
+                                    onChange={(e) => handleServiceItemChange(tier, idx, e.target.value)}
+                                    placeholder="Type point to mention under heading..."
+                                    style={{ flex: 1, fontSize: '12px' }}
+                                  />
+                                  <button
+                                    type="button"
+                                    onClick={() => handleRemoveServiceItem(tier, idx)}
+                                    style={{ background: '#fee2e2', color: '#ef4444', border: '1px solid #fca5a5', padding: '6px 8px', borderRadius: '6px', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}
+                                    title="Remove Point"
+                                  >
+                                    <Trash2 size={14} />
+                                  </button>
+                                </div>
+                              ))}
+                            </div>
+                            <button
+                              type="button"
+                              onClick={() => handleAddServiceItem(tier)}
+                              style={{ marginTop: '10px', background: '#f0fdf4', color: '#16a34a', border: '1px dashed #4ade80', padding: '8px 12px', borderRadius: '6px', fontSize: '12px', fontWeight: 700, cursor: 'pointer', display: 'inline-flex', alignItems: 'center', gap: '4px', width: '100%', justifyContent: 'center' }}
+                            >
+                              <Plus size={14} /> Add Point Under Heading
+                            </button>
+                          </div>
                         </div>
                       </div>
                     );
