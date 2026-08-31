@@ -304,10 +304,9 @@ const Home = ({ setCurrentPage, navigateToService, navigateToProject, onOpenEsti
           <div className="ref-hero-gradient-overlay"></div>
         </div>
 
-        <div className="container relative z-10 grid grid-cols-1 lg:grid-cols-12 gap-8 items-center min-h-[600px] py-12">
-          
+        <div className="container ref-hero-container">
           {/* Left Column Content */}
-          <div className="lg:col-span-7 ref-hero-left">
+          <div className="ref-hero-left">
             
             <div className="ref-hero-pill">
               <Star size={14} className="text-orange fill-orange" />
