@@ -198,14 +198,9 @@ export async function initDatabase() {
           '₹1,750 / sq.ft',
           'Economical Solution',
           'An affordable solution designed for quality residential construction with dependable materials and essential finishes.',
-          '5 Years Structural Warranty',
+          '',
           'Included Services & Warranty',
-          JSON.stringify([
-            'Structural & Architectural Layout',
-            'Standard Electrical & Plumbing',
-            'Site Supervision',
-            'Basic Sanitary Ware (Cera / Parryware)'
-          ])
+          '[]'
         ],
         [
           'premium',
@@ -214,15 +209,9 @@ export async function initDatabase() {
           '₹2,150 / sq.ft',
           'Most Popular',
           'Ideal for homeowners seeking enhanced finishes, premium materials, custom elevation designs, and additional customization.',
-          '10 Years Structural Warranty',
+          '',
           'Included Services & Warranty',
-          JSON.stringify([
-            '3D Elevation & Floor Plan Design',
-            'Concealed Modular Electricals (Havells)',
-            'Dedicated Project Manager',
-            'Premium Sanitary Ware (Kohler / Jaquar)',
-            'Underground Sump & Overhead Tank'
-          ])
+          '[]'
         ],
         [
           'luxury',
@@ -231,15 +220,9 @@ export async function initDatabase() {
           '₹2,750 / sq.ft',
           'Ultra High-End',
           'Designed for premium residences featuring superior materials, elegant interiors, modern architecture, and luxury finishes.',
-          '15 Years Structural Warranty',
+          '',
           'Included Services & Warranty',
-          JSON.stringify([
-            'Full 3D Architectural VR Walkthroughs',
-            'Automation Ready Smart Wiring',
-            'Dedicated Senior Civil Engineer',
-            'Luxury Sanitary Ware (Grohe / Hansgrohe)',
-            'Landscaping & Rooftop Solar Prep'
-          ])
+          '[]'
         ]
       ];
       for (const p of defaultPricing) {

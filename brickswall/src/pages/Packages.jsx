@@ -41,14 +41,7 @@ const Packages = ({ onOpenEstimate }) => {
       priceNum: 1750,
       badge: 'Economical Solution',
       isPopular: false,
-      desc: 'An affordable solution designed for quality residential construction with dependable materials and essential finishes.',
-      warranty: '5 Years Structural Warranty',
-      services: [
-        'Structural & Architectural Layout',
-        'Standard Electrical & Plumbing',
-        'Site Supervision',
-        'Basic Sanitary Ware (Cera / Parryware)'
-      ]
+      desc: 'An affordable solution designed for quality residential construction with dependable materials and essential finishes.'
     },
     {
       id: 'premium',
@@ -57,15 +50,7 @@ const Packages = ({ onOpenEstimate }) => {
       priceNum: 2150,
       badge: 'Most Popular',
       isPopular: true,
-      desc: 'Ideal for homeowners seeking enhanced finishes, premium materials, custom elevation designs, and additional customization.',
-      warranty: '10 Years Structural Warranty',
-      services: [
-        '3D Elevation & Floor Plan Design',
-        'Concealed Modular Electricals (Havells)',
-        'Dedicated Project Manager',
-        'Premium Sanitary Ware (Kohler / Jaquar)',
-        'Underground Sump & Overhead Tank'
-      ]
+      desc: 'Ideal for homeowners seeking enhanced finishes, premium materials, custom elevation designs, and additional customization.'
     },
     {
       id: 'luxury',
@@ -74,15 +59,7 @@ const Packages = ({ onOpenEstimate }) => {
       priceNum: 2750,
       badge: 'Ultra High-End',
       isPopular: false,
-      desc: 'Designed for premium residences featuring superior materials, elegant interiors, modern architecture, and luxury finishes.',
-      warranty: '15 Years Structural Warranty',
-      services: [
-        'Full 3D Architectural VR Walkthroughs',
-        'Automation Ready Smart Wiring',
-        'Dedicated Senior Civil Engineer',
-        'Luxury Sanitary Ware (Grohe / Hansgrohe)',
-        'Landscaping & Rooftop Solar Prep'
-      ]
+      desc: 'Designed for premium residences featuring superior materials, elegant interiors, modern architecture, and luxury finishes.'
     }
   ];
 
@@ -95,12 +72,12 @@ const Packages = ({ onOpenEstimate }) => {
         priceNum: live.priceNum || pkg.priceNum,
         badge: live.badge !== undefined ? live.badge : pkg.badge,
         desc: live.desc !== undefined ? live.desc : pkg.desc,
-        warranty: live.warranty || pkg.warranty,
-        services: Array.isArray(live.services) && live.services.length > 0 ? live.services : pkg.services,
+        warranty: live.warranty || '',
+        services: Array.isArray(live.services) ? live.services : [],
         servicesHeading: live.servicesHeading || 'Included Services & Warranty'
       };
     }
-    return pkg;
+    return { ...pkg, warranty: '', services: [] };
   });
 
   return (
@@ -146,15 +123,17 @@ const Packages = ({ onOpenEstimate }) => {
                     Choose {pkg.name}
                   </button>
 
-                  <div className="pkg-spec-group">
-                    <h4>{pkg.servicesHeading || 'Included Services & Warranty'}:</h4>
-                    <ul>
-                      {pkg.warranty && <li><ShieldCheck size={14} className="text-orange" /> <strong>{pkg.warranty}</strong></li>}
-                      {pkg.services.map((s, i) => (
-                        <li key={i}><Check size={14} className="text-orange" /> {s}</li>
-                      ))}
-                    </ul>
-                  </div>
+                  {(pkg.warranty || pkg.services.length > 0) && (
+                    <div className="pkg-spec-group">
+                      <h4>{pkg.servicesHeading || 'Included Services & Warranty'}:</h4>
+                      <ul>
+                        {pkg.warranty && <li><ShieldCheck size={14} className="text-orange" /> <strong>{pkg.warranty}</strong></li>}
+                        {pkg.services.map((s, i) => (
+                          <li key={i}><Check size={14} className="text-orange" /> {s}</li>
+                        ))}
+                      </ul>
+                    </div>
+                  )}
                 </div>
               );
             })}
