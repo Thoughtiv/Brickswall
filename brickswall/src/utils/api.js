@@ -38,6 +38,22 @@ export async function getPricing() {
     const data = await res.json();
     // Validate returned structure
     if (data && data.basic && data.premium && data.luxury) {
+      const canonicalNames = {
+        basic: 'Standard Package',
+        premium: 'Enhanced Package',
+        luxury: 'Signature Package'
+      };
+      Object.keys(canonicalNames).forEach(id => {
+        if (data[id]) {
+          if (!data[id].name || data[id].name === 'Basic Package' || data[id].name === 'basic') {
+            data[id].name = canonicalNames[id];
+          } else if (data[id].name === 'Premium Package' || data[id].name === 'premium') {
+            data[id].name = canonicalNames[id];
+          } else if (data[id].name === 'Luxury Package' || data[id].name === 'luxury') {
+            data[id].name = canonicalNames[id];
+          }
+        }
+      });
       return data;
     }
     return DEFAULT_PRICING;

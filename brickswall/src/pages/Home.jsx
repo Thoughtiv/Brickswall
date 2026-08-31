@@ -30,7 +30,7 @@ import {
   Armchair,
   Store
 } from 'lucide-react';
-import { submitInquiry, getProjects, getTestimonials, getPricing } from '../utils/api';
+import { submitInquiry, getProjects, getTestimonials, getPricing, DEFAULT_PRICING } from '../utils/api';
 
 const Home = ({ setCurrentPage, navigateToService, navigateToProject, onOpenEstimate, settings }) => {
   const [activeFaq, setActiveFaq] = useState(0);
@@ -175,9 +175,10 @@ const Home = ({ setCurrentPage, navigateToService, navigateToProject, onOpenEsti
       }
 
       const livePricing = await getPricing();
+      const pricingObj = (livePricing && Object.keys(livePricing).length > 0) ? livePricing : DEFAULT_PRICING;
       setPackageTiers(
         ['basic', 'premium', 'luxury']
-          .map(id => livePricing?.[id])
+          .map(id => pricingObj?.[id] || DEFAULT_PRICING[id])
           .filter(Boolean)
       );
     };

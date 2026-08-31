@@ -68,6 +68,7 @@ const Packages = ({ onOpenEstimate }) => {
       const live = pricingData[pkg.id];
       return {
         ...pkg,
+        name: live.name || pkg.name,
         pricePerSqFt: live.pricePerSqFt || pkg.pricePerSqFt,
         priceNum: live.priceNum || pkg.priceNum,
         badge: live.badge !== undefined ? live.badge : pkg.badge,
