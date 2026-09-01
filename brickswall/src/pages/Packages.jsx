@@ -135,12 +135,20 @@ const Packages = ({ onOpenEstimate }) => {
                           points: [...(pkg.warranty ? [pkg.warranty] : []), ...pkg.services.filter(s => typeof s === 'string')]
                         }];
                       }
-                    } else if (pkg.warranty || pkg.servicesHeading) {
+                    } else if (pkg.warranty) {
                       sectionsList = [{
                         heading: pkg.servicesHeading || 'Included Deliverables & Guarantee',
-                        points: pkg.warranty ? [pkg.warranty] : []
+                        points: [pkg.warranty]
                       }];
                     }
+
+                    // servicesHeading always carries a default from the API, so it
+                    // can never gate this block. Drop any section left with nothing
+                    // under it, otherwise clearing every point in the admin panel
+                    // still leaves a bare heading on the card.
+                    sectionsList = sectionsList.filter(sec =>
+                      (sec?.points || []).some(pt => String(pt ?? '').trim())
+                    );
 
                     if (sectionsList.length === 0) return null;
 
