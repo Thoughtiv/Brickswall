@@ -591,7 +591,7 @@ const Home = ({ setCurrentPage, navigateToService, navigateToProject, onOpenEsti
             <div className="about-image-column">
               <div className="about-img-frame">
                 <img
-                  src="/construction-about-us.png"
+                  src="/hero.png"
                   alt="Bricks Wall Construction Hyderabad"
                   className="about-main-img"
                 />
