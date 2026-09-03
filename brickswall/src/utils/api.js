@@ -5,16 +5,29 @@ const API_ORIGIN = API_BASE_URL.replace(/\/api\/?$/, '');
 
 /**
  * Turn a stored image path into a URL the browser can actually load.
- * Uploads are saved as server-relative paths ("/uploads/x.png"), which break
+ * Uploads are saved as server-relative paths ("/uploads/x.png" or "uploads/x.png"), which break
  * whenever the frontend is served from a different origin than the API
  * (Vite on :5173 in dev, or a separate host in production). External URLs and
  * data URLs are returned untouched.
  */
 export function resolveAssetUrl(url) {
   if (!url || typeof url !== 'string') return url;
+
+  // Return full external URLs, blob URLs, and data URLs as-is
   if (/^(https?:|data:|blob:)/i.test(url)) return url;
-  if (url.startsWith('/')) return `${API_ORIGIN}${url}`;
-  return url;
+
+  // Normalize backslashes and leading relative symbols
+  let cleanUrl = url.replace(/\\/g, '/').trim();
+  cleanUrl = cleanUrl.replace(/^(\.\/)+/, '');
+
+  // Handle uploaded assets
+  if (cleanUrl.startsWith('/uploads/') || cleanUrl.startsWith('uploads/')) {
+    const pathWithSlash = cleanUrl.startsWith('/') ? cleanUrl : `/${cleanUrl}`;
+    return `${API_ORIGIN}${pathWithSlash}`;
+  }
+
+  // Handle local frontend assets in public folder
+  return cleanUrl.startsWith('/') ? cleanUrl : `/${cleanUrl}`;
 }
 
 // Fallback pricing configuration in case the server is offline or not configured yet
