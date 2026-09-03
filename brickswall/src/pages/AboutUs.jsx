@@ -95,7 +95,7 @@ const AboutUs = ({ onOpenEstimate }) => {
 
             <div className="story-img-box">
               <img 
-                src="https://images.unsplash.com/photo-1541888946425-d0fbb186a5b7?auto=format&fit=crop&w=800&q=80" 
+                src="/construction-about-us.png" 
                 alt="Bricks Wall Construction Engineers Hyderabad" 
                 className="rounded-lg shadow-lg"
               />
